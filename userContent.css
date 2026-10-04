@@ -64,15 +64,15 @@
 
 
 /* ==========================================================================
-   NEW TAB / HOME – Gruvbox Dark (dark mode only)
+   NEW TAB / HOME - palette colours from foxone-config.css (dark mode only)
    ========================================================================== */
 
 
 @-moz-document url-prefix("about:newtab"), url-prefix("about:home") {
   @media (prefers-color-scheme: dark) {
     :root {
-      --newtab-background-color: #282828 !important;
-      --newtab-text-primary-color: #FFFFFF !important;
+      --newtab-background-color: var(--uc-color-base) !important;
+      --newtab-text-primary-color: var(--uc-color-text) !important;
     }
   }
 }
