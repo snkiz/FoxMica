@@ -1,2 +1,9 @@
-# Auto detect text files and perform LF normalization
-* text=auto
+# Keep line endings as LF in the repo AND in the working folder, on every OS.
+# Stops the "LF will be replaced by CRLF" warning on Windows.
+* text=auto eol=lf
+
+# Images are binary: never touch them.
+*.png binary
+*.jpg binary
+*.webp binary
+*.gif binary
