@@ -343,6 +343,26 @@
   }
 }
 
+/* about:firefoxview — Firefox's own palette, not Nova's. firefoxview.css
+   builds its card colour as
+   var(--newtab-background-color-secondary, light-dark(#ffffff, #42414d));
+   #42414d is the purple-grey in dark mode, and the canvas colour is only
+   picked up if --newtab-background-color is unset. Point the card colour at
+   the palette's surface and keep the canvas on the base. The hover and
+   active fills derive from the canvas, so they follow. Dark only, like the
+   rest of the about: pages here. */
+@-moz-document url-prefix("about:firefoxview") {
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --newtab-background-color: var(--uc-color-base) !important;
+      --newtab-background-color-secondary: var(--uc-color-surface) !important;
+      --fxview-background-color: var(--uc-color-base) !important;
+      --fxview-background-color-secondary: var(--uc-color-surface) !important;
+      --fxview-text-primary-color: var(--uc-color-text) !important;
+    }
+  }
+}
+
 /* about:mozilla – the Book of Mozilla easter egg ships its own maroon
    radial gradient and white serif text (toolkit aboutMozilla.css). Rebind
    the scripture to the palette: base background, amber verse. Typography
