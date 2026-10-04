@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ page.title }} – FoxOne</title>
+<meta name="description" content="{{ site.description }}">
+<link rel="canonical" href="{{ page.url | absolute_url }}">
+<meta name="theme-color" content="#1b1815">
+<link rel="icon" type="image/svg+xml" href="{{ '/favicon.svg' | relative_url }}">
+<link rel="preload" as="font" type="font/woff2" href="{{ '/fonts/InstrumentSans-02.woff2' | relative_url }}" crossorigin>
+<link rel="stylesheet" href="{{ '/fonts/InstrumentSans.css' | relative_url }}">
+<link rel="stylesheet" href="{{ '/style.css' | relative_url }}">
+<script>document.documentElement.classList.add('js');</script>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap top-in">
+    <a class="brand" href="{{ '/' | relative_url }}">foxone</a>
+    <nav class="topnav" aria-label="Pages">
+      <a href="{{ '/installation.html' | relative_url }}">installation</a>
+      <a href="{{ '/customisation.html' | relative_url }}">customisation</a>
+      <a href="{{ '/action.html' | relative_url }}">in action</a>
+      <a href="https://github.com/Firnschnee/FoxOne">github</a>
+    </nav>
+    <span class="badge">amber</span>
+  </div>
+</header>
+
+<main class="doc-main wrap" id="main">
+  <div class="g">
+    <article class="doc">
+{{ content }}
+    </article>
+  </div>
+</main>
+
+<footer class="foot">
+  <div class="wrap g">
+    <p class="f-mark">foxone <span class="f-sep">·</span> one line <span class="f-sep">·</span> firefox</p>
+    <div class="f-col">
+      <p>FoxOne is released under the <a href="https://github.com/Firnschnee/FoxOne/blob/main/LICENSE">MIT License</a>. Inspired by <a href="https://github.com/andreasgrafen/cascade">Cascade</a> and <a href="https://github.com/biglavis/LittleFox">LittleFox</a>.</p>
+      <p>© 2026 firnschnee · foxone</p>
+    </div>
+    <div class="f-col">
+      <p class="f-fine">Also themed for Thunderbird: <a href="https://firnschnee.github.io/BirdOne/">BirdOne</a>.</p>
+    </div>
+  </div>
+</footer>
+
+<script src="{{ '/js/main.js' | relative_url }}"></script>
+</body>
+</html>

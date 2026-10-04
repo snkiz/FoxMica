@@ -1,0 +1,7 @@
+title: FoxOne
+description: Minimalistic one-line userChrome.css theme for Firefox
+url: https://firnschnee.github.io
+baseurl: /FoxOne
+exclude:
+  - superpowers/
+  - index.htmlbak
