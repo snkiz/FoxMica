@@ -1,0 +1,39 @@
+/* Order matters: @imports must come first, and later ones win ties.
+   1. FoxOne itself, untouched
+   2. your settings (palette, shape, bar height, layers, FoxOne toggles)
+   3. tab style (also works on stock Firefox: drop 1, 2 and 4 to try it)
+   4. FoxOne-only overrides: Mica, dropdown, bar-height fixes, bookmarks bar */
+@import url("userChrome-foxone.css") screen;
+@import url("foxone-config.css") screen;
+@import url("userChrome-tab-style.css") screen;
+@import url("userChrome-foxone-overrides.css") screen;
+
+/* ==========================================================================
+   OPTIONAL: your own font for the browser interface. OFF by default.
+
+   To turn it on, delete the first line of the block below (the one starting
+   with "OFF-START") and the last line (the one ending with "OFF-END"), then
+   put the font you want in place of Georgia. Any font installed on your
+   computer works. Georgia ships with Windows and is easy to spot, so you can
+   see at a glance that it worked.
+
+   The second rule keeps the window buttons (minimise, maximise, close) on
+   their own icon font. Without it they can turn into letters or boxes.
+
+   This only changes the browser interface. The about: pages are separate
+   documents and take their fonts from userContent.css.
+   ========================================================================== */
+
+/* OFF-START (delete this line to enable)
+#navigator-toolbox,
+#sidebar-box,
+#appMenu-popup,
+menupopup,
+panel {
+  font-family: Georgia, serif !important;
+}
+#titlebar .titlebar-button,
+#titlebar .titlebar-button * {
+  font-family: initial !important;
+}
+OFF-END (delete this line to enable) */
