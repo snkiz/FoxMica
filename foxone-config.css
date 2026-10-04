@@ -1,0 +1,204 @@
+/*==============================================================================================*
+  FOXONE CONFIG – the one file you edit.
+
+  Variables only, no rules. Imported by BOTH userChrome.css and userContent.css, so the palette
+  and shape you pick here reach the browser UI and the about: pages / new tab alike (no more
+  keeping two copies in sync). It loads AFTER FoxOne, so everything here wins over FoxOne's own
+  defaults. Colours in FoxOne's own groups below are what FoxOne reads; the --ut-* group is read
+  by userChrome-tab-style.css and userChrome-foxone-overrides.css.
+*==============================================================================================*/
+
+:root {
+
+  /* ========================================================================
+     1. PALETTE – dark scheme
+     ======================================================================== */
+  --uc-color-base:    #333333;   /* main background; also the solid URL dropdown */
+  --uc-color-surface: #3c3836;   /* borders, separators, focused URL field */
+  --uc-color-accent:  #325c78;   /* focus ring, links, loading bar, attention */
+  --uc-color-text:    #FFFFFF;   /* primary text */
+  --uc-color-hover:   #627988;   /* hover / highlight backgrounds */
+  --uc-tab-hover-text: #627988;  /* title colour on tab hover (FoxOne default #ffda85) */
+
+  /* ---- light scheme (used instead of the above when Firefox runs light) ---- */
+  --uc-light-color-base:    #fbf1c7;
+  --uc-light-color-surface: #ebdbb2;
+  --uc-light-color-accent:  #b57614;
+  --uc-light-color-text:    #3c3836;
+  --uc-light-color-hover:   #ba7614;
+  --uc-light-tab-hover-text: #855d22;
+
+  /* ========================================================================
+     2. SHAPE
+     ======================================================================== */
+  --uc-rounded: 1;             /* 0 = FoxOne's square edges, 1 = rounded surfaces */
+  --uc-border-radius: 6px;     /* radius for everything --uc-rounded can round */
+
+  /* ========================================================================
+     3. BAR, TABS AND LAYERS  (userChrome-tab-style / -foxone-overrides)
+     ======================================================================== */
+
+  /* Height of the whole one-line bar (tabs, URL bar, hamburger, puzzle button)
+     for each of Firefox's three UI densities (Customize > Density). The bar
+     follows whichever one is active; --ut-bar-height below is the live value
+     and is set from these, so edit these three, not that one.
+
+     Stock Firefox, for reference (Firefox source and FoxOne's own notes):
+       URL field    26px compact / 32px normal / 34px touch
+       bar row      about 34 / 40-44 / 44-48 (Proton ~40; FoxOne assumes 44)
+       tab height   29 / 36 / 41 (Proton)
+       button pad   6px / 8px / 9px inside, 3px / 2px / 2px outside
+     Stock grows about 10% from normal to touch; 40 -> 44 keeps that ratio.
+     Compact is hidden in Firefox's Customize page unless
+     browser.compactmode.show is true in about:config. It is set to 28px, the
+     height you picked as your tightest; stock compact would be about 34px.
+     Set all three equal to ignore density altogether. */
+  --ut-bar-height-compact: 28px;
+  --ut-bar-height-normal: 40px;
+  --ut-bar-height-touch: 44px;
+
+  /* Space left above and below the tabs and the URL field inside the bar. This
+     is "your padding": stock leaves about 6px; 2px keeps things snug. The tab
+     and the field are (bar height - 2 x this) tall. */
+  --ut-bar-padding: 2px;
+
+  /* Toolbar button padding, which sets how far apart the icons sit. Stock is
+     8px inner / 2px outer at normal density (6px / 3px compact, 9px / 2px
+     touch), which on a 900p-class screen reads loose. A button is
+     16px icon + 2 x inner + 2 x outer wide and tall, so inner 4px makes it
+     28px square at normal. Touch keeps a roomier 10px so its bump survives. */
+  --ut-btn-outer: 2px;
+  --ut-btn-inner-compact: 3px;
+  --ut-btn-inner-normal: 4px;
+  --ut-btn-inner-touch: 10px;
+  --ut-btn-inner: var(--ut-btn-inner-normal);
+
+  --ut-bar-height: var(--ut-bar-height-normal);
+
+  --ut-tab-radius: 6px;        /* top corners of tabs. 8px is WinUI's, but Firefox renders it rounder */
+  --ut-tab-top-gap: 2px;       /* gap above the tabs; they run flush to the bottom of the bar */
+  --ut-tab-weight: 500;
+  --ut-tab-text: var(--uc-color-text);   /* selected + hovered tab title (no accent) */
+
+  /* Colour of the extensions (puzzle) button icon. Defaults to the URL-bar
+     search pill's colour (--uc-color-hover), the brightest colour in the
+     palette, for a bit of personality in an otherwise grey bar. Any colour
+     works; set it to var(--uc-color-text) for plain white again. */
+  --ut-puzzle-color: var(--uc-color-hover);
+
+  /* Two layers, like Explorer. The top row (tab strip + URL bar) is the STRIP:
+     plain Mica, optionally tinted. The selected tab, the bookmarks bar and the
+     sidebar are the LAYER on top of it. The layer is a mid-grey sheet, NOT a
+     black one: a grey at about 60% alpha pulls whatever is behind it toward
+     the same shade, so it lands lighter than the strip over a dark backdrop
+     and darker than it over a bright one, which is what Explorer does. (A
+     black tint only ever darkens, so over black it looked muddy.) The dark
+     value was fitted to Explorer measured on a dark and a bright backdrop:
+     grey 58 at 59% alpha. Lighter grey or lower alpha = lighter tab. */
+  --ut-strip: transparent;
+  --ut-layer: light-dark(rgb(255 255 255 / 55%), rgb(58 58 58 / 59%));
+
+  /* Bookmarks bar fill while it floats over the page. Windows paints Mica
+     only where there is no page, so a floating bar cannot be translucent and
+     needs a solid colour. --uc-color-base is the same colour the about: pages
+     use, so the bar matches them (and FoxOne's own default). In customize mode
+     and in the static bar it is the translucent layer instead. */
+  --ut-bookmarks-bg: var(--uc-color-base);
+
+  /* Height of the bookmarks bar when shown. Same as the bar by default, so a
+     bookmark's icon sits in the same amount of room as a toolbar button. The
+     bar's own 6px top and bottom padding is removed to get there. */
+  --ut-bookmarks-height: var(--ut-bar-height);
+
+  --ut-tab-hover-bg: light-dark(rgb(255 255 255 / 30%), rgb(58 58 58 / 30%));   /* half the layer */
+  --ut-separator:    light-dark(rgb(0 0 0 / 22%), rgb(255 255 255 / 25%));   /* transparent = off */
+
+  /* Bookmarks bar behaviour with --uc-dynamic-bookmarks: 1
+       0 = FoxOne's floating overlay: no layout shift, so no flash (default)
+       1 = Wintego's in-flow bar: the bar is translucent like the layer, but it
+           pushes the page down on reveal, which can flash over Mica. */
+  --ut-bookmarks-inflow: 0;
+
+  /* Grab area left of the sidebar button when the window is not maximized.
+     Stock Firefox leaves this space so you can drag the window; 0 removes it. */
+  --ut-drag-left: 12px;
+
+  /* The URL-bar icons that slide in beside the star (reader mode, translate,
+     extension icons, permission icons). FoxOne reveals them the moment the
+     pointer touches the bar, which, with the bar collapsed, widens them over
+     the address and makes it hard to hover or click.
+       0 = only when the bar is focused (you clicked into it). Hovering
+           changes nothing. Default.
+       1 = on hover too, but after --ut-charm-delay, so a quick pass over the
+           bar doesn't trigger them. Focus still shows them at once. */
+  --ut-charms-on-hover: 0;
+  --ut-charm-delay: 600ms;
+
+  /* Hide back/forward buttons that have nowhere to go (no forward history, no
+     back history), even while the nav buttons are revealed by hover or focus.
+       0 = leave FoxOne's behaviour (disabled buttons shown, dimmed)
+       1 = hide the disabled Forward button only (the old Firefox behaviour)
+       2 = hide disabled Back as well */
+  --ut-hide-disabled-nav: 1;
+
+  /* Delay before hovering the nav bar slides the back / forward / reload
+     buttons in (--uc-autohide-nav-buttons 1 or 2). Without it, passing over
+     the collapsed bar widens the buttons at once and the URL bar jumps under
+     the pointer. Clicking into the bar (mode 1) still reveals them at once.
+     0ms = FoxOne's original behaviour. */
+  --ut-nav-delay: 600ms;
+
+  /* Pin the Downloads button beside the puzzle button, at the right edge.
+     OFF by default: the hamburger, puzzle and window controls are already
+     three pinned buttons with no container behind them, and a fourth makes
+     that corner worse, not better. Left off, Firefox keeps the button in the
+     tab row (hidden until your first download). 1 = pinned. */
+  --ut-pin-downloads: 0;
+
+  /* ========================================================================
+     4. YOUR CHANGES TO FOXONE'S OWN SETTINGS
+        (everything else keeps FoxOne's default from the FoxOne file)
+     ======================================================================== */
+  --uc-status-panel-spacing: 6px;
+  --uc-urlbar-min-width: min(25vw, 192px);   /* collapsed width; one icon (32px) narrower than 224px */
+  --uc-urlbar-max-width: min(35vw, 500px);   /* expanded width; was min(50vw, 800px). 520 was a little long, 480 a little short */
+  --uc-active-tab-width: clamp(100px, 40vw, 180px);
+  --uc-inactive-tab-width: clamp(50px, 10vw, 72px);
+  --uc-tab-min-width: 54px;
+  --uc-show-context-splitview: 1;
+  --uc-window-buttons-width: 64px;
+  --uc-hamburger-width: 32px;
+  --uc-extensions-button-width: 32px;
+  --uc-toolbar-button-width: 32px;
+  --uc-newtab-width: 32px;
+  --uc-drag-space: 18px;
+  --uc-show-loading-progress: 1;
+  --uc-autohide-nav-buttons: 1;
+}
+
+/* Density switch. Firefox puts uidensity="compact" or "touch" on the root
+   element; normal has no attribute. These only repoint the live variable, so
+   everything built on --ut-bar-height follows. */
+:root[uidensity="compact"] {
+  --ut-bar-height: var(--ut-bar-height-compact);
+  --ut-btn-inner: var(--ut-btn-inner-compact);
+  --ut-btn-outer: 1px;
+}
+:root[uidensity="touch"] {
+  --ut-bar-height: var(--ut-bar-height-touch);
+  --ut-btn-inner: var(--ut-btn-inner-touch);
+}
+
+/* FoxOne swaps its palette for the light set in its own light-scheme block,
+   which sits BEFORE this file. Our dark values above would override that swap,
+   so the swap is repeated here. */
+@media (prefers-color-scheme: light) {
+  :root {
+    --uc-color-base:    var(--uc-light-color-base);
+    --uc-color-surface: var(--uc-light-color-surface);
+    --uc-color-accent:  var(--uc-light-color-accent);
+    --uc-color-text:    var(--uc-light-color-text);
+    --uc-color-hover:   var(--uc-light-color-hover);
+    --uc-tab-hover-text: var(--uc-light-tab-hover-text);
+  }
+}

@@ -1,0 +1,131 @@
+/* ==========================================================================
+   TAB STYLE – WinUI / Windows 11 Explorer-style tabs + compact bar height.
+
+   Works on stock Firefox AND on FoxOne: it touches only tabs and the height of
+   the tab row / nav bar, and reads none of FoxOne's variables. Every knob is a
+   --ut-* variable with a built-in fallback, so the file also works with no
+   config at all (set them in foxone-config.css, or in any :root block).
+   Transparency / Mica is NOT done here; see userChrome-foxone-overrides.css.
+   On stock Firefox the selected tab is simply a darker (dark scheme) or whiter
+   (light scheme) sheet over the toolbar colour.
+
+   Load it after your base theme. Selectors start with :root so they also win
+   against !important rules of equal weight in the base theme.
+   ========================================================================== */
+
+/* ---- Tab shape: top-only rounding, filled selected tab, flat inactive ---- */
+
+:root .tab-background {
+  border: none !important;
+  border-radius: var(--ut-tab-radius, 6px) var(--ut-tab-radius, 6px) 0 0 !important;
+  margin-block: var(--ut-tab-top-gap, 2px) 0 !important;
+  margin-inline: 0 !important;
+}
+
+/* Inactive: no fill, no border, no outline, no shadow, just the strip */
+:root .tabbrowser-tab:not([selected], [multiselected]) .tab-background {
+  background-color: transparent !important;
+  background-image: none !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+:root .tabbrowser-tab:not([selected], [multiselected]):hover .tab-background {
+  background-color: var(--ut-tab-hover-bg, light-dark(rgb(255 255 255 / 30%), rgb(0 0 0 / 12%))) !important;
+}
+
+:root .tabbrowser-tab:is([selected], [multiselected]) .tab-background {
+  background-color: var(--ut-layer, light-dark(rgb(255 255 255 / 55%), rgb(0 0 0 / 25%))) !important;
+}
+
+/* No extra gap between tabs */
+:root .tabbrowser-tab:not(:first-of-type) {
+  padding-left: 0 !important;
+}
+
+:root .tabbrowser-tab {
+  font-weight: var(--ut-tab-weight, 500) !important;
+}
+
+/* ---- Tab text: plain, no accent -------------------------------------------
+   Themes often colour the selected title with an accent and dim it on hover.
+   With a filled selected tab and a hover fill that is redundant, so both use
+   one normal text colour (--ut-tab-text, else the toolbar text colour). */
+
+:root .tabbrowser-tab[selected],
+:root .tabbrowser-tab:not([selected]):hover {
+  color: var(--ut-tab-text, var(--toolbar-color, CanvasText)) !important;
+}
+
+:root:root {
+  --tab-text-color-selected: var(--ut-tab-text, var(--toolbar-color, CanvasText)) !important;
+  --tab-text-color-hover: var(--ut-tab-text, var(--toolbar-color, CanvasText)) !important;
+}
+
+/* ---- Separators ----------------------------------------------------------
+   A 1px line on the left edge of every tab but the first, drawn from a
+   pseudo-element on .tab-content (out of flow, so it cannot shift layout).
+   Hidden next to the selected tab and the hovered tab, on both sides. */
+
+:root .tabbrowser-tab:not(:first-of-type) .tab-content::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: 0;
+  top: calc(50% - 8px);
+  width: 1px;
+  height: 16px;
+  background: var(--ut-separator, light-dark(rgb(0 0 0 / 22%), rgb(255 255 255 / 25%)));
+  pointer-events: none;
+}
+
+:root .tabbrowser-tab:is([selected], [multiselected]) .tab-content::before,
+:root .tabbrowser-tab:is([selected], [multiselected]) + .tabbrowser-tab .tab-content::before,
+:root .tabbrowser-tab:hover .tab-content::before,
+:root .tabbrowser-tab:hover + .tabbrowser-tab .tab-content::before {
+  background: transparent;
+}
+
+/* ---- Bar height ----------------------------------------------------------
+   One bar height, --ut-bar-height, which the config sets per Firefox UI
+   density (compact / normal / touch). Without the config it falls back to
+   40px and does not react to density. --ut-bar-padding (2px) is the space
+   above and below the tabs and the URL field, so both are
+   (bar - 2 x padding) tall. On stock Firefox this shortens both rows (tab row
+   and nav bar); on FoxOne it is the one shared row. */
+
+:root:root,
+#TabsToolbar,
+#tabbrowser-tabs {
+  --tab-block-margin: var(--ut-bar-padding, 2px) !important;
+  --tab-min-height: calc(var(--ut-bar-height, 40px) - 2 * var(--ut-bar-padding, 2px)) !important;
+}
+
+:root:root,
+#nav-bar,
+#urlbar-container,
+#urlbar {
+  --urlbar-height: calc(var(--ut-bar-height, 40px) - 2 * var(--ut-bar-padding, 2px)) !important;
+  --urlbar-toolbar-height: var(--ut-bar-height, 40px) !important;
+  --urlbar-container-height: var(--ut-bar-height, 40px) !important;
+}
+
+:root #TabsToolbar,
+:root #TabsToolbar > hbox,
+:root #TabsToolbar-customization-target,
+:root #tabbrowser-tabs,
+:root #tabbrowser-arrowscrollbox,
+:root #nav-bar {
+  min-height: var(--ut-bar-height, 40px) !important;
+  max-height: var(--ut-bar-height, 40px) !important;
+}
+
+/* Toolbar button padding from the config (--ut-btn-inner / --ut-btn-outer,
+   set per density). A button is 16px icon + 2 x inner + 2 x outer square, so
+   it never needs to fill the bar: the bar is set by --ut-bar-height, and the
+   buttons sit centred in it. Fallbacks match the normal-density values. */
+:root #nav-bar {
+  padding-block: 0 !important;
+  --toolbarbutton-outer-padding: var(--ut-btn-outer, 2px) !important;
+  --toolbarbutton-inner-padding: var(--ut-btn-inner, 4px) !important;
+}
