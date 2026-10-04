@@ -5,6 +5,10 @@
 
 *==============================================================================================*/
 
+/* Palette, rounding and radius come from the shared config, so userChrome and
+   userContent can never drift apart. Edit foxone-config.css, not this file. */
+@import url("foxone-config.css");
+
 
 /* ==========================================================================
    CONFIG
@@ -17,14 +21,7 @@
    * auto = hands off: pages keep full control of their own scrollbars */
   --uc-content-scrollbar: thin;
 
-  /* Rounded corners for the in-content pages (about:preferences,
-   * about:addons, about:logins, ...). Same switch as in userChrome.css;
-   * userContent has no access to userChrome's variables, so set it here
-   * too. 0 = FoxOne's square edges, 1 = every surface FoxOne squares on
-   * those pages (cards, rows, buttons, fields, dropdowns, message bars,
-   * the category nav) takes --uc-border-radius instead. */
-  --uc-rounded: 0;
-  --uc-border-radius: 8px;
+  /* --uc-rounded and --uc-border-radius now come from foxone-config.css. */
 }
 
 /* Derived: the radius every in-content surface reads. Zero at the default
@@ -82,33 +79,16 @@
 
 
 /* ==========================================================================
-   PALETTE – Gruvbox Dark / Gruvbox Light
-   userContent has no shared config with userChrome; keep in sync with the
-   CONFIG block there. A retheme that only touches userChrome leaves every
-   about: page and the new tab page in Gruvbox (issue #50), so change these
-   values as well. Dark set first, the light scheme swaps in Gruvbox
-   Light (issue #19). Top level instead of inside one @-moz-document block,
-   because the pdf.js viewer can't be matched by URL and reads it too.
+   PALETTE - comes from foxone-config.css (dark set, light swap, tab hover).
+   Only the neutral control hairline is local to the about: pages.
    ========================================================================== */
 
 :root {
-  --uc-color-base:    #282828;
-  --uc-color-surface: #3c3836;
-  --uc-color-accent:  #fabd2f;
-  --uc-color-text:    #FFFFFF;
-  --uc-color-hover:   #7c6f64;
-  --uc-color-border:  #504945;   /* Gruvbox bg2, neutral control hairline */
-  --uc-tab-hover-text: #ffda85;   /* tab title hover, between text and accent */
+  --uc-color-border: #504945;   /* Gruvbox bg2, neutral control hairline */
 }
 @media (prefers-color-scheme: light) {
   :root {
-    --uc-color-base:    #fbf1c7;
-    --uc-color-surface: #ebdbb2;
-    --uc-color-accent:  #b57614;
-    --uc-color-text:    #3c3836;
-    --uc-color-hover:   #bdae93;
-    --uc-color-border:  #d5c4a1;
-    --uc-tab-hover-text: #855d22;
+    --uc-color-border: #d5c4a1;
   }
 }
 
