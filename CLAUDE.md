@@ -9,7 +9,7 @@ because it's personal). Read that too if you can.
 
 ## What this is
 
-FF-mica: a Firefox theme for Windows 11. It puts the real Mica backdrop behind
+**FoxMica** (named 2026-10-04; repo and folder still say FF-mica): a Firefox theme for Windows 11. It puts the real Mica backdrop behind
 FoxOne's one-line UI (tabs and URL bar in one row), with Windows 11 Explorer-style
 tabs. Repo: https://github.com/snkiz/FF-mica-working-title (public, MIT).
 
@@ -35,12 +35,12 @@ Load order is set in `userChrome.css` and it matters (later wins ties):
 
 - Works with `browser.nova.enabled = false` on Nightly 159.0a1. That's the state it
   was built and hand-tested in.
-- **Broken with Nova on (item 26, top priority):** the selected tab has no fill, no
-  rounded corners, no separators. Proton/old look is a dead end, so Nova has to work.
+- Works with Nova on too since 2026-10-04 (item 26 fixed, separators back).
+  Proton/old look is a dead end; Nova is the target.
 - Daily browser is ESR 140. Plan: get Nightly right, then move to ESR 153 (has the
   Nova switch) and backport.
 
-### Item 26: what we know so far
+### Item 26 (solved): how it was found
 
 - `.tab-background` still exists under Nova, inside `.tab-stack`, and has `selected`.
 - Our rule `:root .tabbrowser-tab:is([selected],[multiselected]) .tab-background`
@@ -61,8 +61,8 @@ Load order is set in `userChrome.css` and it matters (later wins ties):
   `.tab-background` gets a `background` shorthand with `background-clip: border-area`
   (for Nova's gradient border). We remove the border, so the fill is clipped to
   nothing. Fix added: `background-clip: border-box !important` on our selected-tab
-  rule in `userChrome-tab-style.css`. **Not yet tested in Firefox.**
-- Separators (25) are a separate question; check after the fill is confirmed.
+  rule in `userChrome-tab-style.css`. **Confirmed working by Corey, same day.**
+- Separators (25) came back with the same fix.
 
 ## Decisions (and why)
 

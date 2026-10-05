@@ -6,10 +6,18 @@ where they disagree.
 
 ## Now
 
-- **26. Tab style doesn't apply with Nova on.** No selected-tab fill, square corners.
-  Details and findings in CLAUDE.md, "Item 26".
-- **25. Tab separators gone.** Probably the same cause as 26 (same file).
-- **24. Modal dialogs have no background.** Maybe the same cause. Check with Nova off.
+- **24. Modal dialogs: background is back but black** (Nova on). Fixed the missing
+  background 2026-10-04 by scoping section 1 of userChrome-foxone-overrides.css to
+  `#main-window` (it had made every chrome document transparent, dialogs included).
+  Left to do: dialogs should use the theme palette, not black. Readable for now.
+- **29. Bookmarks bar vs sidebar mismatch.** The sidebar is now properly translucent;
+  the floating bookmarks bar is still solid, so it looks half on, half off. Ties in
+  with item 1. Test against a busy wallpaper (Corey uses a bricks one for this).
+
+## Housekeeping
+
+- Rename to FoxMica: README title, repo name on GitHub (GitHub redirects the old
+  URL), and the local folder if wanted. Corey's call on when.
 
 ## First bug-fix pass
 
@@ -23,6 +31,8 @@ where they disagree.
 - 11. Find-bar diacritics: change `content: "aá"` to `content: "a\E1"` (pure ASCII).
   Note: this is in FoxOne's file, so it's an override or an upstream note, not an edit.
 - 14. Tab loading highlight is white.
+- 28. Nova on: one animated built-in theme left the tab bar transparent. Fine with
+  Nova off. Only one theme seen so far; check a few others before chasing it.
 - 22. "Make Firefox your default browser" bar has no background.
 - 27. Odd: a red test outline on `.tabbrowser-tab` showed only on the last tab, in both
   Nova states. Not blocking. May explain itself once 26 is understood.
@@ -51,7 +61,7 @@ where they disagree.
 - 9. Fully transparent about: pages and chrome (flaky on Optimus laptops).
 - 10. Extension to open new tabs on the left.
 
-## Upstream notes (only once things are stable, one small issue per idea)
+## Upstream notes (only once things are stable, one small issue per idea, no surprise PRs)
 
 - FoxOne: a variable for the hard-coded 44px row; hover delays; hiding disabled
   Back/Forward; one shared config for chrome and content; the Firefox View fix.
@@ -59,6 +69,9 @@ where they disagree.
   the double-encoded text in his file; license-holder question.
 
 ## Done
+
+- 26. Tab fill/corners with Nova on: fixed 2026-10-04 (background-clip on the
+  selected tab). 25. Separators came back with it.
 
 - 15. userContent.css rebased on 3.8.5.
 - 16. UI font as an option (switched-off block in userChrome.css).

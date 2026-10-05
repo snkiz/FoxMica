@@ -19,8 +19,10 @@
    ========================================================================== */
 @media (-moz-platform: windows) {
 
-  :root:root,
-  :root:root #main-window,
+  /* Main browser window only. userChrome.css also styles every chrome
+     dialog document (alerts, confirm and permission prompts), and a bare
+     :root here made their own -moz-Dialog background transparent too. */
+  :root:root#main-window,
   :root:root #toolbar-menubar,
   :root:root #titlebar,
   :root:root #TabsToolbar,
