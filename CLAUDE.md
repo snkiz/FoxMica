@@ -7,6 +7,17 @@ the project's memory. Chats come and go; these files don't.
 How the maintainer (snkiz) works with Claude is in `ABOUT-ME.md`, one folder up (outside the repo,
 because it's personal). Read that too if you can.
 
+## The maintainer's rule
+
+**I don't commit, push or post anything I can't understand.**
+
+Every change Claude suggests comes with a plain-English explanation of what it
+does, good enough for me to read it and decide. If I can't follow it, it waits.
+
+Why: I don't trust Claude's output by default. Anything with my name on it is my
+responsibility, even when Claude is the one who got it wrong. I'm here to learn and
+get things done, not to have Claude do it for me (boilerplate aside).
+
 ## What this is
 
 **FoxMica** (named 2026-10-04; was "FF-mica"): a Firefox theme for Windows 11. It puts the real Mica backdrop behind
