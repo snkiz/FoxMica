@@ -37,6 +37,11 @@
 
 :root .tabbrowser-tab:is([selected], [multiselected]) .tab-background {
   background-color: var(--ut-layer, light-dark(rgb(255 255 255 / 55%), rgb(0 0 0 / 25%))) !important;
+  /* Nova (browser.nova.enabled) paints the selected tab with a "background"
+     shorthand whose clip is "border-area" (for its gradient border). With our
+     border removed, that clips the fill to nothing, so the tab looked unfilled.
+     Paint over the whole tab instead. Harmless with Nova off. */
+  background-clip: border-box !important;
 }
 
 /* No extra gap between tabs */
