@@ -4,14 +4,14 @@ Read this file first in every new chat, then read `TODO.md`. These two files are
 the project's memory. Chats come and go; these files don't.
 **If the files and your memory disagree, the files win.**
 
-How Corey works with Claude is in `ABOUT-ME.md`, one folder up (outside the repo,
+How the maintainer (snkiz) works with Claude is in `ABOUT-ME.md`, one folder up (outside the repo,
 because it's personal). Read that too if you can.
 
 ## What this is
 
-**FoxMica** (named 2026-10-04; repo and folder still say FF-mica): a Firefox theme for Windows 11. It puts the real Mica backdrop behind
+**FoxMica** (named 2026-10-04; was "FF-mica"): a Firefox theme for Windows 11. It puts the real Mica backdrop behind
 FoxOne's one-line UI (tabs and URL bar in one row), with Windows 11 Explorer-style
-tabs. Repo: https://github.com/snkiz/FF-mica-working-title (public, MIT).
+tabs. Repo: https://github.com/snkiz/FoxMica (public, MIT). Local: Documents\GitHub\FoxMica.
 
 - Built on FoxOne by Firnschnee (vendored unmodified, currently 3.8.5).
 - Mica rules come from Wintego's Firefox-transparent-theme (written for FoxOne 3.5).
@@ -27,7 +27,7 @@ Load order is set in `userChrome.css` and it matters (later wins ties):
 4. `userChrome-foxone-overrides.css`: Mica, layers, URL dropdown fix, bar-height fixes, bookmarks bar.
 5. `userContent.css`: FoxOne's about: page styling with our edits, imports the config.
 
-`userChrome.css` also has an optional, switched-off UI font block (Corey uses Shantell Sans).
+`userChrome.css` also has an optional, switched-off UI font block (the maintainer uses Shantell Sans).
 
 ## Where things stand (update this section at the end of every session)
 
@@ -61,7 +61,7 @@ Load order is set in `userChrome.css` and it matters (later wins ties):
   `.tab-background` gets a `background` shorthand with `background-clip: border-area`
   (for Nova's gradient border). We remove the border, so the fill is clipped to
   nothing. Fix added: `background-clip: border-box !important` on our selected-tab
-  rule in `userChrome-tab-style.css`. **Confirmed working by Corey, same day.**
+  rule in `userChrome-tab-style.css`. **Confirmed working, same day.**
 - Separators (25) came back with the same fix.
 
 ## Decisions (and why)
@@ -86,7 +86,13 @@ Load order is set in `userChrome.css` and it matters (later wins ties):
 - Laptop is NVIDIA Optimus. Mica flicker has been driver trouble before; rule that
   out before blaming CSS.
 
+## Public repo
+
+This repo is public. Keep personal details (real name, location, health, anything
+from ABOUT-ME.md) out of every file here, including notes and issue text.
+
 ## End of a session
 
-Before closing a chat, update "Where things stand" and `TODO.md`, then commit.
+Before closing a chat, update "Where things stand" and `TODO.md`, then commit in
+GitHub Desktop **and click Push origin** (top bar). Commit alone only saves locally.
 A new chat should be able to pick up from these files alone.

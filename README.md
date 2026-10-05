@@ -1,10 +1,10 @@
-# FF-mica (working name)
+# FoxMica
 
 A Firefox theme for Windows 11: the real Mica backdrop behind a one-line browser UI (tabs and URL bar in one row), with Explorer-style tabs. Built on [FoxOne](https://github.com/Firnschnee/FoxOne) by Firnschnee.
 
-> **Work in progress.** Tested only on Firefox Nightly 157 (the Nova redesign) on Windows 11. Other versions have not been tried yet.
+> **Work in progress.** Tested only on Firefox Nightly 159 on Windows 11, with the Nova redesign on (the default) and off. Other versions have not been tried yet.
 
-<!-- TODO: add a screenshot here -->
+![FoxMica on Firefox Nightly, Windows 11](assets/Screenshot-main.png)
 
 ## What you get
 
@@ -19,7 +19,7 @@ A Firefox theme for Windows 11: the real Mica backdrop behind a one-line browser
 ## Requirements
 
 - Windows 11. Mica does not exist on other systems.
-- Firefox Nightly 157 (Nova), see the note above.
+- Firefox Nightly 159, see the note above.
 - Transparency effects on: Windows Settings -> Personalization -> Colors.
 
 ## Install

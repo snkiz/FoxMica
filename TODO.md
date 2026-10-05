@@ -1,7 +1,7 @@
 # TODO
 
 Numbers are kept stable so old chats still make sense. Don't renumber.
-Gathered from the three setup chats on 2026-10-04. Corey's own notes beat this list
+Gathered from the three setup chats on 2026-10-04. The maintainer's own notes beat this list
 where they disagree.
 
 ## Now
@@ -12,12 +12,13 @@ where they disagree.
   Left to do: dialogs should use the theme palette, not black. Readable for now.
 - **29. Bookmarks bar vs sidebar mismatch.** The sidebar is now properly translucent;
   the floating bookmarks bar is still solid, so it looks half on, half off. Ties in
-  with item 1. Test against a busy wallpaper (Corey uses a bricks one for this).
+  with item 1. Test against a busy wallpaper (a brick pattern works well).
 
-## Housekeeping
+## Next time
 
-- Rename to FoxMica: README title, repo name on GitHub (GitHub redirects the old
-  URL), and the local folder if wanted. Corey's call on when.
+- **Retake the README screenshot** (assets/Screenshot-main.png): the current one is
+  from before the tab fix. Hide or change the weather widget first.
+  Keep the same file name.
 
 ## First bug-fix pass
 
@@ -51,7 +52,7 @@ where they disagree.
   contrast for the text.
 - 5. Scaling: "certified good enough", poke at it later.
 - 19. Try `widget.windows.mica.popups` (it's 0 in the good profile's user.js).
-- 20. "DWM resize hack?" Corey to decide what this meant.
+- 20. "DWM resize hack?" Maintainer to decide what this meant.
 - 23. Maybe hide nav controls while the URL dropdown is open or the cursor is in it.
 - Refactor: condense the files, trim the very long comments, move rarely used
   settings to an advanced section.
@@ -77,3 +78,4 @@ where they disagree.
 - 16. UI font as an option (switched-off block in userChrome.css).
 - 17. CI workflow and check.mjs removed, so nothing to adapt.
 - Repo published.
+- Renamed to FoxMica (repo, folder, README), 2026-10-04.
