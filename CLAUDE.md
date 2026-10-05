@@ -31,7 +31,11 @@ Load order is set in `userChrome.css` and it matters (later wins ties):
 
 ## Where things stand (update this section at the end of every session)
 
-**Last updated:** 2026-10-04
+**Last updated:** 2026-10-05
+
+- Issues #1-#6 are filed on GitHub (#6 is an upstream note under the Drafts label).
+  `TODO.md` maps items to issue numbers. Next unfiled item: 18 (selection contrast
+  on about: pages, needs a live look first).
 
 - Works with `browser.nova.enabled = false` on Nightly 159.0a1. That's the state it
   was built and hand-tested in.
