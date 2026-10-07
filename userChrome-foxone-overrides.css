@@ -55,8 +55,8 @@
   #urlbar:not([open]) > .urlbar-background {
     background: transparent !important;
   }
-  #urlbar[focused="true"]:not([open]) > #urlbar-background,
-  #urlbar[focused="true"]:not([open]) > .urlbar-background {
+  #urlbar[focused]:not([open]) > #urlbar-background,
+  #urlbar[focused]:not([open]) > .urlbar-background {
     background: color-mix(in srgb, var(--uc-color-base) 25%, transparent) !important;
   }
 
@@ -363,13 +363,13 @@ notification-message {
    indicator and stay visible regardless (the identity rule excludes them).
    Focus (clicking into the bar) still reveals everything at once. */
 @container style(--ut-charms-on-hover: 0) {
-  #urlbar:hover:not([focused="true"]) :is(
+  #urlbar:hover:not([focused]) :is(
     #reader-mode-button,
     #taskbar-tabs-button,
     #translations-button,
     .urlbar-addon-page-action
   ),
-  #urlbar:hover:not([focused="true"]) #identity-permission-box:not([hasPermissions]):not([hasSharingIcon]) {
+  #urlbar:hover:not([focused]) #identity-permission-box:not([hasPermissions]):not([hasSharingIcon]) {
     max-width: 0 !important;
     opacity: 0 !important;
     pointer-events: none !important;
@@ -381,7 +381,7 @@ notification-message {
 /* Hover reveal, but late. Entering the hover state picks up its own
    transition-delay; leaving it uses the base rule's (none). */
 @container style(--ut-charms-on-hover: 1) {
-  #urlbar:hover:not([focused="true"]) :is(
+  #urlbar:hover:not([focused]) :is(
     #reader-mode-button,
     #taskbar-tabs-button,
     #translations-button,
