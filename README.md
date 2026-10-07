@@ -84,6 +84,13 @@ Further down the file are FoxOne's own settings with the values chosen here (URL
 - Hovering Mica areas sometimes flickered during development on a laptop with NVIDIA and integrated graphics. It went away after reboots and driver updates, so it is probably a driver problem, but this isn't proven.
 - Not tested yet: turning each feature off to check the theme degrades cleanly, other Firefox versions, and non-Windows systems.
 
+## Contributing
+
+Bug reports and ideas are welcome: please open an issue.
+Want to send a pull request? Open an issue first and state your case.
+I'll ask for the PR if it fits. This is a hobby project and I review
+everything by hand, so unrequested PRs may sit or be closed.
+
 ## Credits
 
 - [FoxOne](https://github.com/Firnschnee/FoxOne) by Firnschnee (MIT). `userChrome-foxone.css` is FoxOne 3.8.5 exactly as released; `userContent.css` is FoxOne's with a few edits. FoxOne in turn credits [LittleFox](https://github.com/biglavis/LittleFox) and [Cascade](https://github.com/andreasgrafen/cascade).

@@ -19,8 +19,13 @@ where they disagree.
 
 ## Next time
 
-- **Pull FoxOne upstream** (urlbar changes). Probably fine: we may not use those parts. Check before
-  dropping it in.
+- **Update FoxOne to 3.8.7** [#14]: drop-in for userChrome-foxone.css, three hand edits in userContent.css.
+- **`[focused="true"]` in our overrides** [#15]: 5 selectors stopped matching in Firefox 157. Change to
+  `[focused]`, same as FoxOne 3.8.6.
+- **First release**, warts and all, once #14 and #15 are done and the screenshot is retaken.
+  Known issues = the open issues.
+  Leave dev files out of the release zip with `export-ignore` in .gitattributes (CLAUDE.md, TODO.md,
+  assets/). No release branch.
 - **Retake the README screenshot** (assets/Screenshot-main.png): the current one is
   from before the tab fix. Hide or change the weather widget first.
   Keep the same file name.
