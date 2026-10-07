@@ -93,7 +93,7 @@ everything by hand, so unrequested PRs may sit or be closed.
 
 ## Credits
 
-- [FoxOne](https://github.com/Firnschnee/FoxOne) by Firnschnee (MIT). `userChrome-foxone.css` is FoxOne 3.8.5 exactly as released; `userContent.css` is FoxOne's with a few edits. FoxOne in turn credits [LittleFox](https://github.com/biglavis/LittleFox) and [Cascade](https://github.com/andreasgrafen/cascade).
+- [FoxOne](https://github.com/Firnschnee/FoxOne) by Firnschnee (MIT). `userChrome-foxone.css` is FoxOne 3.8.7 exactly as released; `userContent.css` is FoxOne's with a few edits. FoxOne in turn credits [LittleFox](https://github.com/biglavis/LittleFox) and [Cascade](https://github.com/andreasgrafen/cascade).
 - The Mica rules in `userChrome-foxone-overrides.css` are derived from [Wintego's Firefox-transparent-theme](https://github.com/Wintego/Firefox-transparent-theme).
 - The look was matched by eye against Windows 11 Explorer and the MicaBar theme of Windhawk's [Windows 11 File Explorer Styler](https://windhawk.net/mods/windows-11-file-explorer-styler) mod (Windhawk is by [m417z](https://github.com/m417z)). No code from that project was used.
 - Tab style: written by snkiz, with help from Claude (Anthropic).
