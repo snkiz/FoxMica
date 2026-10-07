@@ -12,6 +12,7 @@ where they disagree.
   background 2026-10-04 by scoping section 1 of userChrome-foxone-overrides.css to
   `#main-window` (it had made every chrome document transparent, dialogs included).
   Left to do: dialogs should use the theme palette, not black. Readable for now.
+  Item 22 (the "make Firefox your default browser" bar) is the same dialog, so it gets fixed with this one.
 - **29. Bookmarks bar vs sidebar mismatch.** [#5] The sidebar is now properly translucent;
   the floating bookmarks bar is still solid, so it looks half on, half off. Ties in
   with item 1. Test against a busy wallpaper (a brick pattern works well).
@@ -31,12 +32,11 @@ where they disagree.
   Maybe hide it when the sidebar is open.
 - 3. Charm delays: [#1] the permissions icon left of the URL bar has no delay. Check all
   optional URL-bar icons (PWAs for Firefox uses one).
-- 11. Find-bar diacritics [#8]: change `content: "aá"` to `content: "a\E1"` (pure ASCII).
+- 11. Find-bar diacritics [#10]: change `content: "aá"` to `content: "a\E1"` (pure ASCII).
   Note: this is in FoxOne's file, so it's an override or an upstream note, not an edit.
 - 14. Tab loading highlight is white.
 - 28. Nova on: one animated built-in theme left the tab bar transparent. Fine with
   Nova off. Only one theme seen so far; check a few others before chasing it.
-- 22. "Make Firefox your default browser" bar has no background.
 - README: update "tested on Nightly 157" to the version it really works on, and add a
   known-issue line for Nova until 26 is fixed.
 - 31. Fix the comment on the static bookmarks bar in foxone-config.css: it says the static bar uses the
@@ -51,7 +51,7 @@ where they disagree.
 - 13. Tab-drag test against upstream's fix (FoxOne 3.8.5, about line 2746).
 - 6, 7, 21. Theme-aware tint like WinUI (Mica grey tinted by accent/wallpaper),
   theme picker support, inherit Windows system colours. Do these together.
-- 30. Palette readability: pick palette ratios so every text/background pair stays
+- 30. Palette readability [#8]: pick palette ratios so every text/background pair stays
   readable (4.5:1 for text, 3:1 for icons and large text), whatever colours are
   chosen. Found while drafting 18 (selected text is about 1.8:1). Ties in with 6, 7, 21.
 - 1. Bookmarks bar on new tab: [#5] drop the background, clear tint with just enough
@@ -77,7 +77,7 @@ where they disagree.
 
 ## Done
 
-- 26. Tab fill/corners with Nova on: fixed 2026-10-04 (background-clip on the
+- 26. Tab fill/corners with Nova on [#11, closed]: fixed 2026-10-04 (background-clip on the
   selected tab). 25. Separators came back with it.
 - 27. Outline only on the last tab: explained by 26. Nova changed how Firefox draws tabs; no fix needed.
 
