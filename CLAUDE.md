@@ -4,8 +4,8 @@ Read this file first in every new chat, then read `TODO.md`. These two files are
 the project's memory. Chats come and go; these files don't.
 **If the files and your memory disagree, the files win.**
 
-How the maintainer (snkiz) works with Claude is in `ABOUT-ME.md`, one folder up (outside the repo,
-because it's personal). Read that too if you can.
+How the maintainer (snkiz) works with Claude is in `ABOUT-ME.md` in a private notes repo
+(local: Documents\GitHub\Notes-n-Tools). Read that too if you can.
 
 ## The maintainer's rule
 
@@ -44,9 +44,9 @@ Load order is set in `userChrome.css` and it matters (later wins ties):
 
 **Last updated:** 2026-10-05
 
-- Issues #1-#6 are filed on GitHub (#6 is an upstream note under the Drafts label).
-  `TODO.md` maps items to issue numbers. Next unfiled item: 18 (selection contrast
-  on about: pages, needs a live look first).
+- Issues #1-#7 are filed on GitHub (#6 is an upstream note under the Drafts label).
+  `TODO.md` maps items to issue numbers. Drafts waiting to be posted (in issue-drafts,
+  outside the repo): items 11, 14, 22, 27, 28 and 30.
 
 - Works with `browser.nova.enabled = false` on Nightly 159.0a1. That's the state it
   was built and hand-tested in.

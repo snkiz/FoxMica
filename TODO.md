@@ -50,6 +50,9 @@ where they disagree.
 - 13. Tab-drag test against upstream's fix (FoxOne 3.8.5, about line 2746).
 - 6, 7, 21. Theme-aware tint like WinUI (Mica grey tinted by accent/wallpaper),
   theme picker support, inherit Windows system colours. Do these together.
+- 30. Palette readability: pick palette ratios so every text/background pair stays
+  readable (4.5:1 for text, 3:1 for icons and large text), whatever colours are
+  chosen. Found while drafting 18 (selected text is about 1.8:1). Ties in with 6, 7, 21.
 - 1. Bookmarks bar on new tab: [#5] drop the background, clear tint with just enough
   contrast for the text.
 - 5. Scaling: "certified good enough", poke at it later.
