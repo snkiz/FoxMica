@@ -24,23 +24,24 @@ where they disagree.
 
 ## First bug-fix pass
 
-- 18. Selection contrast on about: pages (optional separate variable).
+- 18. Selection contrast on about: pages [#7] (optional separate variable).
 - 4. Sidebar button click target [#2] is much bigger than the icon (about half the
   window-grab padding). Did we cause it?
 - 2. Sidebar spacer: [#3] stop bookmarks/tools covering the minimized sidebar button.
   Maybe hide it when the sidebar is open.
 - 3. Charm delays: [#1] the permissions icon left of the URL bar has no delay. Check all
   optional URL-bar icons (PWAs for Firefox uses one).
-- 11. Find-bar diacritics: change `content: "aá"` to `content: "a\E1"` (pure ASCII).
+- 11. Find-bar diacritics [#8]: change `content: "aá"` to `content: "a\E1"` (pure ASCII).
   Note: this is in FoxOne's file, so it's an override or an upstream note, not an edit.
 - 14. Tab loading highlight is white.
 - 28. Nova on: one animated built-in theme left the tab bar transparent. Fine with
   Nova off. Only one theme seen so far; check a few others before chasing it.
 - 22. "Make Firefox your default browser" bar has no background.
-- 27. Odd: a red test outline on `.tabbrowser-tab` showed only on the last tab, in both
-  Nova states. Not blocking. May explain itself once 26 is understood.
 - README: update "tested on Nightly 157" to the version it really works on, and add a
   known-issue line for Nova until 26 is fixed.
+- 31. Fix the comment on the static bookmarks bar in foxone-config.css: it says the static bar uses the
+  translucent layer, but so far only Customize mode does. (Static on the layer is still the plan.)
+- 32. Try pinning the overflow (>>) button the way --ut-pin-downloads pins Downloads. Might not work out.
 
 ## After launch
 
@@ -78,6 +79,7 @@ where they disagree.
 
 - 26. Tab fill/corners with Nova on: fixed 2026-10-04 (background-clip on the
   selected tab). 25. Separators came back with it.
+- 27. Outline only on the last tab: explained by 26. Nova changed how Firefox draws tabs; no fix needed.
 
 - 15. userContent.css rebased on 3.8.5.
 - 16. UI font as an option (switched-off block in userChrome.css).
