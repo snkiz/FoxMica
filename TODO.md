@@ -19,6 +19,8 @@ where they disagree.
 
 ## Next time
 
+- **Pull FoxOne upstream** (urlbar changes). Probably fine: we may not use those parts. Check before
+  dropping it in.
 - **Retake the README screenshot** (assets/Screenshot-main.png): the current one is
   from before the tab fix. Hide or change the weather widget first.
   Keep the same file name.
