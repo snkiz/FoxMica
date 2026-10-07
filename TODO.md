@@ -36,7 +36,7 @@ where they disagree.
   optional URL-bar icons (PWAs for Firefox uses one).
 - 11. Find-bar diacritics [#10]: change `content: "aá"` to `content: "a\E1"` (pure ASCII).
   Note: this is in FoxOne's file, so it's an override or an upstream note, not an edit.
-- 14. Tab loading highlight is white.
+- 14. Tab loading highlight is white [#12] (keep it or match the palette?).
 - 28. Nova on: one animated built-in theme left the tab bar transparent. Fine with
   Nova off. Only one theme seen so far; check a few others before chasing it.
 - README: update "tested on Nightly 157" to the version it really works on, and add a
