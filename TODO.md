@@ -78,13 +78,14 @@ where they disagree.
 ## Upstream notes (only once things are stable, one small issue per idea, no surprise PRs)
 
 - FoxOne: a variable for the hard-coded 44px row [#6, label Drafts]; hover delays; hiding disabled
-  Back/Forward; one shared config for chrome and content; the Firefox View fix.
+  Back/Forward; one shared config for chrome and content [#16, offer on FoxOne #50]; the Firefox View fix.
 - Wintego: FF157+ dropdown fix (also paint `.urlbarView-background`); find-bar fix;
   the double-encoded text in his file; license-holder question.
   Wintego has no issues open and asks for pull requests instead, so these go to him as PRs.
 
 ## Done
 
+- One shared config file for chrome and content [#16, closed]. Offer to FoxOne on its #50 still to do.
 - 26. Tab fill/corners with Nova on [#11, closed]: fixed 2026-10-04 (background-clip on the
   selected tab). 25. Separators came back with it.
 - 27. Outline only on the last tab: explained by 26. Nova changed how Firefox draws tabs; no fix needed.
