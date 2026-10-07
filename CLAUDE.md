@@ -42,11 +42,13 @@ Load order is set in `userChrome.css` and it matters (later wins ties):
 
 ## Where things stand (update this section at the end of every session)
 
-**Last updated:** 2026-10-05
+**Last updated:** 2026-10-07
 
-- Issues #1-#7 are filed on GitHub (#6 is an upstream note under the Drafts label).
-  `TODO.md` maps items to issue numbers. Drafts waiting to be posted (in issue-drafts,
-  outside the repo): items 11, 14, 22, 27, 28 and 30.
+- Issues #1-#13 are on GitHub (#6 is an upstream note under the Drafts label; #9 was a
+  duplicate and was deleted; #11 is item 26, posted already solved and closed).
+  `TODO.md` maps items to issue numbers. No drafts waiting. Item 22 folded into 24 [#4];
+  item 27 explained by 26.
+- Next session: pull FoxOne upstream (urlbar changes), see `TODO.md` "Next time".
 
 - Works with `browser.nova.enabled = false` on Nightly 159.0a1. That's the state it
   was built and hand-tested in.
