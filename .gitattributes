@@ -7,3 +7,11 @@
 *.jpg binary
 *.webp binary
 *.gif binary
+
+# Left out of release downloads ("Source code" zip on a GitHub release).
+# They stay in the repo; users only need the CSS, README and LICENSE.
+CLAUDE.md       export-ignore
+TODO.md         export-ignore
+assets/         export-ignore
+.gitattributes  export-ignore
+.gitignore      export-ignore
