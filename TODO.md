@@ -35,12 +35,18 @@ where they disagree.
 - 14. Tab loading highlight is white [#12] (keep it or match the palette?).
 - 28. [#13] Nova on: one animated built-in theme left the tab bar transparent. Fine with
   Nova off. Only one theme seen so far; check a few others before chasing it.
-- 31. Fix the comment on the static bookmarks bar in foxone-config.css: it says the static bar uses the
+- 31. [#20] Fix the comment on the static bookmarks bar in foxone-config.css: it says the static bar uses the
   translucent layer, but so far only Customize mode does. (Static on the layer is still the plan.)
 - 32. [#19] Try pinning the overflow (>>) button the way --ut-pin-downloads pins Downloads. Might not work out.
 
 ## After launch
 
+- **PWAs for Firefox config:** a FoxMica look for the PWA windows (the addon runs PWAs in their own
+  Firefox profiles). First check what the stock PWA window looks like. Ideal: import the main theme
+  instead of a copy; hard, because the addon does its own things to the UI. My install is a system
+  one (the setup that started FoxMica): find a change to PWAs for Firefox that makes the original
+  mistake impossible to repeat, and offer it upstream (they helped last time). Issue first unless
+  their contributing guide asks for PRs. Back up the PWA profiles before testing anything.
 - **Submit to the FirefoxCSS Store** (https://firefoxcss-store.github.io/submit/). They take a GitHub
   issue (their template): repo URL, short description, screenshots, tags. Their bot opens a PR and
   maintainers review it. Before submitting: more screenshots (more views, not just the main window)

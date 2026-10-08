@@ -102,7 +102,7 @@
      only where there is no page, so a floating bar cannot be translucent and
      needs a solid colour. --uc-color-base is the same colour the about: pages
      use, so the bar matches them (and FoxOne's own default). In customize mode
-     and in the static bar it is the translucent layer instead. */
+     it is the translucent layer instead. (Planned: the static bar too.) */
   --ut-bookmarks-bg: var(--uc-color-base);
 
   /* Height of the bookmarks bar when shown. Same as the bar by default, so a
