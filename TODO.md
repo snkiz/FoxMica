@@ -47,26 +47,28 @@ where they disagree.
   one (the setup that started FoxMica): find a change to PWAs for Firefox that makes the original
   mistake impossible to repeat, and offer it upstream (they helped last time). Issue first unless
   their contributing guide asks for PRs. Back up the PWA profiles before testing anything.
-- **Submit to the FirefoxCSS Store** (https://firefoxcss-store.github.io/submit/). They take a GitHub
+- **Submit to the FirefoxCSS Store** [#30] (https://firefoxcss-store.github.io/submit/). They take a GitHub
   issue (their template): repo URL, short description, screenshots, tags. Their bot opens a PR and
   maintainers review it. Before submitting: more screenshots (more views, not just the main window)
   and a docs pass. Check their issue template for image size and allowed tags.
-- 8. Stock-plus mode: turn off the one-line bar but keep the other goodies. Needs
+- 8. [#24] Stock-plus mode: turn off the one-line bar but keep the other goodies. Needs
   every feature switchable, and testing each feature off.
-- 12. Backport to ESR 153. Check the Nova pref name there. Test Nova on and off.
-- 13. Tab-drag test against upstream's fix (FoxOne 3.8.5, about line 2746).
-- 6, 7, 21. Theme-aware tint like WinUI (Mica grey tinted by accent/wallpaper),
+- 12. [#22] Backport to ESR 153. Check the Nova pref name there. Test Nova on and off.
+- 13. [#27] Tab-drag test against upstream's fix (FoxOne 3.8.5, about line 2746).
+- 6, 7, 21. [#25] Theme-aware tint like WinUI (Mica grey tinted by accent/wallpaper),
   theme picker support, inherit Windows system colours. Do these together.
 - 30. Palette readability [#8]: pick palette ratios so every text/background pair stays
   readable (4.5:1 for text, 3:1 for icons and large text), whatever colours are
   chosen. Found while drafting 18 (selected text is about 1.8:1). Ties in with 6, 7, 21.
+- [#26] Five-colour palette: only the main five colours in the user config, the rest derived and moved
+  to an advanced section. Depends on #25 and #8.
 - 1. Bookmarks bar on new tab: [#5] drop the background, clear tint with just enough
   contrast for the text.
-- 5. Scaling: "certified good enough", poke at it later.
-- 19. Try `widget.windows.mica.popups` (it's 0 in the good profile's user.js).
-- 20. "DWM resize hack?" Maintainer to decide what this meant.
+- 5. [#23] Scaling: "certified good enough", poke at it later.
+- 19. [#28] Try `widget.windows.mica.popups` (it's 0 in the good profile's user.js).
+- 20. [#29] Check `widget.windows.apply-dwm-resize-hack` with Mica (fullscreen from maximized).
 - 23. Maybe hide nav controls [#1] while the URL dropdown is open or the cursor is in it.
-- Refactor: condense the files, trim the very long comments, move rarely used
+- [#21] Refactor: condense the files, trim the very long comments, move rarely used
   settings to an advanced section.
 
 ## Maybe, probably never
