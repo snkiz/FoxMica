@@ -19,16 +19,7 @@ where they disagree.
 
 ## Next time
 
-- **Update FoxOne to 3.8.7** [#14]: drop-in for userChrome-foxone.css, three hand edits in userContent.css.
-- **`[focused="true"]` in our overrides** [#15]: 5 selectors stopped matching in Firefox 157. Change to
-  `[focused]`, same as FoxOne 3.8.6.
-- **First release**, warts and all, once #14 and #15 are done and the screenshot is retaken.
-  Known issues = the open issues.
-  Leave dev files out of the release zip with `export-ignore` in .gitattributes (CLAUDE.md, TODO.md,
-  assets/). No release branch.
-- **Retake the README screenshot** (assets/Screenshot-main.png): the current one is
-  from before the tab fix. Hide or change the weather widget first.
-  Keep the same file name.
+- Nothing queued. Pick from "First bug-fix pass" or the open issues.
 
 ## First bug-fix pass
 
@@ -85,6 +76,8 @@ where they disagree.
 
 ## Done
 
+- Released 0.5 "Warts and all" (2026-10-07): FoxOne 3.8.7 [#14], [focused] fix [#15], new screenshot,
+  dev files left out of the zip. Next releases: 0.5.1, 0.5.2 ... until 1.0.
 - Nav-button hover delay, --ut-nav-delay [#17, closed]. Upstream issue drafted.
 - Hide disabled Back/Forward, --ut-hide-disabled-nav [#18, closed]. Upstream issue drafted.
 - One shared config file for chrome and content [#16, closed]. Offered on FoxOne #50 (closed there).

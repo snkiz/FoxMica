@@ -44,11 +44,11 @@ Load order is set in `userChrome.css` and it matters (later wins ties):
 
 **Last updated:** 2026-10-07
 
-- Issues #1-#13 are on GitHub (#6 is an upstream note under the Drafts label; #9 was a
-  duplicate and was deleted; #11 is item 26, posted already solved and closed).
-  `TODO.md` maps items to issue numbers. No drafts waiting. Item 22 folded into 24 [#4];
-  item 27 explained by 26.
-- Next session: pull FoxOne upstream (urlbar changes), see `TODO.md` "Next time".
+- **Released 0.5 "Warts and all"** (tag `0.5`, no "v"). Release zip leaves out dev files via
+  `export-ignore` in .gitattributes. Fixes go out as 0.5.1, 0.5.2 ... until 1.0. A release is pinned
+  to its tag: push first, then publish.
+- Issues #1-#18 are on GitHub. `TODO.md` maps items to issue numbers. Upstream suggestions for
+  FoxOne were sent as a batch; the URL-bar icon (charm) work goes upstream after #1 is done.
 
 - Works with `browser.nova.enabled = false` on Nightly 159.0a1. That's the state it
   was built and hand-tested in.
