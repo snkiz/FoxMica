@@ -19,7 +19,10 @@ where they disagree.
 
 ## Next time
 
-- Nothing queued. Pick from "First bug-fix pass" or the open issues.
+- **Pull the next FoxOne release.** It should include two of ours: the find-bar escape (FoxOne #56,
+  closes our #10) and the row height as `--uc-row-height`, which now follows Firefox's density
+  (FoxOne #57, commit 644ab85; closes our #6). Then check section 4 of the overrides (bar height):
+  some of it may no longer be needed. Firn notes vertical tabs change `--tabstrip-min-height`.
 
 ## First bug-fix pass
 
@@ -41,12 +44,12 @@ where they disagree.
 
 ## After launch
 
-- **PWAs for Firefox config:** a FoxMica look for the PWA windows (the addon runs PWAs in their own
-  Firefox profiles). First check what the stock PWA window looks like. Ideal: import the main theme
-  instead of a copy; hard, because the addon does its own things to the UI. My install is a system
-  one (the setup that started FoxMica): find a change to PWAs for Firefox that makes the original
-  mistake impossible to repeat, and offer it upstream (they helped last time). Issue first unless
-  their contributing guide asks for PRs. Back up the PWA profiles before testing anything.
+- **PWAs for Firefox theme** (has a milestone): at least a theme that runs on top of the addon's
+  default PWA styling, the way FoxMica runs on FoxOne (done before with the Proton tab tweaks).
+  End goal: detect the addon and import the existing user theme, or draw up a solution for their
+  side to offer. Forked PWAs for Firefox to read their theme code. Also: the system install is the
+  setup that started FoxMica; find a change that makes the original mistake impossible to repeat
+  and offer it upstream (they helped last time), issue first. Back up the PWA profiles before testing.
 - **Submit to the FirefoxCSS Store** [#30] (https://firefoxcss-store.github.io/submit/). They take a GitHub
   issue (their template): repo URL, short description, screenshots, tags. Their bot opens a PR and
   maintainers review it. Before submitting: more screenshots (more views, not just the main window)
