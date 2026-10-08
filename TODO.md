@@ -35,14 +35,16 @@ where they disagree.
 - 14. Tab loading highlight is white [#12] (keep it or match the palette?).
 - 28. [#13] Nova on: one animated built-in theme left the tab bar transparent. Fine with
   Nova off. Only one theme seen so far; check a few others before chasing it.
-- README: update "tested on Nightly 157" to the version it really works on, and add a
-  known-issue line for Nova until 26 is fixed.
 - 31. Fix the comment on the static bookmarks bar in foxone-config.css: it says the static bar uses the
   translucent layer, but so far only Customize mode does. (Static on the layer is still the plan.)
 - 32. Try pinning the overflow (>>) button the way --ut-pin-downloads pins Downloads. Might not work out.
 
 ## After launch
 
+- **Submit to the FirefoxCSS Store** (https://firefoxcss-store.github.io/submit/). They take a GitHub
+  issue (their template): repo URL, short description, screenshots, tags. Their bot opens a PR and
+  maintainers review it. Before submitting: more screenshots (more views, not just the main window)
+  and a docs pass. Check their issue template for image size and allowed tags.
 - 8. Stock-plus mode: turn off the one-line bar but keep the other goodies. Needs
   every feature switchable, and testing each feature off.
 - 12. Backport to ESR 153. Check the Nova pref name there. Test Nova on and off.
@@ -76,6 +78,7 @@ where they disagree.
 
 ## Done
 
+- README "tested on" line: says Nightly 159, Nova on and off.
 - Released 0.5 "Warts and all" (2026-10-07): FoxOne 3.8.7 [#14], [focused] fix [#15], new screenshot,
   dev files left out of the zip. Next releases: 0.5.1, 0.5.2 ... until 1.0.
 - Nav-button hover delay, --ut-nav-delay [#17, closed]. Upstream issue drafted.
