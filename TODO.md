@@ -37,7 +37,7 @@ where they disagree.
   Nova off. Only one theme seen so far; check a few others before chasing it.
 - 31. Fix the comment on the static bookmarks bar in foxone-config.css: it says the static bar uses the
   translucent layer, but so far only Customize mode does. (Static on the layer is still the plan.)
-- 32. Try pinning the overflow (>>) button the way --ut-pin-downloads pins Downloads. Might not work out.
+- 32. [#19] Try pinning the overflow (>>) button the way --ut-pin-downloads pins Downloads. Might not work out.
 
 ## After launch
 
