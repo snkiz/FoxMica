@@ -91,6 +91,9 @@ Want to send a pull request? Open an issue first and state your case.
 I'll ask for the PR if it fits. This is a hobby project and I review
 everything by hand, so unrequested PRs may sit or be closed.
 
+Testers wanted: FoxMica has only been tried on one screen. Screenshots from other screen sizes and
+Windows scale settings are very welcome, see [#23](https://github.com/snkiz/FoxMica/issues/23).
+
 ## Credits
 
 - [FoxOne](https://github.com/Firnschnee/FoxOne) by Firnschnee (MIT). `userChrome-foxone.css` is FoxOne 3.8.7 exactly as released; `userContent.css` is FoxOne's with a few edits. FoxOne in turn credits [LittleFox](https://github.com/biglavis/LittleFox) and [Cascade](https://github.com/andreasgrafen/cascade).
