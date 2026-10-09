@@ -41,6 +41,13 @@ where they disagree.
 - 31. [#20] Fix the comment on the static bookmarks bar in foxone-config.css: it says the static bar uses the
   translucent layer, but so far only Customize mode does. (Static on the layer is still the plan.)
 - 32. [#19] Try pinning the overflow (>>) button the way --ut-pin-downloads pins Downloads. Might not work out.
+- 33. Tab-bar right stop: FoxOne's max-width on #tabbrowser-tabs reserves hamburger + one button + drag space +
+  new-tab (about line 1037). We shrank those four in foxone-config.css (lines 170-174). Last time I looked,
+  tabs could overrun the buttons with the flexible spacer taken out. Test: remove the spacer, fill the bar
+  with tabs, see if they run under the buttons. If so, the reserve is too tight and the spacer hides it.
+- 34. Density moved: in Nightly 159 the Customize -> Density switch redirects to about:settings (Appearance).
+  Look into what changed (does `browser.compactmode.show` still matter? ESR?), then update README line 48 and
+  the comment in foxone-config.css lines 52-54.
 
 ## After launch
 
@@ -71,13 +78,16 @@ where they disagree.
 - 19. [#28] Try `widget.windows.mica.popups` (it's 0 in the good profile's user.js).
 - 20. [#29] Check `widget.windows.apply-dwm-resize-hack` with Mica (fullscreen from maximized).
 - 23. Maybe hide nav controls [#1] while the URL dropdown is open or the cursor is in it.
+- 10. Tab right-click menu: it's far too long. Trim it and reorder it with CSS (hide unused items, move
+  Reopen Closed Tab to the top; untested idea: `#context_undoCloseTab { order: -1; }`). Plus a small
+  extension for "New Tab to the Left" (no add-on found that does left; extensions can add items but
+  not place them at the top).
 - [#21] Refactor: condense the files, trim the very long comments, move rarely used
   settings to an advanced section.
 
 ## Maybe, probably never
 
 - 9. Fully transparent about: pages and chrome (flaky on Optimus laptops).
-- 10. Extension to open new tabs on the left.
 
 ## Upstream notes (only once things are stable, one small issue per idea, no surprise PRs)
 
