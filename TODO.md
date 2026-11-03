@@ -41,6 +41,37 @@ where they disagree.
   posted and pushed by him, waiting on Firn. On #82 he offers a PR with FoxOne's own variable names and docs rows,
   once invited (patch 34 adds `--ut-sidebar-strip` and `--ut-sidebar-strip-vertical`, which FoxOne would name its way).
   The flyout fix sets all four toolbox gradient stop names (Firefox renamed them between 159 and 160).
+- **td41. Bookmarks bar: split "dynamic" in two, driven by Firefox's own menu (after FoxOne #82 is settled).** Idea
+  (2026-11-01): Firefox's bookmarks toolbar menu (Always Show / Only Show on New Tab / Never Show) should do what it says, live, with no
+  CSS edit and no restart. "Always show" means the bar is always there, as a floating bar or in-flow (a choice).
+  "Dynamic" (hover reveal) becomes its own switch, tied to "Only Show on New Tab". The floating bar keeps the sidebar rules
+  from patch 34. Stretch goal: draw the floating bar under the sidebar so the hide rules aren't needed (then people add
+  spacers if they want); if it can't be done, the hide rules stay as they are. Would fold FoxMica's `--ut-bookmarks-inflow`
+  into the same choice. For FoxOne, "in-flow" is just Firefox's stock bar. Upstream pitch: lead with the live switch from
+  the menu; it also keeps the bar reachable with a panel open (Firn's concern on #82).
+  What was found:
+  - FoxOne's own comment says `--uc-dynamic-bookmarks` only works under "Always show", because under the other two
+    settings Firefox collapses the bar. The cause is Firefox's `[collapsed] { visibility: collapse; }` (`xul.css`, same on
+    ESR 153, Release 159, Beta 160 and Nightly 161). FoxOne already hands `visibility` back for fullscreen (line 960 of
+    FoxOne's `userChrome.css`), so the same override may work here.
+  - Firefox's menu handler (`browser.js`, same on all four builds) only toggles `collapsed` per the current page. "Never"
+    and "Only Show on New Tab" on an ordinary page look the same on the element. The choice is kept in the pref
+    `browser.toolbars.bookmarks.visibility` (`always` / `newtab` / `never`).
+  - Idea to test first: read that pref with `@media -moz-pref("browser.toolbars.bookmarks.visibility", "newtab")`, the way
+    patch 34 reads `sidebar.visibility`. Untested: that it works for this pref, that it follows the menu live, and that
+    nothing else Firefox does to a collapsed bar fights the override.
+  - The stretch goal runs into FoxOne's `#navigator-toolbox { z-index: 9999 !important }`: the floating bar hangs from the
+    toolbox, so it can't be layered below something outside the toolbox's stack without changing that rule.
+  - FoxOne also has `--uc-dynamic-bookmarks-newtab` (keeps the bar revealed on fresh tabs), which would overlap with
+    Firefox's "Only Show on New Tab".
+  - Why not do it now: moving existing users means mapping one setting onto two, which a CSS file can't do for them.
+    The default would become floating plus dynamic, so existing users would only see the new step-aside behaviour.
+- **The next FoxMica release waits for FoxOne 4.0.4 (decided 2026-11-01).** 4.0.4 should carry the #82 step/hide work
+  (branch `82-dynamic-bookmark-step-hide`). Then: `node scripts/pull-foxone.mjs 4.0.4`, remove what is upstream (patch 37's
+  6a and 6c are already in 4.0.3), and cut patch 34 down to what only FoxMica needs (no borders, so the step is the full
+  Firefox strip width). Until then patch 34 has two known ESR 153 faults: it checks `:root[sidebar-positionend]`, which ESR
+  doesn't set, so the bar doesn't step aside with the sidebar on the right; and its fixed 50.47px is about 2px short here.
+  Fallback if 4.0.4 is slow: pull 4.0.3, drop 6a and 6c, and give patch 34 the side check and the token formula.
 - **1.0.2 is released (2026-10-28).** The next release has vertical tabs (#42) and the README wording (both in
   `CHANGELOG.md`); steps in `Notes-n-Tools\FoxMica-RELEASING.md`. Release notes for it are not started.
 - **td40. FoxOne accent does not follow dynamic themes.** Seen 2026-10-18 while doing the selected-tab edge: with
@@ -174,6 +205,10 @@ where they disagree.
 - Wintego: FF157+ dropdown fix (also paint `.urlbarView-background`); find-bar fix;
   the double-encoded text in his file; license-holder question.
   Wintego has no issues open and asks for pull requests instead, so these go to him as PRs.
+- FoxOne paper cut (2026-11-01, compact density only): with the URL bar focused on a fresh tab, the field hangs a little
+  below the toolbar's bottom edge, right above the open floating bookmarks bar. Seen on the FoxOne 4.0.3 branch for #82,
+  which doesn't touch the URL bar, so probably in plain FoxOne too (not checked). Already fixed in FoxMica. Not checked
+  on other Firefox builds. Show Firn when convenient.
 
 ## Done
 

@@ -1,0 +1,33 @@
+/* ==========================================================================
+   debug-colours.css: a testing aid, never part of a theme or a release.
+
+   Paints each big surface of the Firefox window a different flat colour, so you can see exactly where one ends and
+   the next begins (gaps, overlaps, a bar that starts a pixel early). Made while testing FoxOne issue #82.
+
+   To use it, add ONE line at the very top of your userChrome.css, before any rule (an @import must come first), and
+   put it after the theme's own @import so it comes last:
+
+       @import url("debug-colours.css");
+
+   Copy this file into the profile's chrome folder next to userChrome.css. To turn it off, comment the line out
+   or delete it, and restart Firefox (it only reads userChrome.css at startup).
+
+   Each rule uses :root:root:root to beat the theme's !important backgrounds. Each also clears the background image,
+   so gradients and Mica don't show through. Colours:
+
+     #titlebar            red          #TabsToolbar         yellow
+     #nav-bar             blue         #PersonalToolbar     hot pink
+     #sidebar-container   green        #sidebar-box         cyan
+     #tabbrowser-tabbox   magenta      findbar              orange
+
+   Only the surfaces named here change. Add a line for any other element you want to see, same pattern.
+   ========================================================================== */
+
+:root:root:root #titlebar          { background: red !important; }
+:root:root:root #TabsToolbar       { background: yellow !important; }
+:root:root:root #nav-bar           { background: blue !important; }
+:root:root:root #PersonalToolbar   { background: hotpink !important; }
+:root:root:root #sidebar-container { background: lime !important; }
+:root:root:root #sidebar-box       { background: cyan !important; }
+:root:root:root #tabbrowser-tabbox { background: magenta !important; }
+:root:root:root findbar            { background: orange !important; }
