@@ -1,22 +1,19 @@
+
 /* ==========================================================================
    6a. LAUNCHER FLYOUT COLOURS
    With vertical tabs and the sidebar set to "expand on hover", the launcher
-   floats over the page. Firefox paints that flyout with its toolbox gradient
-   (violet to orange, half transparent) over the toolbox colour, and falls back
-   to a plain grey when the toolbox colour is transparent, which it is under
-   Mica (patch 22). On ESR 153 that same transparency leaves the flyout with
-   no background at all, and FoxOne alone is fine there. The gradient part
-   below shows on newer Firefox (seen on 160). FoxOne pins the toolbox colour,
-   but its override of the gradient is spelled --toolbox-background-color-gradient-leading, and Firefox's
-   tokens are --toolbox-background-gradient-leading and -trailing, so the
-   gradient survives and the flyout sits off the palette.
+   floats over the page. Under Mica the toolbox colour is transparent
+   (patch 22), so Firefox falls back to a plain grey for the flyout, and on
+   ESR 153 the same transparency leaves the flyout with no background at all
+   (FoxOne alone is fine there).
    The flyout floats over page pixels, so it needs a solid colour, like the
    other floating surfaces (patch 30). This sets it to the palette base, on the
    flyout only, so the Mica toolbox is untouched. A dynamic theme keeps its own.
+   (Firefox also paints a violet-to-orange gradient on the flyout. This patch
+   used to clear it; FoxOne 4.0.4 does that now, FoxOne #81.)
    ========================================================================== */
 
 :root:not([lwtheme]) #sidebar-container[sidebar-launcher-expanded] {
-  background-image: none !important;
   background-color: var(--uc-color-base) !important;
   color: var(--uc-color-text) !important;
 }
@@ -31,30 +28,4 @@
   background-color: transparent !important;
 }
 
-/* 6c. The panel keeps room for the launcher (expand on hover). With a sidebar panel open (History, Settings),
-   Firefox holds a margin on #sidebar-box the width of the collapsed launcher, so the panel does not slide under the
-   floating launcher's hover trigger. FoxOne zeroes the margin of every .chrome-block with !important, and
-   #sidebar-box is one, so the hold was lost. This puts Firefox's own margins back, for the panel only, and keys on
-   the cause: #sidebar-box.chrome-block. Where the panel no longer carries the class (newer Firefox) nothing here
-   matches, so there is no second margin. Per setting: with Nova on the margin holds for as long as a panel is open,
-   with it off only while the launcher is hovered and expanded or animating. Can go once FoxOne carries the same
-   fix (the same block is FoxOne PR #84). */
-@media -moz-pref("browser.nova.enabled") {
-  :root[sidebar-expand-on-hover] #sidebar-box.chrome-block[sidebar-panel-open]:not([sidebar-positionend]) {
-    margin-inline-start: calc(var(--sidebar-launcher-collapsed-width, 0px) + var(--chrome-window-gap, 0px)) !important;
-  }
-  :root[sidebar-expand-on-hover] #sidebar-box.chrome-block[sidebar-panel-open][sidebar-positionend] {
-    margin-inline-end: calc(var(--sidebar-launcher-collapsed-width, 0px) + var(--chrome-window-gap, 0px)) !important;
-  }
-}
-/* Nova off is not the supported mode, but it is how ESR ships out of the box, so it is fixed anyway. */
-@media not -moz-pref("browser.nova.enabled") {
-  :root[sidebar-expand-on-hover] #sidebar-box.chrome-block:not([sidebar-positionend])[sidebar-panel-open][sidebar-launcher-hovered][sidebar-launcher-expanded],
-  :root[sidebar-expand-on-hover] #sidebar-box.chrome-block:not([sidebar-positionend])[sidebar-ongoing-animations][sidebar-panel-open] {
-    margin-inline-start: var(--sidebar-launcher-collapsed-width, 0px) !important;
-  }
-  :root[sidebar-expand-on-hover] #sidebar-box.chrome-block[sidebar-positionend][sidebar-panel-open][sidebar-launcher-hovered][sidebar-launcher-expanded],
-  :root[sidebar-expand-on-hover] #sidebar-box.chrome-block[sidebar-positionend][sidebar-ongoing-animations][sidebar-panel-open] {
-    margin-inline-end: var(--sidebar-launcher-collapsed-width, 0px) !important;
-  }
-}
+/* (6c, the panel's margin beside the launcher on ESR 153, was removed when FoxOne 4.0.4 took the fix, FoxOne PR #84.) */
