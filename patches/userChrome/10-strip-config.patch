@@ -69,7 +69,8 @@
   --uc-active-tab-width: clamp(100px, 30vw, 190px);
   --uc-inactive-tab-width: clamp(100px, 20vw, 120px);
   /* Tab min width (opt-in): 76px = Firefox default (browser.tabs.tabMinWidth).
-     Lower it (e.g. 36px) to allow narrower tabs / fit more before overflow scroll */
+     Lower it (e.g. 36px) to allow narrower tabs / fit more before overflow scroll.
+     All three widths apply to horizontal tabs only, vertical ones fill the sidebar. */
   --uc-tab-min-width: 76px;
 
   /* Inactive tab hover title color (issue #16). Sits between text and accent:
