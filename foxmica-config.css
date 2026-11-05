@@ -210,21 +210,6 @@
                                     positioning. This value is used just on macOS and on Firefox builds without anchor
                                     support. No need to measure it by hand on a modern build. */
 
-  /* CAUTION, LEAVE THESE TWO ALONE. --ut-sidebar-strip and --ut-sidebar-strip-vertical are a last resort. Patch 34
-                                         works the width out itself from Firefox's own sizes, so it follows the
-                                         density, and it should never need help. On Firefox ESR 153 the horizontal
-                                         width is a fixed measured value (50.47px at the default text size), so a
-                                         different text size can leave the bar a pixel or two off; that is the one
-                                         case for setting these. Overriding turns the density tracking off.
-     --ut-sidebar-strip: overlay bookmarks bar, horizontal tabs: how far the bar steps in from the window edge so
-                                         it doesn't cover the collapsed sidebar's icons. Ignored while the sidebar
-                                         is hidden. Remove the comment marks to set it. */
-  /* --ut-sidebar-strip: 40px; */
-  /* --ut-sidebar-strip-vertical: the same for vertical tabs with the sidebar set to "expand on hover", and for a
-                                         static strip collapsed to icons. An expanded static strip keeps the bar
-                                         hidden, because the strip is as wide as it was dragged. */
-  /* --ut-sidebar-strip-vertical: 48px; */
-
   /* Not here on purpose: the live bar height and button padding (foxmica-tabs.css builds them from the three
      density sets above) and the layer colours (the Mica block holds those). */
 }
