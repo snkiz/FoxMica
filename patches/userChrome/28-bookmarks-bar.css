@@ -25,6 +25,11 @@
   /* Collapsed */
   #PersonalToolbar:not(:has(toolbarpaletteitem)) {
     position: static !important;
+    /* FoxOne 4.0.4's sidebar rules set width: auto !important on the bar. That is right for a floating bar, which
+       left and right place, but an in-flow bar is an item in the toolbox's flex row: with an auto width it shares the
+       row with the nav bar and squeezes the URL bar out (vertical tabs, once the sidebar has loaded). flex-basis keeps
+       it on its own full row, as the base width: 100% did, and FoxOne never sets it. */
+    flex-basis: 100% !important;
     top: auto !important;
     transform: none !important;
     overflow: hidden !important;

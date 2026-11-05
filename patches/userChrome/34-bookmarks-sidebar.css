@@ -1,115 +1,24 @@
-/* ==========================================================================
-   5e. BOOKMARKS BAR AND THE SIDEBAR (overlay mode only)
-   FoxOne's floating bookmarks bar spans the whole window, so it covers the
-   sidebar launcher's icons. This steps it aside. CSS can't read the sidebar's
-   live width: the sidebar sits outside the toolbox, and Firefox refuses to
-   anchor the bar to anything out there. So the offsets are fixed settings
-   (--ut-sidebar-strip and --ut-sidebar-strip-vertical in foxmica-config.css).
-   In-flow mode (--ut-bookmarks-inflow: 1) is not touched: that bar stays in
-   the toolbox flow and never covers the sidebar.
 
-   The four cases:
-     1. Horizontal tabs, collapsed strip showing: the bar starts after the
-        strip. With the sidebar hidden there is no strip, so the bar keeps
-        its full width.
-     2. Vertical tabs with "expand on hover": the strip stays narrow, so it
-        gets its own offset. The bar hides while the floating launcher is out.
-     3. Vertical tabs any other way: collapsed to icons the strip is the same
-        narrow width as in case 2, so the bar steps aside the same way.
-        Expanded, the strip is as wide as it was dragged, which CSS can't
-        read, so the bar stays hidden.
-     4. Sidebar panel open, with any tabs: no room, so the bar stays hidden.
-   With the sidebar on the right (:root[sidebar-positionend]) the same offsets
-   count from the right edge.
+/* ==========================================================================
+   5e. BOOKMARKS BAR AND THE SIDEBAR: the in-flow bar never hides
+   FoxOne 4.0.4 keeps the floating bookmarks bar off the sidebar launcher itself (FoxOne #82): it starts after a
+   collapsed launcher, and it fades out while the launcher is expanded or a sidebar panel is open. FoxMica used to carry
+   its own copy of that and dropped it when 4.0.4 was pulled.
+
+   One exception stays here. The in-flow bar (--ut-bookmarks-inflow: 1) sits in the toolbox, above the sidebar, so it
+   never covers the launcher and has no reason to hide. FoxOne's hide rules don't know about in-flow mode, so a
+   revealed in-flow bar would turn invisible and stop taking clicks while the launcher is expanded or a panel is open.
+   This undoes just that: filter (FoxOne's fade) and pointer-events.
+
+   Why the selector looks odd: FoxOne's hide rules are !important and name several ids, so they outrank a plain
+   selector. This one has to outrank all three of them. :not(..., #ut-specificity-pad) adds an id's weight without
+   matching anything (nothing has that id), and the repeated :root adds class weight. It only counts; it changes nothing
+   else. If FoxOne's hide rules change, the weight may need to follow.
    ========================================================================== */
 
-/* The strip's width is Firefox's own sum, built from tokens that sit on :root and follow the density, so we can
-   build the same sum here. (The width Firefox measures is on #browser, which the toolbox can't read.)
-   Newer Firefox: the launcher button size plus the padding on each side. Firefox's comment: "28px icon button + 2 * 4px
-   = 36px collapsed sidebar" at compact density. Vertical tabs on "expand on hover": the collapsed tab width
-   (--tab-collapsed-width), which Firefox pins the launcher to, plus a classic scrollbar's extra.
-   ESR 153 builds it a little differently: the tab height plus the padding on each side, and the same collapsed tab
-   width. It is recognised by the pref sidebar.revamp.round-content-area, on by default there; newer Firefox dropped it.
-   The numbers after the commas are used only if Firefox ever stops providing a token: they are what we measured on
-   ESR 153 at normal density (49px, 43px) and on newer Firefox (40px, 48px). A number in --ut-sidebar-strip or
-   --ut-sidebar-strip-vertical (foxmica-config.css) wins over all of it. */
-:root {
-  --ut-sidebar-strip-auto: calc(
-    var(--sidebar-launcher-button-size, var(--size-item-large, 32px))
-    + 2 * var(--sidebar-launcher-button-padding-inline, 4px)
-    + var(--tab-collapsed-scrollbar-extra, 0px)
-  );
-  --ut-sidebar-strip-vertical-auto: calc(var(--tab-collapsed-width, 48px) + var(--tab-collapsed-scrollbar-extra, 0px));
-}
-
-@media -moz-pref("sidebar.revamp.round-content-area") {
-  :root {
-    /* Measured on ESR 153 at normal density: #sidebar-container is 50.4667px wide. Firefox's own
-       --sidebar-launcher-collapsed-width reads 52.4667px, 2px more than the strip you can see, so it is not used.
-       A fixed 50.47px until the strip's width can be worked out from Firefox's tokens (the old sidebar sets the
-       variable on #browser only, and the toolbox can't read #browser anyway). */
-    --ut-sidebar-strip-auto: 50.47px;
-    /* --tab-collapsed-width runs a constant 1px longer than the strip at every density on ESR 153. */
-    --ut-sidebar-strip-vertical-auto: calc(var(--tab-collapsed-width, 43px) - 1px);
-  }
-}
-
-@container style(--uc-dynamic-bookmarks: 1) and style(--ut-bookmarks-inflow: 0) {
-
-  /* 1. Horizontal tabs, collapsed strip showing. */
-  :root:root:has(#sidebar-container:not([hidden])):not(
-    :has(#tabbrowser-tabs[orient="vertical"])
-  ) #navigator-toolbox #PersonalToolbar {
-    width: auto !important;
-    left: var(--ut-sidebar-strip, var(--ut-sidebar-strip-auto)) !important;
-    right: 0 !important;
-  }
-  :root:root[sidebar-positionend]:has(#sidebar-container:not([hidden])):not(
-    :has(#tabbrowser-tabs[orient="vertical"])
-  ) #navigator-toolbox #PersonalToolbar {
-    left: 0 !important;
-    right: var(--ut-sidebar-strip, var(--ut-sidebar-strip-auto)) !important;
-  }
-
-  /* 2. Vertical tabs with "expand on hover". The pref is used here, not the root attribute, because Firefox
-        removes that attribute for a moment in some cases. */
-  @media -moz-pref("sidebar.visibility", "expand-on-hover") {
-    :root:root:has(#tabbrowser-tabs[orient="vertical"]) #navigator-toolbox #PersonalToolbar {
-      width: auto !important;
-      left: var(--ut-sidebar-strip-vertical, var(--ut-sidebar-strip-vertical-auto)) !important;
-      right: 0 !important;
-    }
-    :root:root[sidebar-positionend]:has(#tabbrowser-tabs[orient="vertical"]) #navigator-toolbox #PersonalToolbar {
-      left: 0 !important;
-      right: var(--ut-sidebar-strip-vertical, var(--ut-sidebar-strip-vertical-auto)) !important;
-    }
-    :root:has(#sidebar-container[sidebar-launcher-expanded]) #PersonalToolbar {
-      display: none !important;
-    }
-  }
-
-  /* 3. Vertical tabs any other way (static). Collapsed to icons, the strip is the same narrow width as the hover
-        launcher (Firefox won't let it go below that, it bounces back), so the bar steps aside by the same offset.
-        Expanded, the strip is as wide as it was dragged, which CSS can't read, so the bar stays hidden. */
-  @media not -moz-pref("sidebar.visibility", "expand-on-hover") {
-    :root:root:has(#tabbrowser-tabs[orient="vertical"]:not([expanded])) #navigator-toolbox #PersonalToolbar {
-      width: auto !important;
-      left: var(--ut-sidebar-strip-vertical, var(--ut-sidebar-strip-vertical-auto)) !important;
-      right: 0 !important;
-    }
-    :root:root[sidebar-positionend]:has(#tabbrowser-tabs[orient="vertical"]:not([expanded])) #navigator-toolbox #PersonalToolbar {
-      left: 0 !important;
-      right: var(--ut-sidebar-strip-vertical, var(--ut-sidebar-strip-vertical-auto)) !important;
-    }
-    /* Expanded is either flag: the tab strip's [expanded], or the launcher's own [sidebar-launcher-expanded]. */
-    :root:has(#tabbrowser-tabs[orient="vertical"][expanded]) #PersonalToolbar,
-    :root:has(#tabbrowser-tabs[orient="vertical"]):has(#sidebar-container[sidebar-launcher-expanded]) #PersonalToolbar {
-      display: none !important;
-    }
-  }
-
-  /* 4. Sidebar panel open, with any tabs. */
-  :root:has(#tabbrowser-tabbox[sidebar-panel-open]) #PersonalToolbar {
-    display: none !important;
+@container style(--uc-dynamic-bookmarks: 1) and style(--ut-bookmarks-inflow: 1) {
+  :root:root:root:root #navigator-toolbox #PersonalToolbar:not(:has(toolbarpaletteitem), #ut-specificity-pad) {
+    filter: none !important;
+    pointer-events: auto !important;
   }
 }
