@@ -17,10 +17,13 @@ where they disagree.
 
 ## Next time
 
-- **[#45](https://github.com/snkiz/FoxMica/issues/45): vertical tab fill is a fixed 10px, tuned on ESR 153.** Patch 39's
-  `margin-inline: 10px` is off on main and newer. Rework it from Firefox's tab tokens, the way patch 34 does for the
-  bookmarks bar (which token is still to be measured), keeping a measured fallback for ESR 153. The test list is in the issue.
-- **1.1 docs pass.** (1) Move the install instructions into the docs landing page (`docs/README.md`) and lead with them.
+- **[#45](https://github.com/snkiz/FoxMica/issues/45): vertical tab fill is a fixed 10px, tuned on ESR 153.** Measured on
+  Nightly, collapsed strip: patch 39's 10px does apply (margins 10px / 10px, fill 28px wide). FoxOne 4.0.4 centres the
+  collapsed strip from Firefox's own token (FoxOne #85; `--tab-margin-inline-inner` from 159, `--tab-inner-inline-margin`
+  on 153, which FoxOne falls back to), 11px on Nightly. Both centre the fill; the difference is 2px of width. Option, not
+  done: limit the fixed 10px to the expanded strip (FoxOne's fix does not cover it) and let FoxOne's token do the
+  collapsed one. ESR 153 not checked yet; Beta looked fine by eye. The test list is in the issue.- Beta only, seen while checking #45: the find bar shows a double gap under the floating bookmarks bar, on a new tab and
+  nowhere else. Not chased.- **1.1 docs pass.** (1) Move the install instructions into the docs landing page (`docs/README.md`) and lead with them.
   (2) Cut the OEM tab settings table on `docs/README.md` ("Tab settings (for OEM drop-in replacement tabs)") down to its
   description. (3) New screenshots with the new bookmarks bar. (4) Split the settings table in `docs/foxone-mica.md` into
   sections in the same order as `foxmica-config.css`. `micaplus-config.css` itself gets the same sections; its table in
@@ -95,6 +98,12 @@ where they disagree.
     (`issue-drafts\micaplus-urlbar-guts-2026-10-25.png`, URL text selected, Nightly). To do: reproduce, find which
     element sticks out (Browser Toolbox), then draft a FoxMica issue.
 
+- **td43. The optional UI font does not reach the sidebar panels** (seen 2026-11-04, issue not filed yet). The font block
+  in `userChrome.css` sets the font on `#sidebar-box`, but each sidebar panel (History, Bookmarks, Customize sidebar) is
+  its own document with its own stylesheet, and a font set on the box does not pass into it. The `about:` pages work the
+  same way and take theirs from `userContent.css` (the block's own comment says so). To do: confirm which panels keep the
+  stock font, find their document addresses in the Browser Toolbox, and test a rule limited to those documents
+  (`@-moz-document`, kept inside the switched-off font block so it stays off by default). Related to td16.
 - [#40] Customize mode: a large gap shows on the left and the new-tab button pins to the end of the tab bar (stock Firefox
   does it too). Cause not traced; guess: a spacer (FoxOne hides `.titlebar-spacer`). Check with the Browser Toolbox in
   Customize mode, pick the empty space. Rejected idea (2026-10-24): switching the one-line bar off while customizing
@@ -211,6 +220,12 @@ where they disagree.
   on other Firefox builds. Show Firn when convenient.
 
 ## Done
+
+- td42. DONE 2026-11-04, tested: vertical tabs with the in-flow bookmarks bar (`--ut-bookmarks-inflow: 1`) on FoxOne 4.0.4
+  put the title-bar buttons on the left and lost the URL bar, half a second after the window opened. FoxOne 4.0.4's sidebar
+  rules set `width: auto !important` on the bar. A floating bar is placed by left and right, but an in-flow bar is an item
+  in the toolbox's flex row, so it stopped filling the row and squeezed the nav bar. Fix: `flex-basis: 100%` on the
+  in-flow bar (patch 28), which FoxOne never sets. Patch 34's in-flow rule was ruled out first (same break with it off).
 
 - ESR 153 fixes (2026-10-24, tested on ESR 153, pushed, unreleased): #37 (URL bar didn't widen while typing; patch
   `49-esr153-urlbar-widen.patch` adds `#urlbar[open]` to FoxOne's two widening rules, a new tab still waits for a click)

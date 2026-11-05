@@ -110,6 +110,12 @@ root is FoxMica's own version (`1.0.2`, 2026-10-28). Details and the patch forma
   Key the fix on that cause, not on a pref, so it matches only where the problem is.
 - Lesson (2026-10-31): in PowerShell, `R` is an alias for `Invoke-History`; do not name a helper function with one
   letter. `[IO.File]` in PowerShell resolves relative paths against `C:\Windows\System32`, so use absolute paths.
+- Lesson (2026-11-04): FoxOne 4.0.4's sidebar launcher rules set `width: auto !important` on `#PersonalToolbar`. That is
+  fine for the floating bar, which `left` and `right` place, but the in-flow bar (`--ut-bookmarks-inflow: 1`) is an item
+  in the toolbox's flex row, so it stopped filling the row and squeezed the nav bar: URL bar gone and the title-bar
+  buttons on the left, half a second after startup, once vertical tabs and the sidebar had loaded. `flex-basis: 100%` on
+  the in-flow bar (patch 28) fixes it, because FoxOne never sets it. Look here first if FoxOne changes the bar's width or
+  position again.
 - Lesson (2026-10-28): Firefox renamed the toolbox gradient stops between 159 and 160 (`--toolbox-background-color-gradient-*`
   became `--toolbox-background-gradient-*`), so set both spellings. ESR 153's sidebar is different and has no gradient problem.
 - **Road to 1.0 (done, kept for the record):** a full test pass of every mode with screenshots
