@@ -20,7 +20,8 @@ FoxMica is built on FoxOne, and I don't want to hand-edit FoxOne's files and los
 
 The header of each built file names FoxMica's own version (the one line in the `VERSION` file in the repo root) and
 the FoxOne release in `vendor/VERSION`. Changing either one makes the built files out of date, so after bumping
-`VERSION` for a release, run `node scripts/assemble.mjs` and commit the rebuilt files with it.
+`VERSION` for a release, run `node scripts/assemble.mjs` and commit the rebuilt files with it. To do both in one
+step, run `node scripts/assemble.mjs --version 1.0.4`.
 
 To change a built file, change a patch, then rebuild. A hand edit to a built file is lost on the next build, and
 `check.mjs` will tell you about it.
@@ -31,6 +32,7 @@ To change a built file, change a patch, then rebuild. A hand edit to a built fil
 | --- | --- | --- |
 | `node scripts/pull-foxone.mjs 3.9.5` | Downloads FoxOne release 3.9.5 into `vendor/` and updates `vendor/VERSION`. | `vendor/` only |
 | `node scripts/assemble.mjs` | Applies the patches to `vendor/` and writes the built files. If any patch fails, nothing is written. | The built files |
+| `node scripts/assemble.mjs --version 1.0.4` | Sets `VERSION` to 1.0.4, then builds as above. If a patch fails, `VERSION` is put back. | `VERSION` and the built files |
 | `node scripts/check.mjs` | Checks `vendor/` matches the release in `VERSION`, every patch applies, the built files are up to date, and every CSS file has matching `{` and `}`. | No |
 | `node scripts/check.mjs --offline` | The same, without the download (skips the `vendor/` check). | No |
 | `node scripts/make-patch.mjs <original> <edited> <patch>` | Writes a patch from the difference between two files. | The new patch only |
