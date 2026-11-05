@@ -5,7 +5,7 @@ this file is cleared for the next version. Older versions live in their GitHub r
 
 The settings and each flavour are documented in [docs/](https://github.com/snkiz/FoxMica/tree/main/docs) on GitHub. The folder is left out of the release zip.
 
-## Next release, built on FoxOne 4.0.2 plus unreleased FoxOne changes (pre-release copy, replace with the release before tagging)
+## Next release, built on FoxOne 4.0.4
 
 ### Fixed
 
@@ -24,27 +24,19 @@ The settings and each flavour are documented in [docs/](https://github.com/snkiz
   every version. Only the bar along the bottom of a loading tab is drawn now; FoxOne's glow along the top edge is
   hidden. `patches/userChrome/36-small-fixes.css`.
 
-- **The floating bookmarks bar no longer covers the sidebar launcher on ESR 153, and follows the density.** The launcher
-  is wider on ESR 153 than on newer Firefox, and the widths change with the density. On newer Firefox the bar works out
-  how far to step aside from the sizes Firefox builds the launcher from (the button size, the padding, the collapsed
-  tab width), the same sum Firefox does, so it follows the density. On ESR 153 the horizontal width is a fixed measured
-  value (50.47px at the default text size, the width of the launcher you see; Firefox's own variable reads 2px more),
-  and the vertical width is the collapsed tab width less 1px. The old sidebar is recognised by the pref
-  `sidebar.revamp.round-content-area`, which newer Firefox dropped. `--ut-sidebar-strip` and
-  `--ut-sidebar-strip-vertical` are no longer set in `foxmica-config.css` (commented examples instead, in the
-  advanced section and marked as a last resort); set a number only to override it, and a fixed number does not follow
-  the density.
-  With vertical tabs and the sidebar set to always show, a strip collapsed to icons now lets the bar step aside too,
-  instead of hiding it; an expanded strip still hides the bar, since its width is wherever it was dragged.
-  `patches/userChrome/34-bookmarks-sidebar.css`.
+- **The floating bookmarks bar keeps off the sidebar launcher, now through FoxOne 4.0.4.** FoxOne took the step-aside
+  and hide rules ([FoxOne #82](https://github.com/Firnschnee/FoxOne/issues/82)): the bar starts after a collapsed
+  launcher, and fades out while the launcher is expanded or a sidebar panel is open. FoxMica's own copy is gone, and so
+  are the `--ut-sidebar-strip` and `--ut-sidebar-strip-vertical` settings (1.0.2 set them to 36px and 48px). A config
+  that still has those two lines can drop them: nothing reads them now, and FoxOne works the offset out from Firefox's
+  own sizes. FoxOne's hide rules would also have hidden the in-flow bar, which sits above the sidebar and never covers it, so
+  FoxMica keeps that one showing. `patches/userChrome/34-bookmarks-sidebar.css`.
 
-- **A sidebar panel no longer slides under the launcher with "expand on hover" on ESR 153.** With a panel open (History,
-  Settings), Firefox keeps a margin the width of the collapsed launcher on the panel, so it sits beside the launcher.
-  FoxOne's `.chrome-block { margin-inline: 0 !important }` cancels that margin, because the panel carries the
-  `chrome-block` class, so the panel went under the launcher's hover trigger. This is a FoxOne bug, not a FoxMica one
-  ([FoxOne #84](https://github.com/Firnschnee/FoxOne/pull/84)). The patch puts Firefox's own margins back for both sidebar sides, only on the old sidebar (newer Firefox does not lose
-  the margin), and can go once FoxOne fixes it. Tested on ESR 153 with "browser.nova.enabled" on and off, and with the
-  sidebar on either side. `patches/userChrome/37-launcher-flyout.css`.
+- **A sidebar panel no longer slides under the launcher with "expand on hover" on ESR 153.** This was a FoxOne bug, and
+  FoxOne 4.0.4 has the fix ([FoxOne PR #84](https://github.com/Firnschnee/FoxOne/pull/84)); FoxMica's own copy of it is
+  gone. The launcher flyout's gradient is cleared by FoxOne 4.0.4 as well ([FoxOne #81](https://github.com/Firnschnee/FoxOne/issues/81)),
+  so `patches/userChrome/37-launcher-flyout.css` keeps only the solid flyout colour and the clear collapsed strip.
+
 - **The in-flow bookmarks bar (`--ut-bookmarks-inflow: 1`) no longer grows when you hover the toolbar**
   ([#44](https://github.com/snkiz/FoxMica/issues/44)). It opened on any hover over the whole toolbar, at FoxOne's `4em`
   plus 6px padding. It now follows the floating bar's rules: it opens when the pointer rests on the URL text, on the
