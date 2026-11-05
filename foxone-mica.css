@@ -1,9 +1,9 @@
 /* BUILT FILE - do not edit by hand.
-   FoxMica 1.0.2-dev: FoxOne 4.0.2+pr83 (vendor/userChrome.css) plus patches/userChrome/.
+   FoxMica 1.0.4: FoxOne 4.0.4 (vendor/userChrome.css) plus patches/userChrome/.
    Made by scripts/assemble.mjs. Change the patches, then rebuild. */
 /*==============================================================================================*
 
-  FoxOne 4.0.2 – A minimalistic one-line Firefox theme
+  FoxOne 4.0.4 – A minimalistic one-line Firefox theme
   Based on Cascade (https://github.com/andreasgrafen/cascade)
   Floating Find Bar and dynamic Bookmarks Bar by LittleFox
   (https://github.com/biglavis/LittleFox)
@@ -931,6 +931,108 @@ sidebar-main,
       transition-delay: 0s, 0s, 0s, 0s !important;
     }
   }
+
+  /* ------------------------------------------------------------------------
+     Sidebar launcher: the bar steps aside or hides (issue #82)
+
+     The floating bar is as wide as the window, so it would cover the sidebar
+     launcher. The launcher is in one of three states, and each gets one of
+     two answers (with the launcher hidden, none of this applies):
+       collapsed (a narrow strip of icons)  -> step: the bar starts after it
+       expanded, or a sidebar panel open    -> hide: no room, the bar fades out
+     That holds in every tab mode. The exceptions are noted on the rules:
+     horizontal tabs have no expanded state, and "expand on hover" steps a
+     little further, past the window gap.
+     With the sidebar on the right, the step counts from the right edge.
+
+     The step is the strip's width, worked out from Firefox's tokens, so there
+     is nothing to set: horizontal tabs, the button size plus the padding on
+     each side; vertical tabs, the collapsed tab width. The plain numbers
+     behind each token are a last resort, so a rename leaves the bar a few
+     pixels off, not broken.
+     ------------------------------------------------------------------------ */
+
+  /* Step, horizontal tabs. The button is --sidebar-launcher-button-size, a
+     Nightly fix (161, compact density, where the button is smaller) that will
+     likely reach every Firefox, so it comes first; --size-item-large (32px) is
+     the one token every build has. The padding is
+     --sidebar-launcher-button-padding-inline (159 and up); ESR 153 has none
+     and pads with --space-medium, so delete that fallback when ESR 153 retires. */
+  :root:has(#sidebar-container:not([hidden])):not(
+    :has(#tabbrowser-tabs[orient="vertical"])
+  ) #PersonalToolbar:not(:has(toolbarpaletteitem)) {
+    --uc-launcher-strip: calc(
+      var(--sidebar-launcher-button-size, var(--size-item-large, 32px))
+      + 2 * var(--sidebar-launcher-button-padding-inline, var(--space-medium, 0.75rem))
+    );
+    width: auto !important;
+    left: var(--uc-launcher-strip) !important;
+    right: 0 !important;
+  }
+  /* Same, sidebar on the right. A moving target: Firefox is moving
+     sidebar-positionend to the root (Nightly 161; Mozilla bug 2078353), while
+     ESR 153 sets it only on the sidebar's own elements. So either counts; when
+     ESR 153 retires, the #sidebar-container half can go. */
+  :root:is([sidebar-positionend], :has(#sidebar-container[sidebar-positionend])):has(#sidebar-container:not([hidden])):not(
+    :has(#tabbrowser-tabs[orient="vertical"])
+  ) #PersonalToolbar:not(:has(toolbarpaletteitem)) {
+    left: 0 !important;
+    right: var(--uc-launcher-strip) !important;
+  }
+
+  /* Step, vertical tabs: the collapsed tab width (plus a scrollbar allowance
+     on Nightly 161), the same for "always show" and "expand on hover". Like
+     the horizontal rule, only while the launcher shows: "Hide tabs and
+     sidebar" hides it, and the bar goes back to the window edge. */
+  :root:has(#tabbrowser-tabs[orient="vertical"]):has(#sidebar-container:not([hidden]))
+    #PersonalToolbar:not(:has(toolbarpaletteitem)) {
+    --uc-launcher-strip: calc(
+      var(--tab-collapsed-width, 48px)
+      + var(--tab-collapsed-scrollbar-extra, 0px)
+    );
+    width: auto !important;
+    left: var(--uc-launcher-strip) !important;
+    right: 0 !important;
+  }
+  :root:is([sidebar-positionend], :has(#sidebar-container[sidebar-positionend])):has(#tabbrowser-tabs[orient="vertical"]):has(#sidebar-container:not([hidden]))
+    #PersonalToolbar:not(:has(toolbarpaletteitem)) {
+    left: 0 !important;
+    right: var(--uc-launcher-strip) !important;
+  }
+
+  /* "Expand on hover" only: the page sits one window gap past the strip (Nova,
+     4px on ESR 153), so the step adds it; 0px where a build doesn't declare it. */
+  :root[sidebar-expand-on-hover]:has(#tabbrowser-tabs[orient="vertical"])
+    #PersonalToolbar:not(:has(toolbarpaletteitem)) {
+    --uc-launcher-strip: calc(
+      var(--tab-collapsed-width, 48px)
+      + var(--tab-collapsed-scrollbar-extra, 0px)
+      + var(--chrome-window-gap, 0px)
+    );
+  }
+
+  /* Hide: the launcher expanded (vertical tabs only; Firefox flags it on the tab
+     strip, [expanded], or on the launcher, [sidebar-launcher-expanded]) or any
+     sidebar panel open. filter: opacity(0), not opacity: the reveal rules set
+     opacity, and the fresh-tab one wins on specificity. */
+  :root:has(#tabbrowser-tabs[orient="vertical"][expanded])
+    #PersonalToolbar:not(:has(toolbarpaletteitem)),
+  :root:has(#tabbrowser-tabs[orient="vertical"]):has(#sidebar-container[sidebar-launcher-expanded])
+    #PersonalToolbar:not(:has(toolbarpaletteitem)),
+  :root:has(#tabbrowser-tabbox[sidebar-panel-open])
+    #PersonalToolbar:not(:has(toolbarpaletteitem)) {
+    filter: opacity(0) !important;
+    pointer-events: none !important;
+    /* The resting transition list with filter added, written as longhands so
+       the delays and the max-height / padding-block steps keep running. The
+       delay list has four values, so filter reuses the first (the hide delay). */
+    transition-property: opacity, transform, max-height, padding-block, filter !important;
+    transition-duration: 100ms, 100ms, 0s, 0s, 120ms !important;
+    /* This rule outranks the reduced-motion block below, so it snaps here. */
+    @media (prefers-reduced-motion: reduce) {
+      transition-duration: 0s !important;
+    }
+  }
 }
 
 #statuspanel #statuspanel-label {
@@ -1132,6 +1234,33 @@ sidebar-main,
   margin-top: 0 !important;
 }
 
+/* The flatten above also strips the margin Firefox holds on the sidebar panel
+   so that, with "expand on hover", it sits beside the collapsed launcher
+   (sidebar.css). The panel then slid under the launcher's hover trigger (seen in #82).
+   The rules key on the cause: #sidebar-box carries .chrome-block, which is what
+   makes the flatten above reach it. Where the panel does not carry the class
+   (newer Firefox) nothing here matches, so there is no second margin. Put
+   Firefox's own margin back for the panel only: Nova holds it while a panel is
+   open, the older rules only while the launcher is hovered and expanded or animating. */
+@media -moz-pref("browser.nova.enabled") {
+  :root[sidebar-expand-on-hover] #sidebar-box.chrome-block[sidebar-panel-open]:not([sidebar-positionend]) {
+    margin-inline-start: calc(var(--sidebar-launcher-collapsed-width, 0px) + var(--chrome-window-gap, 0px)) !important;
+  }
+  :root[sidebar-expand-on-hover] #sidebar-box.chrome-block[sidebar-panel-open][sidebar-positionend] {
+    margin-inline-end: calc(var(--sidebar-launcher-collapsed-width, 0px) + var(--chrome-window-gap, 0px)) !important;
+  }
+}
+/* Nova off is not the supported mode, but it is how ESR ships out of the box, so it is fixed anyway. */
+@media not -moz-pref("browser.nova.enabled") {
+  :root[sidebar-expand-on-hover] #sidebar-box.chrome-block:not([sidebar-positionend])[sidebar-panel-open][sidebar-launcher-hovered][sidebar-launcher-expanded],
+  :root[sidebar-expand-on-hover] #sidebar-box.chrome-block:not([sidebar-positionend])[sidebar-ongoing-animations][sidebar-panel-open] {
+    margin-inline-start: var(--sidebar-launcher-collapsed-width, 0px) !important;
+  }
+  :root[sidebar-expand-on-hover] #sidebar-box.chrome-block[sidebar-positionend][sidebar-panel-open][sidebar-launcher-hovered][sidebar-launcher-expanded],
+  :root[sidebar-expand-on-hover] #sidebar-box.chrome-block[sidebar-positionend][sidebar-ongoing-animations][sidebar-panel-open] {
+    margin-inline-end: var(--sidebar-launcher-collapsed-width, 0px) !important;
+  }
+}
 /* Nova insets the web content on #browser (the flex hbox wrapping sidebar +
    content): padding pushed the page off the window edge, and a 4px flex gap
    (column + row) left strips between content and sidebar and a height/strip
@@ -1603,6 +1732,9 @@ sidebar-main,
    vanished for the whole load; with it on, top:0 + bottom:0 + fixed height is
    over-constrained and the bar jumped to the top edge). A 36px pinned tab has
    no legible progress track anyway.
+   Tabs in the collapsed vertical strip are excluded for the same reason:
+   the selected one carries the pinned indicator there (#85). The exclusion
+   sits in :where() inside the existing :not(), so specificity is unchanged.
    Note: transform must NOT be !important – animations can't override it.
    ========================================================================== */
 
@@ -1625,20 +1757,20 @@ sidebar-main,
 }
 
 /* Bottom bar – animated on busy tabs (pinned excluded, see header) */
-.tabbrowser-tab[busy]:not([pinned]) .tab-background::before {
+.tabbrowser-tab[busy]:not([pinned], :where(#tabbrowser-tabs[orient="vertical"]:not([expanded]) *)) .tab-background::before {
   opacity: var(--uc-show-loading-progress) !important;
   transition: none !important;
   animation: uc-progress 2.5s cubic-bezier(0.2, 0.6, 0.4, 1) forwards !important;
 }
 
 /* Inactive busy tabs – white to match tab text color */
-.tabbrowser-tab[busy]:not([selected], [pinned]) .tab-background::before {
+.tabbrowser-tab[busy]:not([selected], [pinned], :where(#tabbrowser-tabs[orient="vertical"]:not([expanded]) *)) .tab-background::before {
   background: var(--toolbar-color, #FFFFFF) !important;
   box-shadow: 0 1px 10px 1px var(--toolbar-color, #FFFFFF) !important;
 }
 
 /* Top glow – busy tabs (pinned excluded: their ::after is the indicator) */
-.tabbrowser-tab[busy]:not([pinned]) .tab-background::after {
+.tabbrowser-tab[busy]:not([pinned], :where(#tabbrowser-tabs[orient="vertical"]:not([expanded]) *)) .tab-background::after {
   content: "" !important;
   display: block !important;
   position: absolute !important;
@@ -1655,7 +1787,7 @@ sidebar-main,
 }
 
 /* Top glow – inactive tabs use white */
-.tabbrowser-tab[busy]:not([selected], [pinned]) .tab-background::after {
+.tabbrowser-tab[busy]:not([selected], [pinned], :where(#tabbrowser-tabs[orient="vertical"]:not([expanded]) *)) .tab-background::after {
   background: var(--toolbar-color, #FFFFFF) !important;
   box-shadow: 0 1px 10px 1px var(--toolbar-color, #FFFFFF) !important;
 }
@@ -2826,9 +2958,11 @@ sidebar-main {
    matters once --uc-tab-min-width drops below ~50px (favicon-only tabs): the
    audio button then no longer fits and gives way to the favicon badge below.
    inline-size containment is safe here because tab widths come from the
-   strip's flexbox and the min/max-width clamps, not from content. */
-.tabbrowser-tab:not([pinned]) {
-  container-type: inline-size;
+   strip's flexbox and the min/max-width clamps, not from content.
+   Horizontal strip only, and named: an unnamed query would fall through to
+   Nova's #vertical-tabs container, which is under 50px when collapsed. (#85) */
+:where(#tabbrowser-tabs[orient="horizontal"]) .tabbrowser-tab:not([pinned]) {
+  container: uc-tab / inline-size;
 }
 
 /* Tab close button: an overlay in the tab's top layer, not a flex child.
@@ -2837,12 +2971,17 @@ sidebar-main {
    the old sub-50px hiding and its container query (the container-type above
    stays for the audio badge). FoxOne twist on the original: the X slides in
    from the right, vertically centred on the label line, so nothing moves
-   vertically in the one-line layout. */
+   vertically in the one-line layout.
+   The collapsed vertical strip is left to Nova: it has its own X there (a
+   small badge at the tab's top-start corner, hidden entirely with
+   expand-on-hover), and the overlay landed next to the icon instead (#85).
+   The scope sits in :where() so the hover rules below keep their
+   specificity against the base rule. */
 .tabbrowser-tab:not([pinned]) .tab-content {
   /* anchor for the absolutely positioned X */
   position: relative !important;
 }
-.tabbrowser-tab:not([pinned]) .tab-close-button {
+:where(#tabbrowser-tabs:not([orient="vertical"]:not([expanded]))) .tabbrowser-tab:not([pinned]) .tab-close-button {
   /* revert (not -moz-inline-block: a removed alias that parses as invalid
      and gets dropped): restores the native close-button display. */
   display: revert !important;
@@ -2884,34 +3023,40 @@ sidebar-main {
   flex: none !important;
   overflow: hidden !important;
 }
-.tabbrowser-tab:not([pinned]):hover .tab-close-button {
+:where(#tabbrowser-tabs:not([orient="vertical"]:not([expanded]))) .tabbrowser-tab:not([pinned]):hover .tab-close-button {
   opacity: 0.9 !important;
   transform: translateX(0) scale(0.75) !important;
 }
 /* Same three-step colour model as the toolbar icons (issue #16): rest white
    (above), hover the X itself hover-yellow, press it amber. fill is
    currentColor since 154, so color alone recolours the glyph. */
-.tabbrowser-tab:not([pinned]) .tab-close-button:hover {
+:where(#tabbrowser-tabs:not([orient="vertical"]:not([expanded]))) .tabbrowser-tab:not([pinned]) .tab-close-button:hover {
   opacity: 1 !important;
   color: var(--uc-tab-hover-text) !important;
 }
-.tabbrowser-tab:not([pinned]) .tab-close-button:hover:active {
+:where(#tabbrowser-tabs:not([orient="vertical"]:not([expanded]))) .tabbrowser-tab:not([pinned]) .tab-close-button:hover:active {
   color: var(--tab-selected-textcolor, #fabd2f) !important;
 }
 
-/* adaptive tab width */
-.tabbrowser-tab[selected][fadein]:not([pinned]):not(tab-group[collapsed] .tabbrowser-tab) {
+/* adaptive tab width. Horizontal strip only, like Nova's own tab widths: in
+   the vertical strip the tabs fill the sidebar, and the min-width pushed them
+   past the collapsed strip's edge. (#85) */
+:where(#tabbrowser-tabs[orient="horizontal"]) .tabbrowser-tab[selected][fadein]:not([pinned]):not(tab-group[collapsed] .tabbrowser-tab) {
   max-width: var(--uc-active-tab-width) !important;
 }
-.tabbrowser-tab[fadein]:not([selected]):not([pinned]):not(tab-group[collapsed] .tabbrowser-tab) {
+:where(#tabbrowser-tabs[orient="horizontal"]) .tabbrowser-tab[fadein]:not([selected]):not([pinned]):not(tab-group[collapsed] .tabbrowser-tab) {
   max-width: var(--uc-inactive-tab-width) !important;
 }
-.tabbrowser-tab[fadein]:not([pinned]):not(tab-group[collapsed] .tabbrowser-tab) {
+:where(#tabbrowser-tabs[orient="horizontal"]) .tabbrowser-tab[fadein]:not([pinned]):not(tab-group[collapsed] .tabbrowser-tab) {
   min-width: var(--uc-tab-min-width) !important;
 }
 
-/* active pinned tab – bottom glow indicator (mirrors container-line style) */
-.tabbrowser-tab[pinned][selected] .tab-background::after {
+/* active pinned tab – bottom glow indicator (mirrors container-line style).
+   The collapsed vertical strip has no titles, so the accent title colour
+   that marks the active tab elsewhere shows nothing there; every tab is an
+   icon tile like a pinned one and gets the same line (#85). */
+.tabbrowser-tab[pinned][selected] .tab-background::after,
+#tabbrowser-tabs[orient="vertical"]:not([expanded]) .tabbrowser-tab[selected] .tab-background::after {
   content: "" !important;
   display: block !important;
   position: absolute !important;
@@ -2988,7 +3133,7 @@ sidebar-main {
    overlay rules above; only the -8px end-overhang is pulled to -2px so the
    badge stays inside the tab. Pinned tabs have no container (see the
    close-button block), so the query never matches them. */
-@container (width < 50px) {
+@container uc-tab (width < 50px) {
   .tab-audio-button {
     display: none !important;
   }
@@ -3113,6 +3258,22 @@ sidebar-main {
 
 #tabbrowser-tabs[orient="vertical"] .tabbrowser-tab[fadein]:not([pinned]) {
   max-width: none !important;
+}
+
+/* Collapsed vertical strip: the tab box is the fixed-width background plus
+   Nova's inner margin on both sides, and that margin is what centres the
+   background on the icon. The reset above pushed the background to the
+   start edge, off-centre from the icon and the selected-tab line (#85).
+   159 renamed the token (tab.tokens.css); the fallback covers 153. */
+#tabbrowser-tabs[orient="vertical"]:not([expanded]) .tab-background {
+  margin-inline: var(--tab-margin-inline-inner, var(--tab-inner-inline-margin)) !important;
+}
+
+/* Nova tints idle pinned tabs in the vertical strip (7% currentColor), but
+   only while not hovered, so with FoxOne's transparent hover the square
+   vanished under the pointer. FoxOne tabs carry no background. (#85) */
+#pinned-tabs-container[orient="vertical"] .tab-background:not([selected], [multiselected]) {
+  background-color: transparent !important;
 }
 
 
@@ -3244,13 +3405,20 @@ findbar[hidden] {
    transform above. The delay overrides skip [hidden], whose own delays time
    the close. A bar Firefox collapsed ("Only on New Tab" elsewhere) is never
    revealed, so it moves nothing. (#70, found by snkiz) The bookmark context
-   menu hold mirrors the reveal rules too, exclusions included. (#74) */
+   menu hold mirrors the reveal rules too, exclusions included. (#74)
+   The hide rules of the sidebar launcher block (#82) are exclusions too: a
+   bar hidden by an expanded launcher or an open panel moves nothing. */
 @container style(--uc-dynamic-bookmarks: 1) {
   findbar {
     transition: opacity 100ms ease-out, transform 100ms ease-out, visibility 0s step-end,
                 translate 100ms ease-out var(--uc-dynamic-bookmarks-hide-delay) !important;
   }
-  :root:not(:has(#urlbar[open], #PersonalToolbar[collapsed="true"])) {
+  :root:not(:has(
+    #urlbar[open],
+    #PersonalToolbar[collapsed="true"],
+    #tabbrowser-tabs[orient="vertical"][expanded],
+    #tabbrowser-tabbox[sidebar-panel-open]
+  )):not(:has(#tabbrowser-tabs[orient="vertical"]):has(#sidebar-container[sidebar-launcher-expanded])) {
     &:has(#navigator-toolbox :is(#urlbar-input, .urlbar-input):hover,
           #PersonalToolbar:hover,
           #PersonalToolbar toolbarbutton[open]) findbar,
@@ -3275,7 +3443,12 @@ findbar[hidden] {
     transition-delay: 0s !important;
   }
   @container style(--uc-dynamic-bookmarks-newtab: 1) {
-    :root:not(:has(#urlbar[open], #PersonalToolbar[collapsed="true"])):has(
+    :root:not(:has(
+      #urlbar[open],
+      #PersonalToolbar[collapsed="true"],
+      #tabbrowser-tabs[orient="vertical"][expanded],
+      #tabbrowser-tabbox[sidebar-panel-open]
+    )):not(:has(#tabbrowser-tabs[orient="vertical"]):has(#sidebar-container[sidebar-launcher-expanded])):has(
       #urlbar-input-container[pageproxystate="invalid"],
       .urlbar-input-container[pageproxystate="invalid"]
     ):has(#navigator-toolbox :is(#urlbar-input, .urlbar-input):placeholder-shown) findbar {
@@ -3965,13 +4138,16 @@ html[id^="taskbartab"] #unified-extensions-button {
   #TabsToolbar-customization-target > toolbaritem,
   #TabsToolbar-customization-target > toolbarbutton:where(:has(~ toolbaritem)) { transition: none !important; }
 
-  /* Dynamic bookmarks bar – reveal and collapse snap, delays included. The
-     bar still appears and disappears on hover, it just does not animate. */
-  #PersonalToolbar { transition: none !important; }
+  /* Dynamic bookmarks bar – reveal and collapse snap. The resting rule carries
+     :not(:has(toolbarpaletteitem)), which outranked a bare #PersonalToolbar,
+     so the bar kept animating. Repeat it so the specificity ties. Only the
+     durations go: the hover delay is a filter, and the hide delay keeps the
+     hit box for the trip down from the URL bar, so both stay. */
+  #PersonalToolbar:not(:has(toolbarpaletteitem)) { transition-duration: 0s !important; }
 
-  /* Findbar slide / scale */
-  findbar,
-  findbar[hidden] { transition: none !important; }
+  /* Findbar slide / scale. Durations only, as above, so the move out of the
+     bookmarks bar's way still waits out the same delays as the bar. */
+  findbar { transition-duration: 0s !important; }
 
   /* Loading progress bar - resting full stroke instead of growth.
      Visibility stays bound to --uc-show-loading-progress, so the feature
@@ -4224,6 +4400,11 @@ html[id^="taskbartab"] #unified-extensions-button {
   /* Collapsed */
   #PersonalToolbar:not(:has(toolbarpaletteitem)) {
     position: static !important;
+    /* FoxOne 4.0.4's sidebar rules set width: auto !important on the bar. That is right for a floating bar, which
+       left and right place, but an in-flow bar is an item in the toolbox's flex row: with an auto width it shares the
+       row with the nav bar and squeezes the URL bar out (vertical tabs, once the sidebar has loaded). flex-basis keeps
+       it on its own full row, as the base width: 100% did, and FoxOne never sets it. */
+    flex-basis: 100% !important;
     top: auto !important;
     transform: none !important;
     overflow: hidden !important;
@@ -4349,119 +4530,28 @@ notification-message {
   }
 }
 
-/* ==========================================================================
-   5e. BOOKMARKS BAR AND THE SIDEBAR (overlay mode only)
-   FoxOne's floating bookmarks bar spans the whole window, so it covers the
-   sidebar launcher's icons. This steps it aside. CSS can't read the sidebar's
-   live width: the sidebar sits outside the toolbox, and Firefox refuses to
-   anchor the bar to anything out there. So the offsets are fixed settings
-   (--ut-sidebar-strip and --ut-sidebar-strip-vertical in foxmica-config.css).
-   In-flow mode (--ut-bookmarks-inflow: 1) is not touched: that bar stays in
-   the toolbox flow and never covers the sidebar.
 
-   The four cases:
-     1. Horizontal tabs, collapsed strip showing: the bar starts after the
-        strip. With the sidebar hidden there is no strip, so the bar keeps
-        its full width.
-     2. Vertical tabs with "expand on hover": the strip stays narrow, so it
-        gets its own offset. The bar hides while the floating launcher is out.
-     3. Vertical tabs any other way: collapsed to icons the strip is the same
-        narrow width as in case 2, so the bar steps aside the same way.
-        Expanded, the strip is as wide as it was dragged, which CSS can't
-        read, so the bar stays hidden.
-     4. Sidebar panel open, with any tabs: no room, so the bar stays hidden.
-   With the sidebar on the right (:root[sidebar-positionend]) the same offsets
-   count from the right edge.
+/* ==========================================================================
+   5e. BOOKMARKS BAR AND THE SIDEBAR: the in-flow bar never hides
+   FoxOne 4.0.4 keeps the floating bookmarks bar off the sidebar launcher itself (FoxOne #82): it starts after a
+   collapsed launcher, and it fades out while the launcher is expanded or a sidebar panel is open. FoxMica used to carry
+   its own copy of that and dropped it when 4.0.4 was pulled.
+
+   One exception stays here. The in-flow bar (--ut-bookmarks-inflow: 1) sits in the toolbox, above the sidebar, so it
+   never covers the launcher and has no reason to hide. FoxOne's hide rules don't know about in-flow mode, so a
+   revealed in-flow bar would turn invisible and stop taking clicks while the launcher is expanded or a panel is open.
+   This undoes just that: filter (FoxOne's fade) and pointer-events.
+
+   Why the selector looks odd: FoxOne's hide rules are !important and name several ids, so they outrank a plain
+   selector. This one has to outrank all three of them. :not(..., #ut-specificity-pad) adds an id's weight without
+   matching anything (nothing has that id), and the repeated :root adds class weight. It only counts; it changes nothing
+   else. If FoxOne's hide rules change, the weight may need to follow.
    ========================================================================== */
 
-/* The strip's width is Firefox's own sum, built from tokens that sit on :root and follow the density, so we can
-   build the same sum here. (The width Firefox measures is on #browser, which the toolbox can't read.)
-   Newer Firefox: the launcher button size plus the padding on each side. Firefox's comment: "28px icon button + 2 * 4px
-   = 36px collapsed sidebar" at compact density. Vertical tabs on "expand on hover": the collapsed tab width
-   (--tab-collapsed-width), which Firefox pins the launcher to, plus a classic scrollbar's extra.
-   ESR 153 builds it a little differently: the tab height plus the padding on each side, and the same collapsed tab
-   width. It is recognised by the pref sidebar.revamp.round-content-area, on by default there; newer Firefox dropped it.
-   The numbers after the commas are used only if Firefox ever stops providing a token: they are what we measured on
-   ESR 153 at normal density (49px, 43px) and on newer Firefox (40px, 48px). A number in --ut-sidebar-strip or
-   --ut-sidebar-strip-vertical (foxmica-config.css) wins over all of it. */
-:root {
-  --ut-sidebar-strip-auto: calc(
-    var(--sidebar-launcher-button-size, var(--size-item-large, 32px))
-    + 2 * var(--sidebar-launcher-button-padding-inline, 4px)
-    + var(--tab-collapsed-scrollbar-extra, 0px)
-  );
-  --ut-sidebar-strip-vertical-auto: calc(var(--tab-collapsed-width, 48px) + var(--tab-collapsed-scrollbar-extra, 0px));
-}
-
-@media -moz-pref("sidebar.revamp.round-content-area") {
-  :root {
-    /* Measured on ESR 153 at normal density: #sidebar-container is 50.4667px wide. Firefox's own
-       --sidebar-launcher-collapsed-width reads 52.4667px, 2px more than the strip you can see, so it is not used.
-       A fixed 50.47px until the strip's width can be worked out from Firefox's tokens (the old sidebar sets the
-       variable on #browser only, and the toolbox can't read #browser anyway). */
-    --ut-sidebar-strip-auto: 50.47px;
-    /* --tab-collapsed-width runs a constant 1px longer than the strip at every density on ESR 153. */
-    --ut-sidebar-strip-vertical-auto: calc(var(--tab-collapsed-width, 43px) - 1px);
-  }
-}
-
-@container style(--uc-dynamic-bookmarks: 1) and style(--ut-bookmarks-inflow: 0) {
-
-  /* 1. Horizontal tabs, collapsed strip showing. */
-  :root:root:has(#sidebar-container:not([hidden])):not(
-    :has(#tabbrowser-tabs[orient="vertical"])
-  ) #navigator-toolbox #PersonalToolbar {
-    width: auto !important;
-    left: var(--ut-sidebar-strip, var(--ut-sidebar-strip-auto)) !important;
-    right: 0 !important;
-  }
-  :root:root[sidebar-positionend]:has(#sidebar-container:not([hidden])):not(
-    :has(#tabbrowser-tabs[orient="vertical"])
-  ) #navigator-toolbox #PersonalToolbar {
-    left: 0 !important;
-    right: var(--ut-sidebar-strip, var(--ut-sidebar-strip-auto)) !important;
-  }
-
-  /* 2. Vertical tabs with "expand on hover". The pref is used here, not the root attribute, because Firefox
-        removes that attribute for a moment in some cases. */
-  @media -moz-pref("sidebar.visibility", "expand-on-hover") {
-    :root:root:has(#tabbrowser-tabs[orient="vertical"]) #navigator-toolbox #PersonalToolbar {
-      width: auto !important;
-      left: var(--ut-sidebar-strip-vertical, var(--ut-sidebar-strip-vertical-auto)) !important;
-      right: 0 !important;
-    }
-    :root:root[sidebar-positionend]:has(#tabbrowser-tabs[orient="vertical"]) #navigator-toolbox #PersonalToolbar {
-      left: 0 !important;
-      right: var(--ut-sidebar-strip-vertical, var(--ut-sidebar-strip-vertical-auto)) !important;
-    }
-    :root:has(#sidebar-container[sidebar-launcher-expanded]) #PersonalToolbar {
-      display: none !important;
-    }
-  }
-
-  /* 3. Vertical tabs any other way (static). Collapsed to icons, the strip is the same narrow width as the hover
-        launcher (Firefox won't let it go below that, it bounces back), so the bar steps aside by the same offset.
-        Expanded, the strip is as wide as it was dragged, which CSS can't read, so the bar stays hidden. */
-  @media not -moz-pref("sidebar.visibility", "expand-on-hover") {
-    :root:root:has(#tabbrowser-tabs[orient="vertical"]:not([expanded])) #navigator-toolbox #PersonalToolbar {
-      width: auto !important;
-      left: var(--ut-sidebar-strip-vertical, var(--ut-sidebar-strip-vertical-auto)) !important;
-      right: 0 !important;
-    }
-    :root:root[sidebar-positionend]:has(#tabbrowser-tabs[orient="vertical"]:not([expanded])) #navigator-toolbox #PersonalToolbar {
-      left: 0 !important;
-      right: var(--ut-sidebar-strip-vertical, var(--ut-sidebar-strip-vertical-auto)) !important;
-    }
-    /* Expanded is either flag: the tab strip's [expanded], or the launcher's own [sidebar-launcher-expanded]. */
-    :root:has(#tabbrowser-tabs[orient="vertical"][expanded]) #PersonalToolbar,
-    :root:has(#tabbrowser-tabs[orient="vertical"]):has(#sidebar-container[sidebar-launcher-expanded]) #PersonalToolbar {
-      display: none !important;
-    }
-  }
-
-  /* 4. Sidebar panel open, with any tabs. */
-  :root:has(#tabbrowser-tabbox[sidebar-panel-open]) #PersonalToolbar {
-    display: none !important;
+@container style(--uc-dynamic-bookmarks: 1) and style(--ut-bookmarks-inflow: 1) {
+  :root:root:root:root #navigator-toolbox #PersonalToolbar:not(:has(toolbarpaletteitem), #ut-specificity-pad) {
+    filter: none !important;
+    pointer-events: auto !important;
   }
 }
 
@@ -4523,25 +4613,22 @@ notification-message {
   --button-text-color-primary-active: var(--ut-puzzle-color, var(--uc-color-hover)) !important;
 }
 
+
 /* ==========================================================================
    6a. LAUNCHER FLYOUT COLOURS
    With vertical tabs and the sidebar set to "expand on hover", the launcher
-   floats over the page. Firefox paints that flyout with its toolbox gradient
-   (violet to orange, half transparent) over the toolbox colour, and falls back
-   to a plain grey when the toolbox colour is transparent, which it is under
-   Mica (patch 22). On ESR 153 that same transparency leaves the flyout with
-   no background at all, and FoxOne alone is fine there. The gradient part
-   below shows on newer Firefox (seen on 160). FoxOne pins the toolbox colour,
-   but its override of the gradient is spelled --toolbox-background-color-gradient-leading, and Firefox's
-   tokens are --toolbox-background-gradient-leading and -trailing, so the
-   gradient survives and the flyout sits off the palette.
+   floats over the page. Under Mica the toolbox colour is transparent
+   (patch 22), so Firefox falls back to a plain grey for the flyout, and on
+   ESR 153 the same transparency leaves the flyout with no background at all
+   (FoxOne alone is fine there).
    The flyout floats over page pixels, so it needs a solid colour, like the
    other floating surfaces (patch 30). This sets it to the palette base, on the
    flyout only, so the Mica toolbox is untouched. A dynamic theme keeps its own.
+   (Firefox also paints a violet-to-orange gradient on the flyout. This patch
+   used to clear it; FoxOne 4.0.4 does that now, FoxOne #81.)
    ========================================================================== */
 
 :root:not([lwtheme]) #sidebar-container[sidebar-launcher-expanded] {
-  background-image: none !important;
   background-color: var(--uc-color-base) !important;
   color: var(--uc-color-text) !important;
 }
@@ -4556,33 +4643,7 @@ notification-message {
   background-color: transparent !important;
 }
 
-/* 6c. The panel keeps room for the launcher (expand on hover). With a sidebar panel open (History, Settings),
-   Firefox holds a margin on #sidebar-box the width of the collapsed launcher, so the panel does not slide under the
-   floating launcher's hover trigger. FoxOne zeroes the margin of every .chrome-block with !important, and
-   #sidebar-box is one, so the hold was lost. This puts Firefox's own margins back, for the panel only, and keys on
-   the cause: #sidebar-box.chrome-block. Where the panel no longer carries the class (newer Firefox) nothing here
-   matches, so there is no second margin. Per setting: with Nova on the margin holds for as long as a panel is open,
-   with it off only while the launcher is hovered and expanded or animating. Can go once FoxOne carries the same
-   fix (the same block is FoxOne PR #84). */
-@media -moz-pref("browser.nova.enabled") {
-  :root[sidebar-expand-on-hover] #sidebar-box.chrome-block[sidebar-panel-open]:not([sidebar-positionend]) {
-    margin-inline-start: calc(var(--sidebar-launcher-collapsed-width, 0px) + var(--chrome-window-gap, 0px)) !important;
-  }
-  :root[sidebar-expand-on-hover] #sidebar-box.chrome-block[sidebar-panel-open][sidebar-positionend] {
-    margin-inline-end: calc(var(--sidebar-launcher-collapsed-width, 0px) + var(--chrome-window-gap, 0px)) !important;
-  }
-}
-/* Nova off is not the supported mode, but it is how ESR ships out of the box, so it is fixed anyway. */
-@media not -moz-pref("browser.nova.enabled") {
-  :root[sidebar-expand-on-hover] #sidebar-box.chrome-block:not([sidebar-positionend])[sidebar-panel-open][sidebar-launcher-hovered][sidebar-launcher-expanded],
-  :root[sidebar-expand-on-hover] #sidebar-box.chrome-block:not([sidebar-positionend])[sidebar-ongoing-animations][sidebar-panel-open] {
-    margin-inline-start: var(--sidebar-launcher-collapsed-width, 0px) !important;
-  }
-  :root[sidebar-expand-on-hover] #sidebar-box.chrome-block[sidebar-positionend][sidebar-panel-open][sidebar-launcher-hovered][sidebar-launcher-expanded],
-  :root[sidebar-expand-on-hover] #sidebar-box.chrome-block[sidebar-positionend][sidebar-ongoing-animations][sidebar-panel-open] {
-    margin-inline-end: var(--sidebar-launcher-collapsed-width, 0px) !important;
-  }
-}
+/* (6c, the panel's margin beside the launcher on ESR 153, was removed when FoxOne 4.0.4 took the fix, FoxOne PR #84.) */
 
 /* ==========================================================================
    7. WINDOW GRAB AREA, URL-BAR CLUTTER, NAV REVEAL, PUZZLE CLEARANCE
