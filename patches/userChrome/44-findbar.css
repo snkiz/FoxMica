@@ -25,7 +25,7 @@ findbar {
 /* FIND BAR BELOW THE FLOATING BOOKMARKS BAR
    FoxOne 4.0 moves the find bar down while the bookmarks bar is revealed, by --uc-bookmarks-bar-height (default
    39px, which fits FoxOne's own bar). FoxMica's bar has another height: patch 32 sets the block padding to zero and
-   gives each item --ut-bookmarks-height (the bar height by default). So the setting follows that here, and FoxOne's
+   gives each item --ut-bookmarks-height (worked out from the bar height, patch 20). So the setting follows that here, and FoxOne's
    rules do the moving. (FoxMica's own offset for this, before 4.0, is gone.) */
 :root {
   --uc-bookmarks-bar-height: var(--ut-bookmarks-height, var(--ut-bar-height, 38px));
