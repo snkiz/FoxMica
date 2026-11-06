@@ -59,7 +59,7 @@
   --ut-bar-height-normal: 38px;
   --ut-btn-inner-normal: 4px;
 
-  --ut-bar-height-touch: 48px;
+  --ut-bar-height-touch: 46px;
   --ut-btn-inner-touch: 8px;
 
   --ut-bar-padding: 2px;            /* Space left above and below the tabs and the URL field inside the bar. Stock; 6px.
@@ -179,6 +179,9 @@
   --ut-bookmarks-bg: light-dark(rgb(247 247 247 / 85%), rgb(52 52 52 / 78%));   /* Colour of the floating bookmarks
                                         bar (overlay mode). The last number is how solid it is; lower lets the page
                                         show through more. These values are the built-in default. */
+  --ut-fullscreen-bg: light-dark(rgb(243 243 243 / 90%), rgb(32 32 32 / 90%));   /* Colour of the toolbar in fullscreen
+                                        (F11), where it floats over the page and Mica can't show through. These values
+                                        are the built-in default: Mica's own base colours, mostly solid. */
 
   /* ========================================================================
      ADVANCED (leave alone unless you know why)

@@ -24,7 +24,7 @@
      --ut-tab-text              tab title colour (default: the toolbar text colour)
      --ut-bar-padding 2px       space above and below the tabs and the URL field
      --ut-urlbar-padding        the same for the URL field alone (default: follows --ut-bar-padding)
-     --ut-bar-height-compact 30px / -normal 38px / -touch 48px
+     --ut-bar-height-compact 30px / -normal 38px / -touch 46px
      --ut-btn-inner-compact 2px / -normal 4px / -touch 8px
      --ut-btn-outer 2px         (compact density always uses 1px)
    Look values (no need to touch; the Mica block sets richer ones):
@@ -142,7 +142,7 @@
   --ut-btn-outer: 1px;
 }
 :root[uidensity="touch"] {
-  --ut-bar-height: var(--ut-bar-height-touch, 48px);
+  --ut-bar-height: var(--ut-bar-height-touch, 46px);
   --ut-btn-inner: var(--ut-btn-inner-touch, 8px);
 }
 

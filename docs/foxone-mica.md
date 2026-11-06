@@ -24,6 +24,7 @@ Everything you are meant to change is in `foxmica-config.css`. It is variables o
 | `--ut-layer` | The colour and see-through-ness of the layer (selected tab, bookmarks bar, sidebar). Lighter grey or lower alpha = lighter tab. |
 | `--ut-puzzle-color` | Colour of the extensions (puzzle) button icon, in every mode. A bit of flare; set `currentColor` for Firefox's plain look. |
 | `--ut-bookmarks-inflow` | The bookmarks bar floats over the page (`0`) or sits in the page flow (`1`). |
+| `--ut-fullscreen-bg` | Colour of the toolbar in fullscreen (F11), where it floats over the page and Mica can't show through. The last number is its opacity. |
 | `--ut-bookmarks-bg` | Colour of the floating bookmarks bar (commented example in `foxmica-config.css`). The last number is its opacity: lower lets the page show through more. |
 | `--ut-drag-left` | Window-drag area left of the sidebar button when not maximized. `0` removes it. |
 | `--ut-hide-trust-label` | Hide the text next to the site-info icon ("Not secure"). Default: hidden. |
