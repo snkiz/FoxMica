@@ -1,0 +1,14 @@
+/* ==========================================================================
+   FULLSCREEN (F11): A BACKGROUND FOR THE TOOLBAR
+   In F11 the toolbar floats over the page (FoxOne pins the toolbox out of flow). The Mica rules above make the
+   toolbox transparent so Mica shows through, but Mica never paints over page pixels, so here the page showed through
+   the toolbar instead. This gives the shown toolbar a solid fill (--ut-fullscreen-bg in foxmica-config.css).
+   The default matches how the strip looks with Mica on: Windows 11's Mica base colours (about #F3F3F3 light, #202020
+   dark), mostly opaque. It is darker than the bookmarks bar, which is tuned to the selected tab, so it is more solid
+   than that bar is. The bookmarks bar and the selected tab keep their own layer on top, as before.
+   Not while a video is fullscreen (inDOMFullscreen): the toolbox is hidden there anyway.
+   ========================================================================== */
+:root:root[inFullscreen]:not([inDOMFullscreen]) #navigator-toolbox {
+  background-color: var(--ut-fullscreen-bg, light-dark(rgb(243 243 243 / 90%), rgb(32 32 32 / 90%))) !important;
+  background-image: none !important;
+}
