@@ -1,0 +1,35 @@
+/* ==========================================================================
+   MINI WINDOW (Firefox 160+, browser.mini-window.enabled): grab areas, a visible URL field, the nav buttons
+   The Mini Window has no titlebar, so the nav bar is the only place to drag it from. FoxOne keeps a gap on the right
+   of the URL bar for that (margin is not hit-tested, so the gap drags the window). Stock Firefox has one on each
+   side, so this adds the same gap on the left, after the back / forward / reload buttons. The size is the one FoxOne
+   uses, so both sides match: 12% of the row, never less than 24px or more than 96px.
+   The Mica rules in patch 22 make the URL field see-through, which here left it the same colour as the bar with
+   nothing to show where to type. In this window it gets the field's own solid colour back.
+   FoxOne squares the top corners of the URL field because in the one-line bar it sits flush against the row. In the
+   Mini Window the field is the whole window's top edge, so it is rounded on all four corners, the same radius
+   (--uc-radius-surface) StockMica+ uses for a field on its own row (patch 46).
+   ========================================================================== */
+:root[mini-window] #urlbar-container {
+  margin-inline-start: clamp(24px, 12%, 96px) !important;
+}
+
+:root[mini-window] #urlbar:not([open]) > :is(#urlbar-background, .urlbar-background) {
+  background-color: var(--toolbar-field-background-color) !important;
+  border-radius: var(--uc-radius-surface) !important;
+}
+
+/* Nav buttons: the StockMica+ defaults, whatever the main config says. The row then has two icons on each side of the
+   URL field (Back and Reload on the left, Restore and Close on the right), each side with its own grab gap, and the
+   left side gets a third icon only while there is Forward history.
+   How the three switches work together (as seen in use, not from reading the rules):
+     --uc-autohide-nav-buttons       0 = the buttons are always shown, not revealed by hover.
+     --uc-hide-disabled-nav-buttons  1 = a disabled button collapses instead of dimming. Needed for the next one.
+     --ut-hide-disabled-nav          1 = narrows the one above to the Forward button only. It does nothing while the
+                                         one above is 0.
+   These are the same switches as in foxmica-config.css, set for this window only. */
+:root[mini-window] {
+  --uc-autohide-nav-buttons: 0;
+  --uc-hide-disabled-nav-buttons: 1;
+  --ut-hide-disabled-nav: 1;
+}
