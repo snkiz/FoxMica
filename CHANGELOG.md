@@ -5,56 +5,51 @@ this file is cleared for the next version. Older versions live in their GitHub r
 
 The settings and each flavour are documented in [docs/](https://github.com/snkiz/FoxMica/tree/main/docs) on GitHub. The folder is left out of the release zip.
 
-## Next release, built on FoxOne 4.0.4
+## Next release, built on FoxOne 4.0.6
+
+### Changed
+
+- **The touch density bar is 46px, down from 48px** (`--ut-bar-height-touch` in `foxmica-config.css`). Compact (30px)
+  and normal (38px) are unchanged. A config that sets its own value keeps it.
+
+- **The bookmarks bar is no longer as tall as the bar.** Its height is now worked out from the bar height: 30 / 36 / 42px
+  at compact / normal / touch, where it used to match the bar (30 / 38 / 48px). It is a calculated value
+  (`--ut-bookmarks-height`), not a setting. `patches/userChrome/20-layer-values.css`.
+
+- **The find bar moves down by that same height while the floating bookmarks bar is open.** FoxOne 4.0.5 made its own
+  offset follow the density ([FoxOne #93](https://github.com/Firnschnee/FoxOne/issues/93)), but its figure is worked out
+  for FoxOne's own bar, with 6px of padding top and bottom. FoxMica's bar is a different height, so FoxMica keeps setting
+  the offset itself. `patches/userChrome/44-findbar.css`.
 
 ### Fixed
 
-- **Vertical tabs no longer get the horizontal tab shape** ([#42](https://github.com/snkiz/FoxMica/issues/42)).
-  `foxmica-tabs.css` (the OEM drop-in tabs) now leaves the vertical list to Firefox: its pill when extended, its circle
-  when collapsed. In FoxMica's own modes the selected vertical tab is a filled rounded rectangle (`--ut-layer` fill,
-  `--ut-tab-radius` on all four corners, the pinstripe all the way round if it is on), inset 10px from the strip's
-  sides, the same on a left or a right sidebar. Before, it had top-only corners, a flat bottom and separators, and
-  every tab after the first sat off-centre. `patches/userChrome/39-vertical-tabs.css`.
+- **The toolbar has a background in fullscreen (F11).** It floats over the page there, and Mica never paints over page
+  pixels, so the transparent toolbar showed the page through it. It now has a mostly solid fill in Mica's own base
+  colours, and `--ut-fullscreen-bg` in `foxmica-config.css` sets it.
+  `patches/userChrome/50-fullscreen-toolbar.css`.
 
-- **The URL bar keeps its click area at larger densities** ([#34](https://github.com/snkiz/FoxMica/issues/34)). The
-  URL bar now has room for the worst case, the largest density, so the same size works at every density. The default
-  URL bar and tab widths were retuned to match (`foxmica-config.css`, `micaplus-config.css`).
+- **The Mini Window's URL field is visible and the window can be dragged from both sides** (Firefox 160, Nightly for
+  now). The Mica rules had made the field the same colour as the bar, so nothing showed where to type; it now has the
+  field's own solid colour and rounded corners. FoxOne 4.0.6 leaves a gap to the right of the field to drag the window
+  by, and this adds the same gap on the left, like stock. `patches/userChrome/52-mini-window.css`.
 
-- **The tab loading bar is the accent colour again.** The ESR 153 tab text fix (#38) had turned it text-coloured on
-  every version. Only the bar along the bottom of a loading tab is drawn now; FoxOne's glow along the top edge is
-  hidden. `patches/userChrome/36-small-fixes.css`.
+### From FoxOne 4.0.5 and 4.0.6
 
-- **The floating bookmarks bar keeps off the sidebar launcher, now through FoxOne 4.0.4.** FoxOne took the step-aside
-  and hide rules ([FoxOne #82](https://github.com/Firnschnee/FoxOne/issues/82)): the bar starts after a collapsed
-  launcher, and fades out while the launcher is expanded or a sidebar panel is open. FoxMica's own copy is gone, and so
-  are the `--ut-sidebar-strip` and `--ut-sidebar-strip-vertical` settings (1.0.2 set them to 36px and 48px). A config
-  that still has those two lines can drop them: nothing reads them now, and FoxOne works the offset out from Firefox's
-  own sizes. FoxOne's hide rules would also have hidden the in-flow bar, which sits above the sidebar and never covers it, so
-  FoxMica keeps that one showing. `patches/userChrome/34-bookmarks-sidebar.css`.
+None of FoxMica's patches changed for these, and all of them still apply.
 
-- **A sidebar panel no longer slides under the launcher with "expand on hover" on ESR 153.** This was a FoxOne bug, and
-  FoxOne 4.0.4 has the fix ([FoxOne PR #84](https://github.com/Firnschnee/FoxOne/pull/84)); FoxMica's own copy of it is
-  gone. The launcher flyout's gradient is cleared by FoxOne 4.0.4 as well ([FoxOne #81](https://github.com/Firnschnee/FoxOne/issues/81)),
-  so `patches/userChrome/37-launcher-flyout.css` keeps only the solid flyout colour and the clear collapsed strip.
+- **Fullscreen (F11) with the sidebar launcher** ([FoxOne #89](https://github.com/Firnschnee/FoxOne/issues/89),
+  [#91](https://github.com/Firnschnee/FoxOne/pull/91)). The toolbar no longer covers the collapsed launcher, and the
+  find bar no longer hides under the toolbar while it is shown (FoxOne #70). The launcher's width is now declared once
+  as `--uc-launcher-strip`, and the vertical value is half a pixel narrower.
 
-- **The in-flow bookmarks bar (`--ut-bookmarks-inflow: 1`) no longer grows when you hover the toolbar**
-  ([#44](https://github.com/snkiz/FoxMica/issues/44)). It opened on any hover over the whole toolbar, at FoxOne's `4em`
-  plus 6px padding. It now follows the floating bar's rules: it opens when the pointer rests on the URL text, on the
-  bookmark star, on the bar, on an open folder or its right-click menu, or on a fresh tab, and grows to
-  `--ut-bookmarks-height` with no extra padding. Collapsed, it is 0px instead of 2px, which removes the thin strip that
-  showed on about pages. The sidebar is still pushed down by the open bar in this mode; it sits outside the toolbox, so
-  that stays. `patches/userChrome/28-bookmarks-bar.css`.
+- **Mini Window** (Firefox 160, [FoxOne #88](https://github.com/Firnschnee/FoxOne/issues/88)). The page no longer sits
+  a toolbar height below the bar, the address bar fills the row, and the menu and extensions buttons stay hidden there.
 
-- **The bookmark star opens the floating bookmarks bar too.** FoxOne only reacts to the URL text, a small target on a
-  short URL bar. Same hover delay as the text. `patches/userChrome/32-bookmarks-height.css`.
+### Tools
 
-- **Text on primary buttons in popups uses the puzzle colour.** FoxOne now pins that text to the palette base, which is
-  near black. FoxMica uses `--ut-puzzle-color` (the palette's hover colour by default) for a softer look. This is a
-  stopgap: it doesn't pass the contrast ratio on every palette, the light one especially. The proper fix is to calculate
-  the text colour from the accent. `patches/userChrome/36-small-fixes.css`.
+- `scripts/check.mjs` notes a VERSION that still ends in `-dev` (and fails on it in the online run, the one before a
+  release), and notes any declaration that looks like it is missing its `;`. Neither fails the `--offline` run.
 
 ### Docs
 
-- README: the tested-on note now says Nightly and ESR 153 are the ones tested properly, and the other channels get a
-  look when a change touches them. Requirements no longer reads as Nightly only. The vertical tabs known issue says
-  "Good Enough" ([#31](https://github.com/snkiz/FoxMica/issues/31)), and a few typos are fixed.
+- `scripts/README.md`: the check row lists the new `-dev` check.
