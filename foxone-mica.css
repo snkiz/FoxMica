@@ -1,9 +1,9 @@
 /* BUILT FILE - do not edit by hand.
-   FoxMica 1.0.4: FoxOne 4.0.4 (vendor/userChrome.css) plus patches/userChrome/.
+   FoxMica 1.0.6: FoxOne 4.0.6 (vendor/userChrome.css) plus patches/userChrome/.
    Made by scripts/assemble.mjs. Change the patches, then rebuild. */
 /*==============================================================================================*
 
-  FoxOne 4.0.4 – A minimalistic one-line Firefox theme
+  FoxOne 4.0.6 – A minimalistic one-line Firefox theme
   Based on Cascade (https://github.com/andreasgrafen/cascade)
   Floating Find Bar and dynamic Bookmarks Bar by LittleFox
   (https://github.com/biglavis/LittleFox)
@@ -755,6 +755,48 @@ sidebar-main,
 }
 
 /* ==========================================================================
+   SIDEBAR LAUNCHER STRIP – how far the collapsed launcher reaches in from the
+   window edge. Worked out from Firefox's tokens, so it follows the density and
+   the text size; nothing to set. Declared once on :root, outside the @container
+   below (a style query can't match :root itself), so every rule that has to
+   keep clear of the launcher reads the same number: the floating bookmarks bar
+   (#82) and, in F11, the toolbar (#89). The plain numbers behind each token
+   are a last resort, so a rename leaves it a few pixels off, not broken.
+   ========================================================================== */
+
+/* Horizontal tabs: the button plus the padding on each side. The button is
+   --sidebar-launcher-button-size, a Nightly fix (161, compact density, where
+   the button is smaller) that will likely reach every Firefox, so it comes
+   first; --size-item-large (32px) is the one token every build has. The
+   padding is --sidebar-launcher-button-padding-inline (159 and up); ESR 153
+   has none and pads with --space-medium, so delete that fallback when ESR 153
+   retires. */
+:root:has(#sidebar-container:not([hidden])):not(
+  :has(#tabbrowser-tabs[orient="vertical"])
+) {
+  --uc-launcher-strip: calc(
+    var(--sidebar-launcher-button-size, var(--size-item-large, 32px))
+    + 2 * var(--sidebar-launcher-button-padding-inline, var(--space-medium, 0.75rem))
+  );
+}
+
+/* Vertical tabs: the collapsed tab width, plus a scrollbar allowance on
+   Nightly 161, less half a pixel for the launcher's own border. The border is
+   1px on each side but renders in whole device pixels, and the launcher's
+   visible edge sits inside it: measured on ESR 153 the launcher box was
+   50.467px, the strip alone 49.12px, and the dark edge about 48.7px. Starting
+   the toolbar and bar half a pixel inside the strip meets that edge with no
+   sliver of page between them (checked at Windows 115%; +1.5px, the first
+   guess, left one). Only while the launcher shows. */
+:root:has(#tabbrowser-tabs[orient="vertical"]):has(#sidebar-container:not([hidden])) {
+  --uc-launcher-strip: calc(
+    var(--tab-collapsed-width, 48px)
+    + var(--tab-collapsed-scrollbar-extra, 0px)
+    - 0.5px
+  );
+}
+
+/* ==========================================================================
    DYNAMIC BOOKMARKS BAR (on by default, --uc-dynamic-bookmarks: 0 opts out)
 
    Mechanism adapted from LittleFox (github.com/biglavis/LittleFox, MIT):
@@ -940,31 +982,20 @@ sidebar-main,
      two answers (with the launcher hidden, none of this applies):
        collapsed (a narrow strip of icons)  -> step: the bar starts after it
        expanded, or a sidebar panel open    -> hide: no room, the bar fades out
-     That holds in every tab mode. The exceptions are noted on the rules:
-     horizontal tabs have no expanded state, and "expand on hover" steps a
-     little further, past the window gap.
+     That holds in every tab mode, "expand on hover" included. The one
+     exception is noted on the rules: horizontal tabs have no expanded state.
      With the sidebar on the right, the step counts from the right edge.
 
-     The step is the strip's width, worked out from Firefox's tokens, so there
-     is nothing to set: horizontal tabs, the button size plus the padding on
-     each side; vertical tabs, the collapsed tab width. The plain numbers
-     behind each token are a last resort, so a rename leaves the bar a few
-     pixels off, not broken.
+     The step is --uc-launcher-strip, declared above this block, where it is
+     worked out from Firefox's tokens. In F11 the toolbox steps instead and
+     the bar rides along, so these step rules stand down there.
      ------------------------------------------------------------------------ */
 
-  /* Step, horizontal tabs. The button is --sidebar-launcher-button-size, a
-     Nightly fix (161, compact density, where the button is smaller) that will
-     likely reach every Firefox, so it comes first; --size-item-large (32px) is
-     the one token every build has. The padding is
-     --sidebar-launcher-button-padding-inline (159 and up); ESR 153 has none
-     and pads with --space-medium, so delete that fallback when ESR 153 retires. */
-  :root:has(#sidebar-container:not([hidden])):not(
+  /* Step, horizontal tabs: the bar starts after --uc-launcher-strip, the width
+     declared above the DYNAMIC BOOKMARKS BAR block. */
+  :root:not([inFullscreen]):has(#sidebar-container:not([hidden])):not(
     :has(#tabbrowser-tabs[orient="vertical"])
   ) #PersonalToolbar:not(:has(toolbarpaletteitem)) {
-    --uc-launcher-strip: calc(
-      var(--sidebar-launcher-button-size, var(--size-item-large, 32px))
-      + 2 * var(--sidebar-launcher-button-padding-inline, var(--space-medium, 0.75rem))
-    );
     width: auto !important;
     left: var(--uc-launcher-strip) !important;
     right: 0 !important;
@@ -973,42 +1004,26 @@ sidebar-main,
      sidebar-positionend to the root (Nightly 161; Mozilla bug 2078353), while
      ESR 153 sets it only on the sidebar's own elements. So either counts; when
      ESR 153 retires, the #sidebar-container half can go. */
-  :root:is([sidebar-positionend], :has(#sidebar-container[sidebar-positionend])):has(#sidebar-container:not([hidden])):not(
+  :root:not([inFullscreen]):is([sidebar-positionend], :has(#sidebar-container[sidebar-positionend])):has(#sidebar-container:not([hidden])):not(
     :has(#tabbrowser-tabs[orient="vertical"])
   ) #PersonalToolbar:not(:has(toolbarpaletteitem)) {
     left: 0 !important;
     right: var(--uc-launcher-strip) !important;
   }
 
-  /* Step, vertical tabs: the collapsed tab width (plus a scrollbar allowance
-     on Nightly 161), the same for "always show" and "expand on hover". Like
-     the horizontal rule, only while the launcher shows: "Hide tabs and
+  /* Step, vertical tabs: the same, for "always show" and "expand on hover".
+     Like the horizontal rule, only while the launcher shows: "Hide tabs and
      sidebar" hides it, and the bar goes back to the window edge. */
-  :root:has(#tabbrowser-tabs[orient="vertical"]):has(#sidebar-container:not([hidden]))
+  :root:not([inFullscreen]):has(#tabbrowser-tabs[orient="vertical"]):has(#sidebar-container:not([hidden]))
     #PersonalToolbar:not(:has(toolbarpaletteitem)) {
-    --uc-launcher-strip: calc(
-      var(--tab-collapsed-width, 48px)
-      + var(--tab-collapsed-scrollbar-extra, 0px)
-    );
     width: auto !important;
     left: var(--uc-launcher-strip) !important;
     right: 0 !important;
   }
-  :root:is([sidebar-positionend], :has(#sidebar-container[sidebar-positionend])):has(#tabbrowser-tabs[orient="vertical"]):has(#sidebar-container:not([hidden]))
+  :root:not([inFullscreen]):is([sidebar-positionend], :has(#sidebar-container[sidebar-positionend])):has(#tabbrowser-tabs[orient="vertical"]):has(#sidebar-container:not([hidden]))
     #PersonalToolbar:not(:has(toolbarpaletteitem)) {
     left: 0 !important;
     right: var(--uc-launcher-strip) !important;
-  }
-
-  /* "Expand on hover" only: the page sits one window gap past the strip (Nova,
-     4px on ESR 153), so the step adds it; 0px where a build doesn't declare it. */
-  :root[sidebar-expand-on-hover]:has(#tabbrowser-tabs[orient="vertical"])
-    #PersonalToolbar:not(:has(toolbarpaletteitem)) {
-    --uc-launcher-strip: calc(
-      var(--tab-collapsed-width, 48px)
-      + var(--tab-collapsed-scrollbar-extra, 0px)
-      + var(--chrome-window-gap, 0px)
-    );
   }
 
   /* Hide: the launcher expanded (vertical tabs only; Firefox flags it on the tab
@@ -1231,6 +1246,17 @@ sidebar-main,
    everywhere except on the toolbox while in fullscreen. */
 :root:not([inFullscreen]) .chrome-block,
 .chrome-block:not(#navigator-toolbox) {
+  margin-top: 0 !important;
+}
+
+/* The same flatten for the toolbox in F11, but only while it is shown. Firefox
+   hides it with an inline margin-top (the toolbox's own height, negative) and
+   clears that inline style when it shows it again (browser-fullScreenAndPointer
+   Lock.js, same on ESR 153 and Nightly 161), so the Nova margin-top the toolbox
+   keeps in F11 was a gap above the shown toolbar, closed only while the bar
+   was hovered (the pin in DYNAMIC BOOKMARKS BAR). :not([style*="margin-top"])
+   leaves the hidden state, where the inline style must win, alone. */
+:root[inFullscreen]:not([inDOMFullscreen]) #navigator-toolbox:not([style*="margin-top"]) {
   margin-top: 0 !important;
 }
 
@@ -2683,6 +2709,47 @@ sidebar-main {
   overflow: visible !important;
 }
 
+/* F11 and the sidebar launcher (#89). The rule above pins the toolbox to the
+   whole window, so it covers the launcher, which stays on screen in F11. Start
+   it after the launcher strip instead, the same width the bookmarks bar steps
+   by (--uc-launcher-strip, declared above the DYNAMIC BOOKMARKS BAR block), and
+   the other way round with the sidebar on the right. The bar hangs from the
+   toolbox, so it rides along; its own step is switched off in F11 (the four
+   step rules there), or it would step twice. Only while the launcher is
+   collapsed: with it expanded, a step of one strip would leave the toolbar over
+   the top of a wider launcher anyway (the pinned tabs sit under it), so it
+   stays full width there. A panel open keeps the step: the launcher stays put
+   beside it (the bar's hide rules differ, they hide for panels too). */
+:root[inFullscreen]:not([inDOMFullscreen]):has(#sidebar-container:not([hidden])):not(:has(#tabbrowser-tabs[orient="vertical"][expanded])):not(:has(#tabbrowser-tabs[orient="vertical"]):has(#sidebar-container[sidebar-launcher-expanded]))
+  #navigator-toolbox {
+  width: auto !important;
+  inset-inline-start: var(--uc-launcher-strip, 0px) !important;
+  inset-inline-end: 0 !important;
+}
+:root[inFullscreen]:not([inDOMFullscreen]):is([sidebar-positionend], :has(#sidebar-container[sidebar-positionend])):has(#sidebar-container:not([hidden])):not(:has(#tabbrowser-tabs[orient="vertical"][expanded])):not(:has(#tabbrowser-tabs[orient="vertical"]):has(#sidebar-container[sidebar-launcher-expanded]))
+  #navigator-toolbox {
+  inset-inline-start: 0 !important;
+  inset-inline-end: var(--uc-launcher-strip, 0px) !important;
+}
+
+/* F11 with "expand on hover" (#89, #90). Firefox expands the launcher over the
+   page the moment the pointer reaches it, and the toolbar, being full width
+   while the launcher is expanded (above), would lie across its top. The mode
+   is already rough in F11 on Firefox's side (see #90); this only keeps the
+   toolbar out of the expanded launcher's way, so it is hidden while the launcher
+   is expanded by hover. Hidden visually only (visibility, not the reveal state
+   Firefox keeps), so its own show and hide logic is not disturbed, and the
+   toolbar is back when the launcher collapses. In this mode any expanded
+   launcher hides it, however it got expanded: the launcher's toggle fights
+   Firefox's F11 hover, so the rule does not depend on it. */
+:root[inFullscreen]:not([inDOMFullscreen])[sidebar-expand-on-hover]:has(
+  #tabbrowser-tabs[orient="vertical"][expanded],
+  #sidebar-container[sidebar-launcher-expanded]
+) #navigator-toolbox {
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
 /* ==========================================================================
    TOOLBAR EXTENSION BUTTONS – push to right, next to hamburger.
    Only targets <toolbarbutton> and <toolbaritem> children of #TabsToolbar
@@ -3392,6 +3459,24 @@ findbar[hidden] {
   transition-delay: 0s, 0s, 100ms !important;
 }
 
+/* F11: the toolbar floats over the page (out of flow, #46), so while it is
+   showing it covers the find bar, which starts at the same top edge. Firefox
+   marks the toolbar as showing by hiding #fullscr-toggler, [hidden] (ESR 153
+   and 154+ alike), so that is the cue: the find bar starts below the toolbar
+   while it shows and returns to the top edge when it hides. The push is one
+   --uc-row-height, and the clearance it leaves is not constant. With vertical
+   tabs Firefox keeps --tabstrip-min-height (so --uc-row-height) at 36px while
+   the toolbar is 36, 40 and 44px at compact, normal and touch, so the find
+   bar's 8px gap becomes 8, 4 and 0px: it always clears the toolbar, but is
+   flush with it at touch. With horizontal tabs the row follows the density
+   and the gap is within a few px of it. Making it exact kept breaking one
+   density or another, so this is the simple version. (An anchor() to the
+   toolbox was tried first; Firefox does not resolve it across to the find
+   bar.) The bookmarks bar push below still stacks on top of this. (#70) */
+:root[inFullscreen]:not([inDOMFullscreen]):has(#fullscr-toggler[hidden]) findbar {
+  top: calc(var(--uc-row-height) + var(--findbar-top)) !important;
+}
+
 /* The dynamic bookmarks bar hangs over the top of the page, the same edge the
    find bar starts at, so the open bar covered it. While the bar is open, the
    find bar moves down out of its way, and back once it hides. A permanent
@@ -3629,6 +3714,48 @@ html[id^="taskbartab"] #urlbar-container,
 html[id^="taskbartab"] #PanelUI-button,
 html[id^="taskbartab"] #unified-extensions-button {
   display: none !important;
+}
+
+
+/* ==========================================================================
+   MINI WINDOW – FF 159+ (browser.mini-window.enabled, default on from 160).
+   A single-tab, always-on-top browser window marked :root[mini-window].
+   Nova takes the toolbox out of flow (position: absolute, top edge), slides
+   it in on hover near the top, and pushes #browser down by the measured
+   --mini-window-toolbar-height while it is shown. It also hides everything
+   in the nav-bar except back/forward/reload, the URL bar and its own
+   audio/restore/close buttons. FoxOne broke both halves (#88).
+   ========================================================================== */
+
+/* The dynamic bookmarks block (and the macOS traffic-light block) set the
+   toolbox to position: relative, which put it back in flow. The page then
+   sat below the bar AND got Nova's push on top, leaving a bar-high gap. */
+:root[mini-window] #navigator-toolbox {
+  position: absolute !important;
+}
+
+/* Nova hides the hamburger and the puzzle here, but FoxOne's pinned
+   versions force display: flex !important and brought both back. */
+:root[mini-window] :is(#PanelUI-button, #unified-extensions-button) {
+  display: none !important;
+}
+
+/* Nova centres the URL bar at max-width 60 % (80 % under 400px), which left
+   wide empty gaps on both sides of it. FoxOne lets it fill the row instead,
+   but keeps a gap before the restore/close buttons: the nav-bar is the mini
+   window's only drag area (no titlebar), and a full-width URL bar left
+   nothing to grab. Margin is not hit-tested on the container, so the gap
+   drags the window. Nova's own drop under 150px stays. */
+:root[mini-window] #urlbar-container {
+  max-width: none !important;
+  margin-inline: 0 clamp(24px, 12%, 96px) !important;
+}
+
+/* The mini window has no titlebar buttons; its own close button in the
+   nav-bar stands in for them, so it hovers in the same close-red as
+   .titlebar-close (WINDOW CONTROLS). Restore keeps the nav-bar hover. */
+:root[mini-window] #mini-window-close-button:is(:hover, :active) {
+  --toolbarbutton-icon-fill: #e81123 !important; /* Windows close-red */
 }
 
 
@@ -4185,9 +4312,12 @@ html[id^="taskbartab"] #unified-extensions-button {
      (Planned: the static bar too.) */
   --ut-bookmarks-bg: var(--uc-color-base);
 
-  /* Height of the bookmarks bar when shown. Same as the bar by default, so a bookmark's icon sits in the same amount
-     of room as a toolbar button. The bar's own 6px top and bottom padding is removed to get there. */
-  --ut-bookmarks-height: var(--ut-bar-height);
+  /* Height of the bookmarks bar when shown, worked out from the bar height so it follows the density. It is 2px
+     shorter than the bar at normal density and changes by 0.75px for every 1px the bar changes, which gives
+     30 / 36 / 42px for a 30 / 38 / 46px bar (compact / normal / touch). The bar's own 6px top and bottom padding is
+     removed to get there (patch 32). Patch 44 uses the same value to move the find bar out of its way. */
+  --ut-bookmarks-height: calc(var(--ut-bar-height-normal, 38px) - 2px
+                              + 0.75 * (var(--ut-bar-height) - var(--ut-bar-height-normal, 38px)));
 }
 
 /* ==========================================================================
@@ -4477,8 +4607,8 @@ notification-message {
    FoxOne gives the bar 6px of padding top and bottom, on top of whatever
    padding each bookmark carries, so a bar with one bookmark came out much
    taller than the bar row above it. This takes the bar's block padding to
-   zero and gives each item exactly --ut-bookmarks-height (the bar height by
-   default), so the icon has the same room as a toolbar button. Inline
+   zero and gives each item exactly --ut-bookmarks-height (worked out from the bar
+   height in patch 20), so the icon has about the room of a toolbar button. Inline
    padding is untouched. The reveal rules below are copies of FoxOne's own
    selectors, because its revealed state sets `max-height: 4em` and
    `padding-block: 6px` with !important; loaded later, same weight, they win.
@@ -4824,7 +4954,7 @@ findbar {
 /* FIND BAR BELOW THE FLOATING BOOKMARKS BAR
    FoxOne 4.0 moves the find bar down while the bookmarks bar is revealed, by --uc-bookmarks-bar-height (default
    39px, which fits FoxOne's own bar). FoxMica's bar has another height: patch 32 sets the block padding to zero and
-   gives each item --ut-bookmarks-height (the bar height by default). So the setting follows that here, and FoxOne's
+   gives each item --ut-bookmarks-height (worked out from the bar height, patch 20). So the setting follows that here, and FoxOne's
    rules do the moving. (FoxMica's own offset for this, before 4.0, is gone.) */
 :root {
   --uc-bookmarks-bar-height: var(--ut-bookmarks-height, var(--ut-bar-height, 38px));
@@ -4996,4 +5126,55 @@ findbar {
       }
     }
   }
+}
+
+/* ==========================================================================
+   FULLSCREEN (F11): A BACKGROUND FOR THE TOOLBAR
+   In F11 the toolbar floats over the page (FoxOne pins the toolbox out of flow). The Mica rules above make the
+   toolbox transparent so Mica shows through, but Mica never paints over page pixels, so here the page showed through
+   the toolbar instead. This gives the shown toolbar a solid fill (--ut-fullscreen-bg in foxmica-config.css).
+   The default matches how the strip looks with Mica on: Windows 11's Mica base colours (about #F3F3F3 light, #202020
+   dark), mostly opaque. It is darker than the bookmarks bar, which is tuned to the selected tab, so it is more solid
+   than that bar is. The bookmarks bar and the selected tab keep their own layer on top, as before.
+   Not while a video is fullscreen (inDOMFullscreen): the toolbox is hidden there anyway.
+   ========================================================================== */
+:root:root[inFullscreen]:not([inDOMFullscreen]) #navigator-toolbox {
+  background-color: var(--ut-fullscreen-bg, light-dark(rgb(243 243 243 / 90%), rgb(32 32 32 / 90%))) !important;
+  background-image: none !important;
+}
+
+/* ==========================================================================
+   MINI WINDOW (Firefox 160+, browser.mini-window.enabled): grab areas, a visible URL field, the nav buttons
+   The Mini Window has no titlebar, so the nav bar is the only place to drag it from. FoxOne keeps a gap on the right
+   of the URL bar for that (margin is not hit-tested, so the gap drags the window). Stock Firefox has one on each
+   side, so this adds the same gap on the left, after the back / forward / reload buttons. The size is the one FoxOne
+   uses, so both sides match: 12% of the row, never less than 24px or more than 96px.
+   The Mica rules in patch 22 make the URL field see-through, which here left it the same colour as the bar with
+   nothing to show where to type. In this window it gets the field's own solid colour back.
+   FoxOne squares the top corners of the URL field because in the one-line bar it sits flush against the row. In the
+   Mini Window the field is the whole window's top edge, so it is rounded on all four corners, the same radius
+   (--uc-radius-surface) StockMica+ uses for a field on its own row (patch 46).
+   ========================================================================== */
+:root[mini-window] #urlbar-container {
+  margin-inline-start: clamp(24px, 12%, 96px) !important;
+}
+
+:root[mini-window] #urlbar:not([open]) > :is(#urlbar-background, .urlbar-background) {
+  background-color: var(--toolbar-field-background-color) !important;
+  border-radius: var(--uc-radius-surface) !important;
+}
+
+/* Nav buttons: the StockMica+ defaults, whatever the main config says. The row then has two icons on each side of the
+   URL field (Back and Reload on the left, Restore and Close on the right), each side with its own grab gap, and the
+   left side gets a third icon only while there is Forward history.
+   How the three switches work together (as seen in use, not from reading the rules):
+     --uc-autohide-nav-buttons       0 = the buttons are always shown, not revealed by hover.
+     --uc-hide-disabled-nav-buttons  1 = a disabled button collapses instead of dimming. Needed for the next one.
+     --ut-hide-disabled-nav          1 = narrows the one above to the Forward button only. It does nothing while the
+                                         one above is 0.
+   These are the same switches as in foxmica-config.css, set for this window only. */
+:root[mini-window] {
+  --uc-autohide-nav-buttons: 0;
+  --uc-hide-disabled-nav-buttons: 1;
+  --ut-hide-disabled-nav: 1;
 }
