@@ -3,7 +3,7 @@
 // Usage (from the repo root):   node scripts/check.mjs            (needs the internet for the first check)
 //                               node scripts/check.mjs --offline  (skips the first check)
 //
-// It checks five things:
+// It checks six things:
 //   1. vendor/ is byte-for-byte the FoxOne release named in vendor/VERSION.
 //   2. every patch applies to the vendored file (each FIND text occurs exactly once).
 //   3. the built files in the repo are what vendor + patches produce right now, so nobody has
@@ -12,6 +12,10 @@
 //      or extra brace gives no error anywhere: the browser just drops every rule after it.
 //   5. a release (a FoxMica VERSION with no -dev) is not built on a pre-release FoxOne copy (a vendor/VERSION
 //      with a +).
+//   6. a FoxMica VERSION that still ends in -dev is not a release. With --offline this is only a note (the everyday
+//      pre-commit run); without it, it fails, so the pre-release run stops until -dev is taken off.
+//
+// It also prints a note (never a failure) for any declaration that looks like it is missing its ; (see below).
 //
 // Changes nothing. Exits with an error if anything fails, so it can also run before a release.
 
@@ -26,8 +30,12 @@ const fail = (msg) => {
   console.error(`FAIL  ${msg}`);
 };
 
-// 1. vendor/ against the real release
+// Which versions this run is looking at, printed every time so a -dev version is never a surprise.
+const foxmicaVersion = (await readText("VERSION")).trim();
 const version = (await readText("vendor/VERSION")).trim();
+console.log(`FoxMica ${foxmicaVersion} on FoxOne ${version}\n`);
+
+// 1. vendor/ against the real release
 if (offline) {
   console.log(`skip  vendor/ against the FoxOne ${version} release (--offline)`);
 } else if (version.includes("+")) {
@@ -134,10 +142,38 @@ for (const target of TARGETS) {
 }
 if (failures === failuresBefore) ok(`braces match in ${cssFiles.length} CSS file(s) and ${TARGETS.length} built result(s)`);
 
+// Possible missing semicolons. A declaration with no ; at the end of its line is silently merged with the next one,
+// and the browser drops both. This only NOTES them, because it is a guess: a line is flagged when it looks like
+// "property: value", has no ; (or { } , ( at the end), and the next line starts another declaration. A value that
+// carries on over several lines is fine, because its continuation lines don't look like "property: value".
+// Needs: the CSS text. Returns: a list of { line, text }.
+function findMissingSemicolons(css) {
+  // blank out comments but keep the line breaks, so line numbers stay right
+  const lines = css.replace(/\/\*[\s\S]*?\*\//g, (c) => c.replace(/[^\n]/g, " ")).split("\n");
+  const looksLikeDeclaration = /^(--[\w-]+|-?[a-z][\w-]*)\s*:\s*\S/i;
+  const found = [];
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (!looksLikeDeclaration.test(line) || /[;{},(]$/.test(line)) continue;
+    let next = i + 1;
+    while (next < lines.length && lines[next].trim() === "") next++;
+    if (next < lines.length && looksLikeDeclaration.test(lines[next].trim())) found.push({ line: i + 1, text: line });
+  }
+  return found;
+}
+
+let semicolonNotes = 0;
+for (const file of cssFiles) {
+  for (const m of findMissingSemicolons(await readText(file))) {
+    console.warn(`note  ${file} line ${m.line}: no ; at the end?  ${m.text}`);
+    semicolonNotes++;
+  }
+}
+if (semicolonNotes === 0) ok(`no missing semicolons spotted in ${cssFiles.length} CSS file(s)`);
+
 // 5. a release must not ship a pre-release FoxOne copy. FoxMica's VERSION ends in -dev between releases and the
 // release step removes it. If vendor/VERSION still has a + (a FoxOne release plus an unreleased pull request) at
 // that point, stop: a tag would point at a FoxOne nobody can fetch.
-const foxmicaVersion = (await readText("VERSION")).trim();
 if (version.includes("+") && !foxmicaVersion.includes("-")) {
   fail(
     `VERSION is ${foxmicaVersion}, a release, but vendor/VERSION is ${version}, a pre-release FoxOne copy: ` +
@@ -146,5 +182,12 @@ if (version.includes("+") && !foxmicaVersion.includes("-")) {
 } else if (version.includes("+")) {
   ok(`VERSION ${foxmicaVersion} is a dev version, so the pre-release FoxOne copy (${version}) is fine for now`);
 }
+// 6. a -dev VERSION is not a release. Offline (the everyday check before a commit) it is only a reminder; online
+// (the pre-release run) it fails, because a tag made now would announce a dev version.
+if (foxmicaVersion.includes("-")) {
+  if (offline) console.log(`note  VERSION is ${foxmicaVersion}, a dev version, not a release`);
+  else fail(`VERSION is ${foxmicaVersion}, a dev version: take off the -dev (assemble.mjs --version <number>) to release`);
+}
+
 console.log(failures === 0 ? "\nAll good." : `\n${failures} problem(s).`);
 process.exit(failures === 0 ? 0 : 1);

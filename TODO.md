@@ -63,6 +63,25 @@ where they disagree.
   - Idea to test first: read that pref with `@media -moz-pref("browser.toolbars.bookmarks.visibility", "newtab")`, the way
     patch 34 reads `sidebar.visibility`. Untested: that it works for this pref, that it follows the menu live, and that
     nothing else Firefox does to a collapsed bar fights the override.
+  - **Tested 2026-11-05: the bar is empty under "Only Show on New Tab" until a new tab has been shown once (FoxOne
+    #87, Firn's point 3).** Throwaway profile, three toolbar bookmarks, window starting on a normal page, ESR 153.6,
+    Beta 160 and Nightly 161: the bar is collapsed with 0 items (Firefox hasn't built them); on a new tab it shows
+    all 3; back on a normal page it collapses again but the 3 items stay. Firefox builds the items in its own code
+    when the bar becomes visible, and CSS can't trigger that, so revealing the bar from the pref alone would show an
+    empty strip. Only a script could populate it, and a script is out of scope for FoxOne and FoxMica. Possible limit
+    instead: a `:has(#PlacesToolbarItems > *)` guard so the dynamic rules wait until the bar is built (not tested).
+    Most people start on a new tab or home page, which builds it at startup; session restore or a custom homepage
+    would not. "Always Show" stays the supported setting for now. Still open: looking for a way to get the bar built without a script.
+  - **Tested 2026-11-05, same profile, all three builds: what does and doesn't get the bar built.** Overriding
+    Firefox's `[collapsed] { visibility: collapse }` with `visibility: visible` and a forced 1138x30px size draws the
+    bar but it still has 0 items, so drawing is not the trigger (Firefox's JS keys on the `collapsed` attribute, which
+    CSS can't change). What did build it: moving the "Bookmarks Toolbar Items" widget (`personal-bookmarks`) into the nav
+    bar (what Customize does). It had all 3 items at startup while the bookmarks bar stayed collapsed, whatever the menu
+    pref says. CSS can't clone the widget, and Firefox keeps one instance per window, so it is a move, not a copy; only
+    toolbar areas Firefox registers will take it (only the nav bar tried). Idea if this is ever picked up: the user
+    places the widget in a visible toolbar (a Customize step, like today's "Always Show" step) and CSS turns it into the
+    dynamic or floating bar. Untested: how it renders, width and the overflow chevron, and whether the floating and
+    hover rules can be moved onto it. It means rebuilding FoxOne's bar rules around a different element, so parked.
   - The stretch goal runs into FoxOne's `#navigator-toolbox { z-index: 9999 !important }`: the floating bar hangs from the
     toolbox, so it can't be layered below something outside the toolbox's stack without changing that rule.
   - FoxOne also has `--uc-dynamic-bookmarks-newtab` (keeps the bar revealed on fresh tabs), which would overlap with
@@ -86,6 +105,32 @@ where they disagree.
 - README: re-check the about:config table (is `widget.windows.mica.toplevel-backdrop` 2
   or 4 still wanted? In the dev profile, 2 made the tab strip black). Next release. (The pinstripe settings are in the
   table now.)
+- td46. The extension hide (pinned extensions beside the hamburger hide until it is hovered) does not work with vertical
+  tabs (seen 2026-11-06, not investigated). Suspected cause, not checked: with vertical tabs the overflow button goes
+  back into the toolbar and the cluster rules don't exclude it, so the run of extensions is broken or the reveal never
+  triggers. Check how the cluster is worked out in `vendor/userChrome.css` (the "unbroken run" rules, #62) and whether
+  the vertical-tabs toolbar has other items in the way. Test on ESR 153 and Nightly.
+- td47. Bookmarks bar items are spaced much tighter than the main bar's buttons (seen 2026-11-06, not investigated).
+  FoxMica sets `--toolbarbutton-inner-padding` and `--toolbarbutton-outer-padding` from the density settings on
+  `#nav-bar` only (`foxmica-tabs.css`), and patch 32 zeroes only the bookmarks bar's block padding, so the sideways
+  spacing there is Firefox's own and never follows the density. The bookmark favicons live inside each item's own
+  widget, so the nav-bar rules would not reach them either (Firefox itself may not do anything about them). Its own
+  problem, separate from td45. Needs Firefox's rules for bookmark items read first, and measured at each density.
+- td48. Showing the menu bar (press F10, or Alt) breaks the layout (found 2026-11-06 by pressing F10 by mistake, not
+  investigated, cause unknown). Not related to the F11 work. First step: see whether it happens on plain FoxOne and on
+  a clean profile with no theme, to tell a FoxOne, a FoxMica and a stock Firefox cause apart. Then check on Nightly
+  and ESR 153.
+- td49. Idea: a title bar instead of the URL box in the Mini Window (parked 2026-11-06, too big for now; patch 52 makes
+  the box usable meanwhile). The window works like a PWA window or picture-in-picture, which doesn't need an address
+  box. CSS can't copy the page title into the nav bar; it lives on the tab, and the Mini Window hides the tab strip.
+  The route to check: un-hide the strip and style its one tab as a title bar. Needs Nightly's Mini Window layout read
+  first. Hiding the box with no title would remove the only view of which site the window is on, so the title is what
+  makes it safe. Firefox 160+ only, so not on ESR 153.
+- td50. 1.1: rework the READMEs (collecting examples from other repos first, 2026-11-06). Ideas so far: a social
+  preview image (repo Settings, General, Social preview, about 1280 x 640; it shows when the repo link is shared, check
+  whether it also shows in GitHub's search listings); light and dark screenshots with `<picture>`; collapsible
+  `<details>` sections to keep the README short; `> [!NOTE]` callouts; tables. The README stays short, the long pages
+  stay in `docs/`.
 
 ## First bug-fix pass
 
@@ -179,6 +224,9 @@ where they disagree.
   exist, a few custom palettes, and a dynamic theme's accent (test that part first).
 - [#26] Five-colour palette: only the main five colours in the user config, the rest derived and moved
   to an advanced section. Depends on #25 and #8.
+  Target 1.2 (2026-11-06), after the 1.1 clean-up of fixed values, which fits (td45). The fixed colours it would replace
+  with ones derived from the palette: `--ut-layer`, `--ut-bookmarks-bg`, `--ut-fullscreen-bg`, and the hover and
+  separator fills in patch 20 (`--ut-tab-hover-bg`, `--ut-separator`).
 - td5. [#23] Scaling: "certified good enough", poke at it later.
 - td19. [#28] Try `widget.windows.mica.popups` (it's 0 in the good profile's user.js).
 - td10. Tab right-click menu: it's far too long. Trim it and reorder it with CSS (hide unused items, move
@@ -196,6 +244,19 @@ where they disagree.
 ## Maybe, probably never
 
 - td9. Fully transparent about: pages and chrome (flaky on Optimus laptops).
+- td44. Narrower collapsed sidebar launcher strip (parked 2026-11-06, not started). The width where the bars and the
+  strip line up is wider than wanted. Probably doable by overriding Firefox's launcher width token and the launcher
+  buttons' padding, but patch 34 reads the same tokens (ESR 153 uses a measured 50.47px), so the bar offset has to
+  follow, and every build needs measuring first.
+- td45. Derive the fixed numbers from the density settings instead of tuning each by eye (parked 2026-11-06). First
+  case: `--uc-toolbar-button-width` (26px in `foxmica-config.css`) only reserves room for one toolbar button in the tab
+  strip's max-width, so it should come from the button size. Two models of that size disagree: the comment in
+  `foxmica-tabs.css` says a button is 16px icon + 2 x inner + 2 x outer; a reading of Firefox's default says outer is
+  the whole button box and inner is (outer - 16) / 2. The 26px only fits the first model if one outer edge is dropped,
+  which is a fit to one value. Needed first: the whole box width of one tool button at compact, normal and touch, on
+  each Firefox build supported (icons stay 16px at every density, checked). A formula has to match all three. Same
+  idea for the bookmarks bar height and the find bar offset (bookmarks height = compact + 0.75 x (bar - compact) gives
+  30/36/42 for a 30/38/46 bar). Check what FoxOne 4.1's option cleanup (#73) changes before building on this.
 
 ## Upstream notes (only once things are stable, one small issue per idea, no surprise PRs)
 

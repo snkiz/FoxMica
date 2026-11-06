@@ -33,7 +33,7 @@ To change a built file, change a patch, then rebuild. A hand edit to a built fil
 | `node scripts/pull-foxone.mjs 3.9.5` | Downloads FoxOne release 3.9.5 into `vendor/` and updates `vendor/VERSION`. | `vendor/` only |
 | `node scripts/assemble.mjs` | Applies the patches to `vendor/` and writes the built files. If any patch fails, nothing is written. | The built files |
 | `node scripts/assemble.mjs --version 1.0.4` | Sets `VERSION` to 1.0.4, then builds as above. If a patch fails, `VERSION` is put back. | `VERSION` and the built files |
-| `node scripts/check.mjs` | Checks `vendor/` matches the release in `VERSION`, every patch applies, the built files are up to date, and every CSS file has matching `{` and `}`. | No |
+| `node scripts/check.mjs` | Checks `vendor/` matches the release in `VERSION`, every patch applies, the built files are up to date, every CSS file has matching `{` and `}`, and `VERSION` is not still `-dev`. | No |
 | `node scripts/check.mjs --offline` | The same, without the download (skips the `vendor/` check). | No |
 | `node scripts/make-patch.mjs <original> <edited> <patch>` | Writes a patch from the difference between two files. | The new patch only |
 
