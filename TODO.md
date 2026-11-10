@@ -9,6 +9,15 @@ where they disagree.
 
 ## Now
 
+- **td51. LICENSE: carry FoxOne's two new copyright lines (the next push after 1.0.6, not the 1.0.6 push).** FoxOne
+  commit 2cfd49d (https://github.com/Firnschnee/FoxOne/commit/2cfd49d66b81224f2a1ab2d8e02ae68f328f674f, it is in what
+  FoxOne's header calls 4.0.7) added "Portions copyright (c) 2022 Andreas Grafen (Cascade)" and "Portions copyright
+  (c) 2026 biglavis (LittleFox)" under Firnschnee's line in its LICENSE, and now says "Built on" Cascade instead of
+  "Inspired by", with the Cascade link at cascadefox/cascade. FoxMica's LICENSE has only the Firnschnee and snkiz
+  lines, and the README says it keeps FoxOne's copyright notice, so add the same two lines. Then check the README's
+  credits for wording that undersells FoxOne's sources (nothing in the repo links the old Cascade address; only
+  `vendor/` does, and that is never edited).
+
 - **td24. Modal dialogs: background is back but black** [#4] (Nova on). Fixed the missing
   background 2026-10-04 by scoping section 1 of the Mica block (patches/userChrome/22-mica.css) to
   `#main-window` (it had made every chrome document transparent, dialogs included).
@@ -248,15 +257,24 @@ where they disagree.
   strip line up is wider than wanted. Probably doable by overriding Firefox's launcher width token and the launcher
   buttons' padding, but patch 34 reads the same tokens (ESR 153 uses a measured 50.47px), so the bar offset has to
   follow, and every build needs measuring first.
-- td45. Derive the fixed numbers from the density settings instead of tuning each by eye (parked 2026-11-06). First
-  case: `--uc-toolbar-button-width` (26px in `foxmica-config.css`) only reserves room for one toolbar button in the tab
-  strip's max-width, so it should come from the button size. Two models of that size disagree: the comment in
-  `foxmica-tabs.css` says a button is 16px icon + 2 x inner + 2 x outer; a reading of Firefox's default says outer is
-  the whole button box and inner is (outer - 16) / 2. The 26px only fits the first model if one outer edge is dropped,
-  which is a fit to one value. Needed first: the whole box width of one tool button at compact, normal and touch, on
-  each Firefox build supported (icons stay 16px at every density, checked). A formula has to match all three. Same
-  idea for the bookmarks bar height and the find bar offset (bookmarks height = compact + 0.75 x (bar - compact) gives
-  30/36/42 for a 30/38/46 bar). Check what FoxOne 4.1's option cleanup (#73) changes before building on this.
+- td45. Derive the fixed numbers from the density settings instead of tuning each by eye (started 2026-11-09 on
+  Algebra-branch; not committed or released yet, and not yet checked on screen at all three densities on ESR 153 and
+  Nightly). Done in the files:
+  - Button size: a box is 16px icon + 2 x inner + 2 x outer (confirmed on ESR 153; 154+ reads the same). Inner follows
+    the bar height, `max(4px, (bar - 14px) / 4)` = 4 / 6 / 8 (foxmica-tabs.css; under 4 the highlight crowds the
+    icon). Outer is the user's knob, default 2. The nav bar, tab bar and personal bar read the same two tokens.
+    Firefox's names are `--toolbarbutton-padding-inner` and `-outer`; the old `-inner-padding` and `-outer-padding`
+    do nothing on ESR 153 or Nightly, so the old override had been dead.
+  - Corner reserve (patch 27): with the puzzle pinned, `--uc-extensions-button-width` is really the burger's box (a
+    regular box + edge - outer: the end button's outside padding is Firefox's edge padding, not outer; 4px from
+    `--toolbar-edge-padding` on Nightly 162, 6px from `--toolbar-padding-inline` on ESR 153, so +2 and +4) and `--uc-hamburger-width` is the
+    puzzle's box. The new-tab reserve is one regular button, the toolbar-button reserve is 0. The drawer clears
+    burger + puzzle, so those two numbers are the whole reserve.
+  - Personal bar (patches 20 and 32): row = bar - 4px, between 30 and 40 (30 / 34 / 40). Tool buttons use outer - 1
+    and centre themselves; bookmark items spread by a gap of 0 / 2 / 4px.
+  Still open: the find bar offset; Beta and Release readings
+  only if a token name looks different; FoxOne 4.1's option cleanup (#73) before building more. Readings:
+  Notes-n-Tools\algebra-stock-padding.md. The upstream note for Firn is under Upstream notes below.
 
 ## Upstream notes (only once things are stable, one small issue per idea, no surprise PRs)
 
@@ -272,6 +290,10 @@ where they disagree.
   operations: tag the FoxMica point release (so the patches are a live example), post the issue to Firn, post the feature,
   send the PR, float a 4.0 so point releases can sync. 4.0 idea: the puzzle as the one anchor and trigger for the drawer in
   every case, pinned too; the pin stays (it is the only way to get the puzzle into the one-bar layout).
+- FoxOne: the corner reserve could be derived from the button padding instead of typed numbers (FoxMica Algebra-branch, td45).
+  With the puzzle pinned, `--uc-extensions-button-width` is really the burger's box (the puzzle sits that far from the
+  window controls) and `--uc-hamburger-width` the puzzle's box. The names say the opposite, and the numbers only work
+  when they match the real button boxes. Suggest clearer names and a comment; offer the formula as the example. Only once it holds on ESR 153 and Nightly.
 - Wintego: FF157+ dropdown fix (also paint `.urlbarView-background`); find-bar fix;
   the double-encoded text in his file; license-holder question.
   Wintego has no issues open and asks for pull requests instead, so these go to him as PRs.
