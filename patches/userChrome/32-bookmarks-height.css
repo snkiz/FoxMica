@@ -14,6 +14,31 @@
   padding-block: 0 !important;
 }
 
+/* A Firefox tool button placed on this bar follows the same padding values as the other bars (set on the nav bar
+   in foxmica-tabs.css, and on the tab bar in patch 27), with the outer padding 1px less, because this bar's row is
+   shorter and does not scale 1:1 with the others. Its box is then 16 + 2 x inner + 2 x (outer - 1): 26 / 30 / 34 at
+   compact / normal / touch with the default outer of 2. That is under the row height (30 / 34 / 40), so it does not
+   make the bar taller. Bookmark items keep the padding rules below. */
+:root #PersonalToolbar {
+  --toolbarbutton-padding-outer: max(0px, calc(var(--ut-btn-outer, 2px) - 1px)) !important;
+  --toolbarbutton-padding-inner: var(--ut-btn-inner, 6px) !important;
+}
+
+/* Tool buttons on this bar (anything that is not a bookmark) keep their own height and sit in the middle of the row.
+   The row is as tall as --ut-bookmarks-height because the bookmark items below are forced to that, and a button
+   in a row stretches to the row's height unless told otherwise, which drew its hover as a tall oval. */
+:root #PersonalToolbar toolbarbutton:not(.bookmark-item) {
+  align-self: center !important;
+}
+
+/* Bookmark items spread out a little as the density goes up, for fingers: 0 / 2 / 4px between neighbours at the
+   30 / 38 / 46px bars (a quarter of how far the bar is over 30px). A gap on the container adds to whatever padding
+   the items already have, so nothing of Firefox's is replaced. The items keep the full row height and have no
+   hover of their own (FoxOne), so only the spacing changes. */
+:root #PersonalToolbar #PlacesToolbarItems {
+  gap: max(0px, (var(--ut-bar-height) - 30px) / 4);
+}
+
 :root #PersonalToolbar .bookmark-item {
   height: var(--ut-bookmarks-height, var(--ut-bar-height, 40px)) !important;
   min-height: 0 !important;

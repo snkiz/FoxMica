@@ -22,10 +22,10 @@
      (Planned: the static bar too.) */
   --ut-bookmarks-bg: var(--uc-color-base);
 
-  /* Height of the bookmarks bar when shown, worked out from the bar height so it follows the density. It is 2px
-     shorter than the bar at normal density and changes by 0.75px for every 1px the bar changes, which gives
-     30 / 36 / 42px for a 30 / 38 / 46px bar (compact / normal / touch). The bar's own 6px top and bottom padding is
-     removed to get there (patch 32). Patch 44 uses the same value to move the find bar out of its way. */
-  --ut-bookmarks-height: calc(var(--ut-bar-height-normal, 38px) - 2px
-                              + 0.75 * (var(--ut-bar-height) - var(--ut-bar-height-normal, 38px)));
+  /* Height of the bookmarks bar when shown, worked out from the bar height so it follows the density: 4px shorter
+     than the bar, but never under 30px or over 40px (found by eye: 36 was too tall at normal, 42 too fat at
+     touch). That gives 30 / 34 / 40px for a 30 / 38 / 46px bar (compact / normal / touch). The bar's own 6px top
+     and bottom padding is removed to get there (patch 32). Patch 44 uses the same value to move the find bar out
+     of its way. */
+  --ut-bookmarks-height: min(40px, max(30px, var(--ut-bar-height) - 4px));
 }
