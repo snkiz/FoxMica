@@ -1,0 +1,38 @@
+/* ==========================================================================
+   CORNER RESERVE - the room FoxOne holds for the burger and puzzle, worked out from the button padding
+   FoxOne pins the burger and the puzzle to the right edge, outside the tab bar's layout, so it can't measure them
+   and reserves their room with two typed widths. Those are the buttons' box widths, so they come from the padding
+   instead: a button box is 16px icon + 2 x inner + 2 x outer (--ut-btn-inner follows density, --ut-btn-outer is the
+   user's setting, both from foxmica-tabs.css).
+     --uc-extensions-button-width  is really the BURGER's box: the puzzle sits this far from the window controls.
+     --uc-hamburger-width          is really the PUZZLE's box: with the burger's, it is how far the last extension
+                                   icon stays clear of the corner.
+   With the puzzle pinned the names say the opposite of what they do. FoxOne's rules read these two names, so they stay.
+   The burger's box is wider than a regular button. Its end padding (toward the window controls) is Firefox's edge
+   padding, not the outer padding, so the extra is edge - outer. Measured on stock: the edge is 4px on Nightly 162
+   (--toolbar-edge-padding) and 6px on ESR 153, which has no edge token and uses --toolbar-padding-inline, so the
+   extra is +2 on Nightly and +4 on ESR at outer 2. Both are shared tokens, readable here on :root.
+   FoxOne's own default (38) is a 36px box + 2 at stock normal on Nightly.
+   The tab strip's reserve is those two, --uc-drag-space and one regular button for the new-tab "+" (--uc-newtab-width).
+   Without that last one the "+" ate into the grab space. --uc-toolbar-button-width is 0: the extension icons
+   beside the strip push it aside on their own.
+   This file loads before foxmica-config.css and foxmica-tabs.css, so either can still override a value. Mica+ zeroes
+   the two widths on the toolbox (patch 46), which is closer than :root, so that still wins there.
+   ========================================================================== */
+:root {
+  --ut-btn-box: calc(16px + 2 * var(--ut-btn-inner, 6px) + 2 * var(--ut-btn-outer, 2px));
+  --ut-btn-end-extra: calc(var(--toolbar-edge-padding, var(--toolbar-padding-inline, 6px)) - var(--ut-btn-outer, 2px));
+  --uc-extensions-button-width: calc(var(--ut-btn-box) + var(--ut-btn-end-extra));
+  --uc-hamburger-width: var(--ut-btn-box);
+  --uc-toolbar-button-width: 0px;
+  --uc-newtab-width: var(--ut-btn-box);
+}
+
+/* The tab bar's buttons follow the same two padding values as the nav bar's (foxmica-tabs.css sets them on the nav
+   bar). Firefox works the tab bar's inner padding out from the tab height instead of from density
+   (toolbarbuttons.css), so without this the tab bar follows a different rule. Here, not in foxmica-tabs.css, so
+   stock Firefox keeps its own tab-bar buttons. */
+:root #TabsToolbar {
+  --toolbarbutton-padding-outer: var(--ut-btn-outer, 2px) !important;
+  --toolbarbutton-padding-inner: var(--ut-btn-inner, 6px) !important;
+}
