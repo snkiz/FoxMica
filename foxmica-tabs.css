@@ -24,9 +24,10 @@
      --ut-tab-text              tab title colour (default: the toolbar text colour)
      --ut-bar-padding 2px       space above and below the tabs and the URL field
      --ut-urlbar-padding        the same for the URL field alone (default: follows --ut-bar-padding)
-     --ut-bar-height-compact 30px / -normal 38px / -touch 46px
-     --ut-btn-inner-compact 2px / -normal 4px / -touch 8px
-     --ut-btn-outer 2px         (compact density always uses 1px)
+     --ut-bar-height-compact 30px / -normal 38px / -touch 46px   (FoxMica's; with no config loaded the file falls
+                                back to 36 / 40 / 44, the toolbar heights of stock Firefox 154+)
+     --ut-btn-inner             follows the bar height (4 / 6 / 8 at 30 / 38 / 46px); not a setting
+     --ut-btn-outer 2px         the same at every density
    Look values (no need to touch; the Mica block sets richer ones):
      --ut-layer, --ut-tab-hover-bg, --ut-separator
 
@@ -128,22 +129,24 @@
 
 /* ---- Density ---------------------------------------------------------------
    Firefox puts uidensity="compact" or "touch" on the root element; normal has
-   no attribute. These pick which of the three sets becomes the live
-   --ut-bar-height / --ut-btn-inner that everything below (and the Mica block)
-   is built on. */
+   no attribute. These pick which of the three bar heights becomes the live
+   --ut-bar-height. --ut-btn-inner is worked out from it. Everything below (and the Mica block) is built on
+   those two. */
 
 :root {
-  --ut-bar-height: var(--ut-bar-height-normal, 38px);
-  --ut-btn-inner: var(--ut-btn-inner-normal, 4px);
+  --ut-bar-height: var(--ut-bar-height-normal, 40px);
+  /* Inside button padding follows the bar height: a quarter of it, less 3.5px, rounded to whole pixels and never under
+     4px (smaller and the highlight crowds the icon; found by eye). The 30 / 38 / 46px bars land on 4 / 6 / 8 with
+     no rounding at all; the rounding only matters for other heights, like the 36 / 40 / 44 fallbacks, which come
+     out 6 / 7 / 8 (stock is 6 / 8 / 9). It is declared once, here: the compact and touch blocks below only change
+     the bar height, and this follows. */
+  --ut-btn-inner: max(4px, round((var(--ut-bar-height) - 14px) / 4, 1px));
 }
 :root[uidensity="compact"] {
-  --ut-bar-height: var(--ut-bar-height-compact, 30px);
-  --ut-btn-inner: var(--ut-btn-inner-compact, 2px);
-  --ut-btn-outer: 1px;
+  --ut-bar-height: var(--ut-bar-height-compact, 36px);
 }
 :root[uidensity="touch"] {
-  --ut-bar-height: var(--ut-bar-height-touch, 46px);
-  --ut-btn-inner: var(--ut-btn-inner-touch, 8px);
+  --ut-bar-height: var(--ut-bar-height-touch, 44px);
 }
 
 /* ---- Bar height ----------------------------------------------------------
@@ -194,8 +197,8 @@
    buttons sit centred in it. Fallbacks match the normal-density values. */
 :root #nav-bar {
   padding-block: 0 !important;
-  --toolbarbutton-outer-padding: var(--ut-btn-outer, 2px) !important;
-  --toolbarbutton-inner-padding: var(--ut-btn-inner, 4px) !important;
+  --toolbarbutton-padding-outer: var(--ut-btn-outer, 2px) !important;
+  --toolbarbutton-padding-inner: var(--ut-btn-inner, 6px) !important;
 }
 
 

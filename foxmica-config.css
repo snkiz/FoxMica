@@ -48,24 +48,22 @@
    - URL field    26px compact / 32px normal / 34px touch
    - bar row      about 34 / 40-44 / 44-48 (Proton ~40; FoxOne assumes 44)
    - tab height   29 / 36 / 41 (Proton)
-   - button pad   6px / 8px / 9px inside, 3px / 2px / 2px outside.
+   - button pad   6px / 8px / 9px inside, 2px / 2px / 2px outside (read on ESR 153).
+  FoxMica works the inside padding out from the bar height (foxmica-tabs.css), so it is not a setting here.
     
   153 ESR Compact is hidden in Firefox's Customize page unless browser.compactmode.show is true in about:config.
   158 and byond it's been moved to settings/apperance. Set all three equal to ignore density altogether. */
     
   --ut-bar-height-compact: 30px;
-  --ut-btn-inner-compact: 2px;
 
   --ut-bar-height-normal: 38px;
-  --ut-btn-inner-normal: 4px;
 
   --ut-bar-height-touch: 46px;
-  --ut-btn-inner-touch: 8px;
 
   --ut-bar-padding: 2px;            /* Space left above and below the tabs and the URL field inside the bar. Stock; 6px.
                                     The tab and the field are (bar height - 2 x this) tall. */
-  --ut-btn-outer: 2px;              /* Toolbar button padding. Stock is 8px inner / 2px outer at normal density 
-                                    (6px / 3px compact, 9px / 2px touch) */
+  --ut-btn-outer: 2px;              /* Toolbar button padding, the same at every density. Stock is 8px inner / 2px outer
+                                    at normal (6px / 2px compact, 9px / 2px touch, read on ESR 153) */
 
  /* ---- RADI, SPACING ---- */
   --uc-rounded: 1;                  /* Rounded corners (0 = FoxOne's square edges, 1 = every surface FoxOne squares takes
@@ -76,7 +74,6 @@
                                     Both use this one value, in CSS px, so they sit at the same real inset under any
                                     display scaling. */
   --ut-findbar-left: 1;             /* Which side the floating find bar sits on (0 = right, 1 = left). */
-  --uc-toolbar-button-width: 26px;  /* Generic toolbar icon spacing (pinned extensions, customize tools) */
   --ut-drag-left: 12px;             /* Grab zone on the left when the window is not maximized. Firefox leaves this space
                                     so you can drag the window */  
   --uc-drag-space: 20px;            /* Grab zone after the tabs for moving the window. Kept small; They are functional,
@@ -158,10 +155,6 @@
   set it to var(--uc-color-text) for plain white again. */
   --ut-puzzle-color: var(--uc-color-hover);
 
-  --uc-extensions-button-width: 32px;   /* Width reserved for the puzzle button. Also its distance from the window
-                                        controls beyond the hamburger, so it doubles as the gap knob:
-                                        lower is closer. 30px will not fit the if you change this, keep them in sync. */
-  --uc-hamburger-width: 30px;           /* Reserved in tab bar to prevent overlap. Also Changes the extension flyout. */
 
   /* ---- PERSONAL BAR ---- */
   --ut-bookmarks-inflow: 0;             /* FoxMica: Bookmarks bar behaviour with --uc-dynamic-bookmarks: 1
@@ -199,8 +192,6 @@
   --uc-show-all-tabs-button: 0; /* This button has fixed spacing in the ANNEX. It's not recommended to turn this on.
                                 (0 = hidden, 1 = visible) */
 
-  --uc-newtab-width: 26px;      /* Again this is scaffolding, you shouldn't touch it.
-                                (set to 0 if removed from toolbar) */
    
   --uc-hide-window-buttons: 0;    /* Window controls (minimise/maximise/close) – hide them to free the space.
                                   Close with Ctrl+Shift+W or Alt+F4, maximise by double-clicking the drag space.
@@ -214,7 +205,9 @@
                                     support. No need to measure it by hand on a modern build. */
 
   /* Not here on purpose: the live bar height and button padding (foxmica-tabs.css builds them from the three
-     density sets above) and the layer colours (the Mica block holds those). */
+     density sets above), the room reserved for the burger and puzzle (worked out from that padding, in
+     patches/userChrome/27-corner-reserve.css)
+     and the layer colours (the Mica block holds those). */
 }
 
 /* FoxOne swaps its palette for the light set in its own light-scheme block, which sits BEFORE this file. Our dark

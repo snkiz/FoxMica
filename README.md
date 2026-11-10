@@ -85,7 +85,7 @@ The floating bookmarks bar needs the bookmarks toolbar set to "Always Show". The
 - Pinned extensions sit at the end of the toolbar and behave normally. Drag one into the stack beside the hamburger and it hides until you hover the hamburger.
 - Customize mode does odd things to the bar, in stock Firefox too: the new-tab button pins to the end of the tab bar and a large gap shows on the left. It is only how the bar draws in that mode ([#40](https://github.com/snkiz/FoxMica/issues/40)).
 - Short on toolbar? Nothing stops you putting things in the bookmarks bar. ;)
-- Spacing is finicky. `--uc-hamburger-width` (30px) sets how far out the extensions flyout sits, and 30px fits the puzzle button. `--uc-extensions-button-width` (32px) is the puzzle button's spacing; 30px will not fit if you change it. `--uc-toolbar-button-width` and `--uc-newtab-width` (26px) are the generic icon spacing.
+- Spacing: the room reserved in the tab bar for the burger and the puzzle button is worked out from the button padding (`--ut-btn-outer` is the one to change), so there is nothing to keep in step by hand.
 
 ## More
 

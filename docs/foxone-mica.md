@@ -17,7 +17,7 @@ Everything you are meant to change is in `foxmica-config.css`. It is variables o
 | `--uc-rounded`, `--uc-border-radius` | Rounded corners on or off, and how round. |
 | `--ut-bar-height-compact / -normal / -touch` | Height of the one-line bar for each Firefox UI density. |
 | `--ut-bar-padding` | Space above and below the tabs and URL field inside the bar. |
-| `--ut-btn-inner-*`, `--ut-btn-outer` | Toolbar button padding, which sets how far apart the icons sit. |
+| `--ut-btn-outer` | Toolbar button padding, which sets how far apart the icons sit. The padding inside the button follows the bar height. |
 | `--ut-tab-radius`, `--ut-tab-top-gap`, `--ut-tab-weight` | Tab corner radius, gap above tabs, font weight. |
 | `--ut-tab-pinstripe` | The thin edge around the selected tab: `1` shows it, `0` hides it. Off in FoxOne-Mica and StockMica+, on in OEM drop-in replacement tabs. |
 | `--ut-tab-pinstripe-color` | Colour of that edge on Firefox's own themes (commented example in `foxmica-config.css`). Default is the accent colour. |
