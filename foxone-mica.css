@@ -4312,12 +4312,12 @@ html[id^="taskbartab"] #unified-extensions-button {
      (Planned: the static bar too.) */
   --ut-bookmarks-bg: var(--uc-color-base);
 
-  /* Height of the bookmarks bar when shown, worked out from the bar height so it follows the density. It is 2px
-     shorter than the bar at normal density and changes by 0.75px for every 1px the bar changes, which gives
-     30 / 36 / 42px for a 30 / 38 / 46px bar (compact / normal / touch). The bar's own 6px top and bottom padding is
-     removed to get there (patch 32). Patch 44 uses the same value to move the find bar out of its way. */
-  --ut-bookmarks-height: calc(var(--ut-bar-height-normal, 38px) - 2px
-                              + 0.75 * (var(--ut-bar-height) - var(--ut-bar-height-normal, 38px)));
+  /* Height of the bookmarks bar when shown, worked out from the bar height so it follows the density: 4px shorter
+     than the bar, but never under 30px or over 40px (found by eye: 36 was too tall at normal, 42 too fat at
+     touch). That gives 30 / 34 / 40px for a 30 / 38 / 46px bar (compact / normal / touch). The bar's own 6px top
+     and bottom padding is removed to get there (patch 32). Patch 44 uses the same value to move the find bar out
+     of its way. */
+  --ut-bookmarks-height: min(40px, max(30px, var(--ut-bar-height) - 4px));
 }
 
 /* ==========================================================================
@@ -4504,6 +4504,45 @@ html[id^="taskbartab"] #unified-extensions-button {
 }
 
 /* ==========================================================================
+   CORNER RESERVE - the room FoxOne holds for the burger and puzzle, worked out from the button padding
+   FoxOne pins the burger and the puzzle to the right edge, outside the tab bar's layout, so it can't measure them
+   and reserves their room with two typed widths. Those are the buttons' box widths, so they come from the padding
+   instead: a button box is 16px icon + 2 x inner + 2 x outer (--ut-btn-inner follows density, --ut-btn-outer is the
+   user's setting, both from foxmica-tabs.css).
+     --uc-extensions-button-width  is really the BURGER's box: the puzzle sits this far from the window controls.
+     --uc-hamburger-width          is really the PUZZLE's box: with the burger's, it is how far the last extension
+                                   icon stays clear of the corner.
+   With the puzzle pinned the names say the opposite of what they do. FoxOne's rules read these two names, so they stay.
+   The burger's box is wider than a regular button. Its end padding (toward the window controls) is Firefox's edge
+   padding, not the outer padding, so the extra is edge - outer. Measured on stock: the edge is 4px on Nightly 162
+   (--toolbar-edge-padding) and 6px on ESR 153, which has no edge token and uses --toolbar-padding-inline, so the
+   extra is +2 on Nightly and +4 on ESR at outer 2. Both are shared tokens, readable here on :root.
+   FoxOne's own default (38) is a 36px box + 2 at stock normal on Nightly.
+   The tab strip's reserve is those two, --uc-drag-space and one regular button for the new-tab "+" (--uc-newtab-width).
+   Without that last one the "+" ate into the grab space. --uc-toolbar-button-width is 0: the extension icons
+   beside the strip push it aside on their own.
+   This file loads before foxmica-config.css and foxmica-tabs.css, so either can still override a value. Mica+ zeroes
+   the two widths on the toolbox (patch 46), which is closer than :root, so that still wins there.
+   ========================================================================== */
+:root {
+  --ut-btn-box: calc(16px + 2 * var(--ut-btn-inner, 6px) + 2 * var(--ut-btn-outer, 2px));
+  --ut-btn-end-extra: calc(var(--toolbar-edge-padding, var(--toolbar-padding-inline, 6px)) - var(--ut-btn-outer, 2px));
+  --uc-extensions-button-width: calc(var(--ut-btn-box) + var(--ut-btn-end-extra));
+  --uc-hamburger-width: var(--ut-btn-box);
+  --uc-toolbar-button-width: 0px;
+  --uc-newtab-width: var(--ut-btn-box);
+}
+
+/* The tab bar's buttons follow the same two padding values as the nav bar's (foxmica-tabs.css sets them on the nav
+   bar). Firefox works the tab bar's inner padding out from the tab height instead of from density
+   (toolbarbuttons.css), so without this the tab bar follows a different rule. Here, not in foxmica-tabs.css, so
+   stock Firefox keeps its own tab-bar buttons. */
+:root #TabsToolbar {
+  --toolbarbutton-padding-outer: var(--ut-btn-outer, 2px) !important;
+  --toolbarbutton-padding-inner: var(--ut-btn-inner, 6px) !important;
+}
+
+/* ==========================================================================
    5. BOOKMARKS BAR (with --uc-dynamic-bookmarks: 1)
    Overlay mode (--ut-bookmarks-inflow: 0, default): FoxOne's own floating
    bar. It never moves the page, so nothing can flash. Over page pixels it
@@ -4616,6 +4655,31 @@ notification-message {
 
 :root:root #PersonalToolbar {
   padding-block: 0 !important;
+}
+
+/* A Firefox tool button placed on this bar follows the same padding values as the other bars (set on the nav bar
+   in foxmica-tabs.css, and on the tab bar in patch 27), with the outer padding 1px less, because this bar's row is
+   shorter and does not scale 1:1 with the others. Its box is then 16 + 2 x inner + 2 x (outer - 1): 26 / 30 / 34 at
+   compact / normal / touch with the default outer of 2. That is under the row height (30 / 34 / 40), so it does not
+   make the bar taller. Bookmark items keep the padding rules below. */
+:root #PersonalToolbar {
+  --toolbarbutton-padding-outer: max(0px, calc(var(--ut-btn-outer, 2px) - 1px)) !important;
+  --toolbarbutton-padding-inner: var(--ut-btn-inner, 6px) !important;
+}
+
+/* Tool buttons on this bar (anything that is not a bookmark) keep their own height and sit in the middle of the row.
+   The row is as tall as --ut-bookmarks-height because the bookmark items below are forced to that, and a button
+   in a row stretches to the row's height unless told otherwise, which drew its hover as a tall oval. */
+:root #PersonalToolbar toolbarbutton:not(.bookmark-item) {
+  align-self: center !important;
+}
+
+/* Bookmark items spread out a little as the density goes up, for fingers: 0 / 2 / 4px between neighbours at the
+   30 / 38 / 46px bars (a quarter of how far the bar is over 30px). A gap on the container adds to whatever padding
+   the items already have, so nothing of Firefox's is replaced. The items keep the full row height and have no
+   hover of their own (FoxOne), so only the spacing changes. */
+:root #PersonalToolbar #PlacesToolbarItems {
+  gap: max(0px, (var(--ut-bar-height) - 30px) / 4);
 }
 
 :root #PersonalToolbar .bookmark-item {
@@ -4794,7 +4858,7 @@ notification-message {
    the same padding as every other button. Maximized and fullscreen keep Firefox's corner target. */
 :root:not([sizemode="maximized"]):not([inFullscreen])
   #nav-bar-customization-target > :is(toolbarbutton, toolbaritem):first-child {
-  padding-inline-start: var(--toolbarbutton-outer-padding) !important;
+  padding-inline-start: var(--toolbarbutton-padding-outer) !important;
 }
 
 /* 7b. Site-info label (Nova). The trust icon in front of the URL bar carries a text label, "Not secure" on
