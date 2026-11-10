@@ -17,7 +17,7 @@
    the same padding as every other button. Maximized and fullscreen keep Firefox's corner target. */
 :root:not([sizemode="maximized"]):not([inFullscreen])
   #nav-bar-customization-target > :is(toolbarbutton, toolbaritem):first-child {
-  padding-inline-start: var(--toolbarbutton-outer-padding) !important;
+  padding-inline-start: var(--toolbarbutton-padding-outer) !important;
 }
 
 /* 7b. Site-info label (Nova). The trust icon in front of the URL bar carries a text label, "Not secure" on
