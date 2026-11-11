@@ -10,10 +10,15 @@
 :root:root:root #tabbrowser-tabs[orient="vertical"] .tab-background {
   border-radius: var(--ut-tab-radius, 6px) !important;
   border-width: calc(var(--ut-tab-pinstripe, 1) * 1px) !important;
-  /* FoxOne zeroes every tab's margin, which left the fill flush against the outer window edge. The same inset on both
-     sides keeps it centred on the icon, on a left or a right sidebar. Tuned by eye (4px and 8px sat too close to the edge).
-     width: auto because with a set width the browser ignores the end margin, and only the start margin counted. */
-  margin-inline: 10px !important;
+}
+
+/* The fill's inset. Collapsed, FoxOne centres it on the icon with Firefox's own inner tab margin (FoxOne #85), so
+   nothing is set here. Expanded, FoxOne leaves it edge to edge; this gives it a small inset on both sides, so it sits
+   clear of the window edge on a left or a right sidebar. 4px, because with more the close button's hover spills out
+   past the fill. width: auto and justify-self because with a set width the browser ignores the end margin, and only
+   the start margin counted. */
+:root:root:root #tabbrowser-tabs[orient="vertical"][expanded] .tab-background {
+  margin-inline: 4px !important;
   width: auto !important;
   justify-self: stretch !important;
 }
@@ -35,6 +40,35 @@
   background-clip: border-box !important;
   outline: none !important;
   border-color: var(--ut-tab-pinstripe-color, var(--uc-color-accent)) !important;
+}
+
+/* Collapsed strip: the selected tab's fill is flat on the bottom (no pinstripe there either), so it runs into the line
+   under the icon (a container tab's hairline, for one) instead of curving away from it. The expanded strip keeps all
+   four corners rounded. */
+:root:root:root #tabbrowser-tabs[orient="vertical"]:not([expanded]) .tabbrowser-tab:is([selected], [multiselected]) .tab-background {
+  border-end-start-radius: 0 !important;
+  border-end-end-radius: 0 !important;
+  border-block-end-width: 0 !important;
+}
+
+/* Collapsed strip: the close button, a badge that hangs over the tab's top corner. Firefox draws it as a circle. Here
+   it is a rounded square, the radius following the rounding setting (--uc-radius-row), so it matches the fill, FoxOne's
+   own close button and the rest of the buttons. Firefox pins it to the start edge of the tab (inset-inline-start) and
+   never checks which side the sidebar is on, so with the sidebar on the right it hangs over the page side. This puts it
+   on the end edge there, mirrored. The side is read the way FoxOne does it: Nightly sets sidebar-positionend on :root,
+   ESR 153 and Beta only set it on the sidebar container. The top offset is left to Firefox (it differs per build). */
+:root:root:root #tabbrowser-tabs[orient="vertical"]:not([expanded]) .tab-close-button {
+  border-radius: var(--uc-radius-row, 4px) !important;
+  /* 12px with 2px padding, so the glyph is 8px on every build. Firefox's own is 15px with 3.5px padding on ESR 153 and
+     Beta (the same 8px glyph) and 16px with 2px padding on Nightly with Nova, which read as too big here. */
+  width: 12px !important;
+  height: 12px !important;
+  padding: 2px !important;
+}
+:root:root:root:is([sidebar-positionend], :has(#sidebar-container[sidebar-positionend]))
+  #tabbrowser-tabs[orient="vertical"]:not([expanded]) .tab-close-button {
+  inset-inline-start: auto !important;
+  inset-inline-end: 2px !important;
 }
 
 /* Themes other than Firefox's own: the theme's own edge colour, as on the horizontal tabs. */
