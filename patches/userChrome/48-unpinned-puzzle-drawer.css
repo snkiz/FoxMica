@@ -1,8 +1,9 @@
 /* ==========================================================================
    8. UNPINNED PUZZLE – the extension drawer follows the puzzle button
    Offered to FoxOne (#71), declined: it stays here. Only applies when the puzzle is NOT pinned to the corner
-   (--uc-extensions-button-right: 0) and the icons hide (--uc-hide-extension-icons: 1). With the puzzle pinned
-   nothing here applies, and the burger anchors, the reserved space and the title-bar rules behave as before.
+   (--uc-extensions-button-right: 0, or vertical tabs, see the rule just below this comment) and the icons hide
+   (--uc-hide-extension-icons: 1). With the puzzle pinned nothing here applies, and the burger anchors, the reserved
+   space and the title-bar rules behave as before.
    Today, with the puzzle unpinned, the title-bar icons still hide but only the burger or an icon opens them.
    47-title-bar-hide-only-when-pinned.patch turns that off, so unpinned there is one drawer, this one.
    The drawer is the unbroken run of extension icons touching the puzzle button on ONE side: an icon is in it when
@@ -19,6 +20,13 @@
    puzzle (FoxMica #41). FoxOne's own title-bar rule only takes the trailing run of items, and the puzzle, a
    toolbarbutton, breaks it, so with the puzzle beside the burger nothing was picked up.
    ========================================================================== */
+/* Vertical tabs put the puzzle in the nav bar and never pin it to the corner, so the drawer below applies there
+   whatever --uc-extensions-button-right says (FoxOne #96). Same state as setting it to 0 in the config, but only
+   while the tab strip is vertical, so a pinned puzzle with horizontal tabs is untouched. */
+:root:has(#tabbrowser-tabs[orient="vertical"]) {
+  --uc-extensions-button-right: 0;
+}
+
 /* The reveal conditions are flat on purpose: a :has() inside a :has() is not allowed by the spec, and inside :is() the
    branch is silently dropped. So "an icon of the run is hovered" is written with sibling combinators from the bar
    (hovered icon, then the puzzle later, with only icons between), not by reusing the run selector. "An extension popup
