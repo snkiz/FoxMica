@@ -27,6 +27,16 @@ The settings and each flavour are documented in [docs/](https://github.com/snkiz
 - **Tool buttons on the bookmarks bar follow the same padding and sit centred in the row,** and the bookmarks spread
   out by 0 / 2 / 4px at the three densities. `patches/userChrome/32-bookmarks-height.css`.
 
+- **The vertical-tab fill is no longer a fixed 10px** ([#45](https://github.com/snkiz/FoxMica/issues/45)). Collapsed,
+  FoxOne centres it on the icon with Firefox's own inset. Expanded, it gets 4px on each side instead of running edge to
+  edge. The selected tab's fill is flat on the bottom in the collapsed strip. The close button in
+  that strip is a rounded square instead of a circle, and with the sidebar on the right it hangs over the other corner,
+  mirrored, where Firefox leaves it on the left. `patches/userChrome/39-vertical-tabs.css`.
+
+- **StockMica+ no longer has `--uc-extensions-button-right` in its config.** It was always meant to stay at 0 there, so
+  the two-row layout (`--ut-one-line: 0`) now sets it itself, and a config that still has the line is ignored.
+  `patches/userChrome/46-stock-tabs.css`, `micaplus-config.css`, `docs/stockmica-plus.md`.
+
 ### From FoxOne 4.0.7 and 4.0.8
 
 - **Alt or F10 no longer breaks the layout** ([FoxOne #78](https://github.com/Firnschnee/FoxOne/issues/78)). The menu
