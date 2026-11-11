@@ -28,12 +28,9 @@
                                     left or right. Only that side counts. Point it toward the inside of the bar: left when the
                                     puzzle is at the right end of the bar, right when it is at the left end. */
 
-  /* PUZZLE BUTTON: not pinned to the corner. The icons you drop beside it make the drawer that opens from it
-     (the unbroken run of extension icons touching the puzzle, on the side --ut-drawer-side picks).
-     CAUTION: leave this at 0. Setting it to 1 does not move the puzzle here (Firefox keeps it where it is), but it
-     does pin the drawer: the title-bar icons collapse to nothing in the corner and are picked up from there, not from
-     the puzzle. */
-  --uc-extensions-button-right: 0;
+  /* PUZZLE BUTTON: not pinned to the corner, and not a setting here (patch 46 keeps it that way). The icons you drop
+     beside it make the drawer that opens from it (the unbroken run of extension icons touching the puzzle, on the
+     side --ut-drawer-side picks). */
 
   /* NAVIGATION BUTTONS: always shown. The nav bar has its own row now, so there is no need to tuck them away
      until you rest on the bar. (0 = always show, 1 = reveal with hover and focus, 2 = reveal with hover and

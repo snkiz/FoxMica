@@ -21,6 +21,10 @@
     /* The burger and the puzzle are no longer fixed over the tab strip, so nothing is reserved for them. */
     --uc-hamburger-width: 0px;
     --uc-extensions-button-width: 0px;
+    /* Nor is the puzzle pinned to the corner: it stays in the nav bar's flow, so the drawer (patch 48) takes over
+       and the pinned rules stay off. Set here, not in micaplus-config.css, because it is not a setting: at 1 the
+       puzzle would not move, but the drawer would pin to the title-bar corner and stop following the puzzle. */
+    --uc-extensions-button-right: 0;
   }
   #nav-bar,
   #navigator-toolbox:has(#nav-bar:focus-within) #nav-bar {

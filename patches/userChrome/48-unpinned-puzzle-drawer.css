@@ -22,9 +22,13 @@
    ========================================================================== */
 /* Vertical tabs put the puzzle in the nav bar and never pin it to the corner, so the drawer below applies there
    whatever --uc-extensions-button-right says (FoxOne #96). Same state as setting it to 0 in the config, but only
-   while the tab strip is vertical, so a pinned puzzle with horizontal tabs is untouched. */
-:root:has(#tabbrowser-tabs[orient="vertical"]) {
-  --uc-extensions-button-right: 0;
+   while the tab strip is vertical, so a pinned puzzle with horizontal tabs is untouched. It is set on the toolbox,
+   inside the hide switch's own query (:root has no ancestor to query, and the drawer rules all sit inside the
+   toolbox), so with the icons not hiding nothing changes for vertical tabs. */
+@container style(--uc-hide-extension-icons: 1) {
+  :root:has(#tabbrowser-tabs[orient="vertical"]) #navigator-toolbox {
+    --uc-extensions-button-right: 0;
+  }
 }
 
 /* The reveal conditions are flat on purpose: a :has() inside a :has() is not allowed by the spec, and inside :is() the
