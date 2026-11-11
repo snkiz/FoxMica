@@ -29,9 +29,13 @@ where they disagree.
 - **[#45](https://github.com/snkiz/FoxMica/issues/45): vertical tab fill is a fixed 10px, tuned on ESR 153.** Measured on
   Nightly, collapsed strip: patch 39's 10px does apply (margins 10px / 10px, fill 28px wide). FoxOne 4.0.4 centres the
   collapsed strip from Firefox's own token (FoxOne #85; `--tab-margin-inline-inner` from 159, `--tab-inner-inline-margin`
-  on 153, which FoxOne falls back to), 11px on Nightly. Both centre the fill; the difference is 2px of width. Option, not
-  done: limit the fixed 10px to the expanded strip (FoxOne's fix does not cover it) and let FoxOne's token do the
-  collapsed one. ESR 153 not checked yet; Beta looked fine by eye. The test list is in the issue.- Beta only, seen while checking #45: the find bar shows a double gap under the floating bookmarks bar, on a new tab and
+  on 153, which FoxOne falls back to), 11px on Nightly. Both centre the fill; the difference is 2px of width.
+  Changed 2026-11-11 on Algebra-branch, not tested properly yet: the fixed 10px is gone from the collapsed strip, where
+  FoxOne's token rule now does the centring. Expanded (FoxOne leaves it edge to edge) patch 39 gives the fill 4px on
+  both sides (more and the close button's hover spills out past it). Looked right by eye with the page behind it; the brighter
+  look was the page showing through the translucent fill. ESR 153 not checked yet, nor the three densities. Mark it
+  fixed after that. The test list is in the issue.
+- Beta only, seen while checking #45: the find bar shows a double gap under the floating bookmarks bar, on a new tab and
   nowhere else. Not chased.- **1.1 docs pass.** (1) Move the install instructions into the docs landing page (`docs/README.md`) and lead with them.
   (2) Cut the OEM tab settings table on `docs/README.md` ("Tab settings (for OEM drop-in replacement tabs)") down to its
   description. (3) New screenshots with the new bookmarks bar. (4) Split the settings table in `docs/foxone-mica.md` into
@@ -114,11 +118,13 @@ where they disagree.
 - README: re-check the about:config table (is `widget.windows.mica.toplevel-backdrop` 2
   or 4 still wanted? In the dev profile, 2 made the tab strip black). Next release. (The pinstripe settings are in the
   table now.)
-- td46. The extension hide (pinned extensions beside the hamburger hide until it is hovered) does not work with vertical
-  tabs (seen 2026-11-06, not investigated). Suspected cause, not checked: with vertical tabs the overflow button goes
-  back into the toolbar and the cluster rules don't exclude it, so the run of extensions is broken or the reveal never
-  triggers. Check how the cluster is worked out in `vendor/userChrome.css` (the "unbroken run" rules, #62) and whether
-  the vertical-tabs toolbar has other items in the way. Test on ESR 153 and Nightly.
+- td46. DONE 2026-11-11 on Algebra-branch, not released yet. The extension hide (pinned extensions beside the hamburger
+  hide until it is hovered) did not work with vertical tabs (seen 2026-11-06). Cause: vertical tabs leave the puzzle in
+  the nav bar, never pinned, but patch 48's drawer only ran with `--uc-extensions-button-right: 0`. Fix: patch 48 sets
+  that to 0 on `#navigator-toolbox` while the tabs are vertical and `--uc-hide-extension-icons` is 1. The first idea,
+  adding `#nav-bar-overflow-button` to the run exclusions, did not fix it and is reverted on the FoxOne PR branch.
+  Reported upstream as FoxOne #96, with the branch `vert-tab-ext-hover` on snkiz/FoxOne-PR linked (no PR: 4.1 is a
+  considerable rewrite and Firn has not replied). An unpinned puzzle with horizontal tabs is best effort.
 - td47. Bookmarks bar items are spaced much tighter than the main bar's buttons (seen 2026-11-06, not investigated).
   FoxMica sets `--toolbarbutton-inner-padding` and `--toolbarbutton-outer-padding` from the density settings on
   `#nav-bar` only (`foxmica-tabs.css`), and patch 32 zeroes only the bookmarks bar's block padding, so the sideways
@@ -301,6 +307,13 @@ where they disagree.
   below the toolbar's bottom edge, right above the open floating bookmarks bar. Seen on the FoxOne 4.0.3 branch for #82,
   which doesn't touch the URL bar, so probably in plain FoxOne too (not checked). Already fixed in FoxMica. Not checked
   on other Firefox builds. Show Firn when convenient.
+- FoxOne and Mozilla: the collapsed vertical-tab close badge (patch 39, the last two rules): a 12px rounded square
+  instead of Firefox's circle, and mirrored when the sidebar is on the right (Firefox pins it to the start edge and never
+  checks the side, on ESR 153, Beta 159 and Nightly 162). Nothing in it is FoxMica-specific except the `:root:root:root`
+  prefix. Show Firn once the Algebra-branch work has passed the merge checks and FoxOne 4.1 is settled. Link it to the
+  Mozilla bug to be filed for the mirroring (the nearest existing one is bug 2024362, the sidebar on the right changes
+  the order but nothing else; the collapsed close button is bug 1933479's feature). Nothing here depends on Mozilla
+  changing anything.
 
 ## Done
 
