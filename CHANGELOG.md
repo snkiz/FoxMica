@@ -5,51 +5,51 @@ this file is cleared for the next version. Older versions live in their GitHub r
 
 The settings and each flavour are documented in [docs/](https://github.com/snkiz/FoxMica/tree/main/docs) on GitHub. The folder is left out of the release zip.
 
-## Next release, built on FoxOne 4.0.6
+## Next release, built on FoxOne 4.0.8
 
 ### Changed
 
-- **The touch density bar is 46px, down from 48px** (`--ut-bar-height-touch` in `foxmica-config.css`). Compact (30px)
-  and normal (38px) are unchanged. A config that sets its own value keeps it.
+- **Toolbar button spacing is worked out from the bar height.** The padding inside a button is a quarter of the bar
+  height less 3.5px, never under 4px: 4 / 6 / 8px at compact / normal / touch. `--ut-btn-outer` (default 2px, the same
+  at every density) is the one spacing setting left. `--ut-btn-inner-compact / -normal / -touch` are gone from
+  `foxmica-config.css`; a config that still sets them is ignored. The nav bar, tab bar and bookmarks bar now read the
+  same two values. The old override used names Firefox no longer reads, so button spacing may look a little different.
+  `foxmica-tabs.css`, `patches/userChrome/27-corner-reserve.css`.
 
-- **The bookmarks bar is no longer as tall as the bar.** Its height is now worked out from the bar height: 30 / 36 / 42px
-  at compact / normal / touch, where it used to match the bar (30 / 38 / 48px). It is a calculated value
-  (`--ut-bookmarks-height`), not a setting. `patches/userChrome/20-layer-values.css`.
+- **The room held for the burger and puzzle buttons is worked out from that padding too.** `--uc-extensions-button-width`,
+  `--uc-hamburger-width`, `--uc-toolbar-button-width` and `--uc-newtab-width` are no longer in `foxmica-config.css`,
+  so nothing needs keeping in step by hand. A config that sets one still wins.
 
-- **The find bar moves down by that same height while the floating bookmarks bar is open.** FoxOne 4.0.5 made its own
-  offset follow the density ([FoxOne #93](https://github.com/Firnschnee/FoxOne/issues/93)), but its figure is worked out
-  for FoxOne's own bar, with 6px of padding top and bottom. FoxMica's bar is a different height, so FoxMica keeps setting
-  the offset itself. `patches/userChrome/44-findbar.css`.
+- **The bookmarks bar is 30 / 34 / 40px** at compact / normal / touch (the bar height less 4px, never under 30 or over
+  40), where the previous release had 30 / 36 / 42px. It is still a calculated value, not a setting.
+  `patches/userChrome/20-layer-values.css`.
+
+- **Tool buttons on the bookmarks bar follow the same padding and sit centred in the row,** and the bookmarks spread
+  out by 0 / 2 / 4px at the three densities. `patches/userChrome/32-bookmarks-height.css`.
+
+### From FoxOne 4.0.7 and 4.0.8
+
+- **Alt or F10 no longer breaks the layout** ([FoxOne #78](https://github.com/Firnschnee/FoxOne/issues/78)). The menu
+  bar lies over the nav bar instead of squeezing into the row.
+
+- **F11 on Firefox 154 and up:** the toolbar steps back to the window edge when Firefox autohides the sidebar launcher
+  ([FoxOne #94](https://github.com/Firnschnee/FoxOne/issues/94)).
+
+- **The floating bookmarks bar now floats over an open sidebar panel** instead of hiding. It still steps past the
+  launcher, and still hides when vertical tabs are expanded.
+
+- **The empty footer of the AI chatbot panel and its border line are hidden** (Firefox 158 and up).
+
+- The credit now says FoxOne is built on Cascade (new address) and carries LittleFox's copyright line.
 
 ### Fixed
 
-- **The toolbar has a background in fullscreen (F11).** It floats over the page there, and Mica never paints over page
-  pixels, so the transparent toolbar showed the page through it. It now has a mostly solid fill in Mica's own base
-  colours, and `--ut-fullscreen-bg` in `foxmica-config.css` sets it.
-  `patches/userChrome/50-fullscreen-toolbar.css`.
-
-- **The Mini Window's URL field is visible and the window can be dragged from both sides** (Firefox 160, Nightly for
-  now). The Mica rules had made the field the same colour as the bar, so nothing showed where to type; it now has the
-  field's own solid colour and rounded corners. FoxOne 4.0.6 leaves a gap to the right of the field to drag the window
-  by, and this adds the same gap on the left, like stock. `patches/userChrome/52-mini-window.css`.
-
-### From FoxOne 4.0.5 and 4.0.6
-
-None of FoxMica's patches changed for these, and all of them still apply.
-
-- **Fullscreen (F11) with the sidebar launcher** ([FoxOne #89](https://github.com/Firnschnee/FoxOne/issues/89),
-  [#91](https://github.com/Firnschnee/FoxOne/pull/91)). The toolbar no longer covers the collapsed launcher, and the
-  find bar no longer hides under the toolbar while it is shown (FoxOne #70). The launcher's width is now declared once
-  as `--uc-launcher-strip`, and the vertical value is half a pixel narrower.
-
-- **Mini Window** (Firefox 160, [FoxOne #88](https://github.com/Firnschnee/FoxOne/issues/88)). The page no longer sits
-  a toolbar height below the bar, the address bar fills the row, and the menu and extensions buttons stay hidden there.
-
-### Tools
-
-- `scripts/check.mjs` notes a VERSION that still ends in `-dev` (and fails on it in the online run, the one before a
-  release), and notes any declaration that looks like it is missing its `;`. Neither fails the `--offline` run.
+- **Vertical tabs: the pinned extension icons beside the burger now hide until the puzzle is hovered**
+  ([FoxOne #96](https://github.com/Firnschnee/FoxOne/issues/96), same on ESR 153 and Nightly, not tied to the density).
+  Vertical tabs put the puzzle in the nav bar, where it is never pinned to the corner, but the drawer that handles
+  that only ran with `--uc-extensions-button-right: 0`. It now also runs whenever the tab strip is vertical, and
+  horizontal tabs keep whatever the setting says. `patches/userChrome/48-unpinned-puzzle-drawer.css`.
 
 ### Docs
 
-- `scripts/README.md`: the check row lists the new `-dev` check.
+- README and `docs/foxone-mica.md`: the spacing notes now describe `--ut-btn-outer` and the calculated reserve.
