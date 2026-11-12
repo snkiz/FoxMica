@@ -1,77 +1,53 @@
 /* ==========================================================================
-   VERTICAL TABS (#42): a filled rounded rectangle for the selected tab
-   foxmica-tabs.css leaves the vertical tab list to Firefox (a pill when the list is extended, a circle outline when it
-   is collapsed), so the OEM drop-in tabs look native there. In FoxMica's own modes the selected tab is drawn the way
-   the horizontal one is: the --ut-layer fill, rounded by --ut-tab-radius on all four corners (nothing to join to
-   beside the page), and the pinstripe, if it is on, all the way round. Inactive tabs have no fill; hover gets the same
-   hover fill as the horizontal tabs. The same on a left or a right sidebar.
+   VERTICAL TABS (#42): the toolbar. The tabs themselves are styled in foxmica-tabs.css.
    ========================================================================== */
 
-:root:root:root #tabbrowser-tabs[orient="vertical"] .tab-background {
-  border-radius: var(--ut-tab-radius, 6px) !important;
-  border-width: calc(var(--ut-tab-pinstripe, 1) * 1px) !important;
-}
-
-/* The fill's inset. Collapsed, FoxOne centres it on the icon with Firefox's own inner tab margin (FoxOne #85), so
-   nothing is set here. Expanded, FoxOne leaves it edge to edge; this gives it a small inset on both sides, so it sits
-   clear of the window edge on a left or a right sidebar. 4px, because with more the close button's hover spills out
-   past the fill. width: auto and justify-self because with a set width the browser ignores the end margin, and only
-   the start margin counted. */
-:root:root:root #tabbrowser-tabs[orient="vertical"][expanded] .tab-background {
-  margin-inline: 4px !important;
-  width: auto !important;
-  justify-self: stretch !important;
-}
-
-:root:root:root #tabbrowser-tabs[orient="vertical"] .tabbrowser-tab:not([selected], [multiselected]) .tab-background {
-  background-color: transparent !important;
-  background-image: none !important;
-  outline: none !important;
-  box-shadow: none !important;
-}
-
-:root:root:root #tabbrowser-tabs[orient="vertical"] .tabbrowser-tab:not([selected], [multiselected]):hover .tab-background {
-  background-color: var(--ut-tab-hover-bg, light-dark(rgb(255 255 255 / 30%), rgb(0 0 0 / 12%))) !important;
-}
-
-:root:root:root #tabbrowser-tabs[orient="vertical"] .tabbrowser-tab:is([selected], [multiselected]) .tab-background {
-  background-color: var(--ut-layer, light-dark(rgb(255 255 255 / 55%), rgb(0 0 0 / 25%))) !important;
-  background-image: none !important;
-  background-clip: border-box !important;
-  outline: none !important;
-  border-color: var(--ut-tab-pinstripe-color, var(--uc-color-accent)) !important;
-}
-
-/* Collapsed strip: the selected tab's fill is flat on the bottom (no pinstripe there either), so it runs into the line
-   under the icon (a container tab's hairline, for one) instead of curving away from it. The expanded strip keeps all
-   four corners rounded. */
-:root:root:root #tabbrowser-tabs[orient="vertical"]:not([expanded]) .tabbrowser-tab:is([selected], [multiselected]) .tab-background {
-  border-end-start-radius: 0 !important;
-  border-end-end-radius: 0 !important;
-  border-block-end-width: 0 !important;
-}
-
-/* Collapsed strip: the close button, a badge that hangs over the tab's top corner. Firefox draws it as a circle. Here
-   it is a rounded square, the radius following the rounding setting (--uc-radius-row), so it matches the fill, FoxOne's
-   own close button and the rest of the buttons. Firefox pins it to the start edge of the tab (inset-inline-start) and
-   never checks which side the sidebar is on, so with the sidebar on the right it hangs over the page side. This puts it
-   on the end edge there, mirrored. The side is read the way FoxOne does it: Nightly sets sidebar-positionend on :root,
-   ESR 153 and Beta only set it on the sidebar container. The top offset is left to Firefox (it differs per build). */
+/* The close badge on the collapsed strip (foxmica-tabs.css) is a 4px rounded square. FoxOne squares every surface when
+   its rounding option is off (--uc-rounded: 0), so the badge follows: the flag multiplies the 4px, the same way FoxOne
+   derives its own radii. Only the on / off is read; the size is not up for change. */
 :root:root:root #tabbrowser-tabs[orient="vertical"]:not([expanded]) .tab-close-button {
-  border-radius: var(--uc-radius-row, 4px) !important;
-  /* 12px with 2px padding, so the glyph is 8px on every build. Firefox's own is 15px with 3.5px padding on ESR 153 and
-     Beta (the same 8px glyph) and 16px with 2px padding on Nightly with Nova, which read as too big here. */
-  width: 12px !important;
-  height: 12px !important;
-  padding: 2px !important;
-}
-:root:root:root:is([sidebar-positionend], :has(#sidebar-container[sidebar-positionend]))
-  #tabbrowser-tabs[orient="vertical"]:not([expanded]) .tab-close-button {
-  inset-inline-start: auto !important;
-  inset-inline-end: 2px !important;
+  border-radius: calc(var(--uc-rounded, 1) * 4px) !important;
 }
 
-/* Themes other than Firefox's own: the theme's own edge colour, as on the horizontal tabs. */
-:root:root:root:not([theme-in-app]) #tabbrowser-tabs[orient="vertical"] .tabbrowser-tab[selected]:not([multiselected]) .tab-background {
-  border-color: var(--tab-border-color-selected) !important;
+/* The URL field in the toolbar: with vertical tabs the tabs are in the sidebar, so the toolbar is the whole window wide
+   and Firefox stretches the field across all of it. The star then sits at the far edge, and nothing shows where the
+   field ends. Here the field is the middle half of the row, 1:2:1 (a quarter of the row before it, half for the field),
+   with a pixel cap in the same ratio so a 4K screen doesn't stretch it. Its width and its start margin are shares of
+   the row, not of what the other buttons leave, so a button that appears after it (the extension icons on hover) takes
+   the space after the field, which the auto margin on the end side soaks up, and the puzzle and burger stay in the
+   corner. The one thing that can still squeeze the field is a row too narrow for everything: it shrinks then, and
+   the gap holds. Margin is not hit-tested, so the gaps are where the window is dragged from.
+   It is not exactly centred: the buttons before it (sidebar, back, reload) are in the row, so its left edge is
+   those plus a quarter of the row. Taking it out of the row to centre it exactly was tried and dropped: the results
+   list, the row height and the puzzle all moved. FoxOne's own widths (--uc-urlbar-min-width and -max-width) size the
+   whole bar in the one-line layout and do nothing here, and the values are not in the config on purpose. */
+:root:has(#tabbrowser-tabs[orient="vertical"]) #nav-bar #urlbar-container {
+  max-width: none !important;
+  margin-inline: min(25%, 550px) auto !important;
+  flex: 0 1 min(50%, 1100px) !important;
+}
+/* In a narrow window the ratio gives way: a quarter of the row for the margin and the buttons on both sides left the
+   field a third of the row (a half-width window on a 1080p screen, ~960px, showed barely 300px of the URL). So the
+   field fills the row, as the Mini Window's does, with one button box of gap on each side, which is also the grab
+   area. A margin never shrinks in a row, so this is a switch at a window width, not a gradual change. The width is
+   the window's, in CSS px, which DPI scaling shrinks, so a bigger scale switches at a bigger physical width and the
+   field gets as much room as it can. 1000 is just over a half-width window on a 1080p screen at 100% (960, the
+   floor), about 1150 physical px at 115% (where a snapped half is about 665 CSS px and a full window about 1330), and
+   about 1500 at 150%. Snapped windows stay clear of it, so the switch shows only when a window is dragged across it
+   by hand. The narrowest window is about 620 (the sidebar and the bookmarks bar set it). */
+@media (max-width: 1000px) {
+  :root:has(#tabbrowser-tabs[orient="vertical"]) #nav-bar #urlbar-container {
+    margin-inline: var(--ut-btn-box) !important;
+    flex: 1 1 0 !important;
+  }
+}
+
+/* Nav buttons: the StockMica+ defaults, whatever the main config says, the same three switches as for the Mini Window
+   (patch 52, which has the notes on how they work together). Back and Reload are always shown and only Forward
+   collapses while there is no history, so what sits before the field changes width only when Forward comes and goes.
+   With the buttons revealed on hover the whole left side, and the field with it, moved on every hover. */
+:root:has(#tabbrowser-tabs[orient="vertical"]) {
+  --uc-autohide-nav-buttons: 0;
+  --uc-hide-disabled-nav-buttons: 1;
+  --ut-hide-disabled-nav: 1;
 }
