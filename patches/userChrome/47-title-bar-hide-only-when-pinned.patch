@@ -5,10 +5,10 @@
 # keep icons clear of the burger are outside this query and still apply.
 <<<<<<< FIND
 @container style(--uc-hide-extension-icons: 1) {
-  #TabsToolbar-customization-target > toolbaritem:where(:not(:has(~ :not(toolbaritem, #alltabs-button, #nav-bar-overflow-button, [hidden])))) {
-    max-width: 0 !important;
+  #TabsToolbar-customization-target > toolbaritem:where(:not(:has(~ :not(toolbaritem, #alltabs-button, [hidden])))) {
+    max-width: 0 !important
 =======
 @container style(--uc-hide-extension-icons: 1) and style(--uc-extensions-button-right: 1) {
-  #TabsToolbar-customization-target > toolbaritem:where(:not(:has(~ :not(toolbaritem, #alltabs-button, #nav-bar-overflow-button, [hidden])))) {
-    max-width: 0 !important;
+  #TabsToolbar-customization-target > toolbaritem:where(:not(:has(~ :not(toolbaritem, #alltabs-button, [hidden])))) {
+    max-width: 0 !important
 >>>>>>> REPLACE
