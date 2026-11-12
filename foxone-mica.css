@@ -5369,3 +5369,27 @@ findbar {
   --uc-hide-disabled-nav-buttons: 1;
   --ut-hide-disabled-nav: 1;
 }
+
+/* ==========================================================================
+   PRIVATE WINDOWS WITHOUT THE MASK BUTTON (ESR 153)
+   In a private window FoxOne zeroes the end margin of the last item in the tab strip, because Firefox puts a mask
+   button (.private-browsing-indicator-button) at the very end and FoxOne gives the mask the clearance for the corner
+   buttons instead. ESR 153 has no such button, so the last item, an extension icon, kept no clearance and sat on top
+   of the burger and the puzzle. With no mask in the window this puts the last item's clearance back: the burger's
+   width, or the burger's plus the puzzle's while the puzzle is pinned to the corner, the same two values FoxOne uses
+   for it in a normal window. Windows that have the mask are not touched.
+   Not covered: with --uc-hide-extension-icons on, the icons that slide out on hover in a private window still leave
+   no clearance there, because FoxOne's private-window reveal rules also assume the mask.
+   The selector is FoxOne's own, so the :not(:has()) adds the weight to outrank the rule it undoes.
+   ========================================================================== */
+:root[privatebrowsingmode]:not(:has(#TabsToolbar .private-browsing-indicator-button))
+  #TabsToolbar-customization-target > :is(toolbarbutton, toolbaritem):where(:not(#alltabs-button, [hidden])):where(:not(:has(~ :not(#alltabs-button, [hidden])))) {
+  margin-inline-end: var(--uc-hamburger-width) !important;
+}
+
+@container style(--uc-extensions-button-right: 1) {
+  :root[privatebrowsingmode]:not(:has(#TabsToolbar .private-browsing-indicator-button))
+    #TabsToolbar-customization-target > :is(toolbarbutton, toolbaritem):where(:not(#alltabs-button, [hidden])):where(:not(:has(~ :not(#alltabs-button, [hidden])))) {
+    margin-inline-end: calc(var(--uc-hamburger-width) + var(--uc-extensions-button-width)) !important;
+  }
+}

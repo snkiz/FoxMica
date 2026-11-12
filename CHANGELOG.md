@@ -14,7 +14,9 @@ The settings and each flavour are documented in [docs/](https://github.com/snkiz
   at every density) is the one spacing setting left. `--ut-btn-inner-compact / -normal / -touch` are gone from
   `foxmica-config.css`; a config that still sets them is ignored. The nav bar, tab bar and bookmarks bar now read the
   same two values. The old override used names Firefox no longer reads, so button spacing may look a little different.
-  `foxmica-tabs.css`, `patches/userChrome/27-corner-reserve.css`.
+  The first button on the nav bar had the same problem (its start padding read `--toolbarbutton-outer-padding`, which
+  Firefox no longer has) and now reads `--toolbarbutton-padding-outer`.
+  `foxmica-tabs.css`, `patches/userChrome/27-corner-reserve.css`, `patches/userChrome/38-grab-and-nav.css`.
 
 - **The room held for the burger and puzzle buttons is worked out from that padding too.** `--uc-extensions-button-width`,
   `--uc-hamburger-width`, `--uc-toolbar-button-width` and `--uc-newtab-width` are no longer in `foxmica-config.css`,
@@ -85,6 +87,11 @@ The settings and each flavour are documented in [docs/](https://github.com/snkiz
   bar's flow, so FoxMica's fixed bar height took over. The rule is repeated outside that switch.
   `patches/userChrome/48-unpinned-puzzle-drawer.css`.
 
+- **ESR 153, private windows: the last extension icon no longer sits on top of the burger and puzzle.** FoxOne gives
+  the corner clearance to Firefox's private-browsing mask button in a private window, and ESR 153 has no such button.
+  With no mask the icon gets its normal clearance back. `patches/userChrome/53-private-window-no-mask.css`.
+
 ### Docs
 
-- README and `docs/foxone-mica.md`: the spacing notes now describe `--ut-btn-outer` and the calculated reserve.
+- README and `docs/foxone-mica.md`: the spacing notes now describe `--ut-btn-outer` and the calculated reserve, and the
+  stock outer padding is corrected to 2px at every density (read on ESR 153; it said 3px at compact).
