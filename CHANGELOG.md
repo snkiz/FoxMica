@@ -5,7 +5,7 @@ this file is cleared for the next version. Older versions live in their GitHub r
 
 The settings and each flavour are documented in [docs/](https://github.com/snkiz/FoxMica/tree/main/docs) on GitHub. The folder is left out of the release zip.
 
-## Next release, built on FoxOne 4.0.8
+## Next release, built on FoxOne 4.0.9
 
 ### Changed
 
@@ -31,16 +31,36 @@ The settings and each flavour are documented in [docs/](https://github.com/snkiz
   FoxOne centres it on the icon with Firefox's own inset. Expanded, it gets 4px on each side instead of running edge to
   edge. The selected tab's fill is flat on the bottom in the collapsed strip. The close button in
   that strip is a rounded square instead of a circle, and with the sidebar on the right it hangs over the other corner,
-  mirrored, where Firefox leaves it on the left. `patches/userChrome/39-vertical-tabs.css`.
+  mirrored, where Firefox leaves it on the left. The vertical tab styling now lives in `foxmica-tabs.css`, so the
+  Explorer-style tabs drop-in has it too (the close badge is a 4px square, and `patches/userChrome/39-vertical-tabs.css`
+  squares it when FoxOne's rounding is off).
+
+- **Vertical tabs: the URL field is the middle half of the toolbar.** The toolbar is the whole window wide there, so
+  the field ran edge to edge, the star sat at the far corner and nothing was left to drag the window by. The field is
+  now 1:2:1 (a quarter of the row before it, half for the field, capped at 1100px so a 4K screen doesn't stretch it),
+  and the extension icons and nav buttons come and go in the space around it. Windows narrower than 1000 CSS px (a
+  half-width window on a 1080p screen at 100% scaling, wider at higher scaling) switch to a field that fills the row
+  with one button box of gap on each side. `patches/userChrome/39-vertical-tabs.css`.
+
+- **Vertical tabs: the nav buttons use the StockMica+ defaults.** Back and Reload are always shown and only Forward
+  collapses while there is no history, so the field only shifts when Forward comes and goes. Set for this layout only,
+  whatever the main config says (the Mini Window does the same). `patches/userChrome/39-vertical-tabs.css`.
 
 - **StockMica+ no longer has `--uc-extensions-button-right` in its config.** It was always meant to stay at 0 there, so
   the two-row layout (`--ut-one-line: 0`) now sets it itself, and a config that still has the line is ignored.
   `patches/userChrome/46-stock-tabs.css`, `micaplus-config.css`, `docs/stockmica-plus.md`.
 
-### From FoxOne 4.0.7 and 4.0.8
+### From FoxOne 4.0.7 to 4.0.9
 
 - **Alt or F10 no longer breaks the layout** ([FoxOne #78](https://github.com/Firnschnee/FoxOne/issues/78)). The menu
   bar lies over the nav bar instead of squeezing into the row.
+
+- **The tab strip no longer jumps by a pixel when the menu bar appears.** The hidden menu bar had been holding an
+  invisible 1px sliver at the left edge of the row ([FoxOne #78](https://github.com/Firnschnee/FoxOne/issues/78)).
+
+- **With the bookmarks bar set to "Only Show on New Tab", the find bar no longer slides down when the pointer is over
+  the URL bar** on pages that show no bookmarks bar (found while looking into
+  [FoxOne #87](https://github.com/Firnschnee/FoxOne/issues/87)).
 
 - **F11 on Firefox 154 and up:** the toolbar steps back to the window edge when Firefox autohides the sidebar launcher
   ([FoxOne #94](https://github.com/Firnschnee/FoxOne/issues/94)).
@@ -59,6 +79,11 @@ The settings and each flavour are documented in [docs/](https://github.com/snkiz
   Vertical tabs put the puzzle in the nav bar, where it is never pinned to the corner, but the drawer that handles
   that only ran with `--uc-extensions-button-right: 0`. It now also runs whenever the tab strip is vertical, and
   horizontal tabs keep whatever the setting says. `patches/userChrome/48-unpinned-puzzle-drawer.css`.
+
+- **Vertical tabs: the puzzle button no longer sits low in the toolbar** when the extension icons hide. Setting the
+  corner switch for vertical tabs (the fix above) switched off FoxOne's rule that puts the puzzle back in the nav
+  bar's flow, so FoxMica's fixed bar height took over. The rule is repeated outside that switch.
+  `patches/userChrome/48-unpinned-puzzle-drawer.css`.
 
 ### Docs
 
