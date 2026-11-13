@@ -5319,6 +5319,15 @@ findbar {
   }
 }
 
+/* Reduced motion: the drawer snaps instead of sliding. FoxOne's own reduced-motion block comes before the patches and
+   covers only the tab bar's icons, and the collapse rules above carry !important, so this repeats their selector for
+   the specificity to tie, and sits after them so the later position wins. */
+@media (prefers-reduced-motion: reduce) {
+  :is(#nav-bar-customization-target, #TabsToolbar-customization-target) > toolbaritem[id$="-browser-action"] {
+    transition: none !important;
+  }
+}
+
 /* ==========================================================================
    FULLSCREEN (F11): A BACKGROUND FOR THE TOOLBAR
    In F11 the toolbar floats over the page (FoxOne pins the toolbox out of flow). The Mica rules above make the

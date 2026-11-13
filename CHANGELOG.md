@@ -80,7 +80,8 @@ The settings and each flavour are documented in [docs/](https://github.com/snkiz
   ([FoxOne #96](https://github.com/Firnschnee/FoxOne/issues/96), same on ESR 153 and Nightly, not tied to the density).
   Vertical tabs put the puzzle in the nav bar, where it is never pinned to the corner, but the drawer that handles
   that only ran with `--uc-extensions-button-right: 0`. It now also runs whenever the tab strip is vertical, and
-  horizontal tabs keep whatever the setting says. `patches/userChrome/48-unpinned-puzzle-drawer.css`.
+  horizontal tabs keep whatever the setting says. The drawer also snaps instead of sliding when the system asks for
+  reduced motion. `patches/userChrome/48-unpinned-puzzle-drawer.css`.
 
 - **Vertical tabs: the puzzle button no longer sits low in the toolbar** when the extension icons hide. Setting the
   corner switch for vertical tabs (the fix above) switched off FoxOne's rule that puts the puzzle back in the nav
