@@ -1,9 +1,9 @@
 /* BUILT FILE - do not edit by hand.
-   FoxMica 1.0.9: FoxOne 4.0.9 (vendor/userChrome.css) plus patches/userChrome/.
+   FoxMica 1.0.11: FoxOne 4.0.11 (vendor/userChrome.css) plus patches/userChrome/.
    Made by scripts/assemble.mjs. Change the patches, then rebuild. */
 /*==============================================================================================*
 
-  FoxOne 4.0.9 – A minimalistic one-line Firefox theme
+  FoxOne 4.0.11 – A minimalistic one-line Firefox theme
   Based on Cascade (https://github.com/cascadefox/cascade)
   Floating Find Bar and dynamic Bookmarks Bar by LittleFox
   (https://github.com/biglavis/LittleFox)
@@ -24,7 +24,10 @@
    * (1 = right, beside the hamburger, 0 = Firefox default in the nav-bar).
    * Firefox locks the button to the nav-bar in Customize Toolbar, so this is
    * the only way to get it there. Pinned is the tested layout, 0 leaves the
-   * button where Firefox puts it, best effort. (issues #48, #67) */
+   * button where Firefox puts it, best effort. (issues #48, #67)
+   * Two-row layouts need 0: in FoxMica's StockMica+ and in PWAsForFirefox
+   * windows the pin can't take, so the switch stays even though only 1 is
+   * tested. Don't cut it in a cleanup round. (#73) */
   --uc-extensions-button-right: 1;
 
   /* Findbar – floating search bar */
@@ -432,6 +435,36 @@
      against --border-radius-medium). */
   --menuitem-border-radius: var(--uc-radius-row) !important;
   --panel-menuitem-border-radius: var(--uc-radius-row) !important;
+}
+
+/* Tooltips (tab titles, toolbar buttons, page title attributes) are not
+   part of the popup token family. On Windows toolkit xul.css drops the
+   native appearance and paints them with hard-coded literals: background
+   light-dark(#f9f9fb, #2b2a33), border light-dark(#67676c, #f9f9fb), 4px
+   radius. #2b2a33 is the violet-tinted Photon grey, so every tooltip read
+   as a lilac box in a Gruvbox window. Map them onto the popup surface:
+   base background, surface border, square corners like every other
+   popup. Those literals sit in a UA sheet without !important, so plain
+   user-sheet declarations win. The rule also covers the content-area
+   tooltips (#remoteBrowserTooltip, #aHTMLTooltip), which otherwise follow
+   the web page's colour scheme and flash white on light sites. */
+tooltip {
+  background-color: var(--uc-color-base);
+  color: var(--uc-color-text);
+  border-color: var(--uc-color-surface);
+  border-radius: var(--uc-radius-surface);
+}
+
+/* Tab hover preview (issue #102). The panel shell already follows the popup
+   radius above, but tab-hover-preview.css rounds two surfaces inside it on
+   their own: the thumbnail canvas and the tab-note box, both at
+   --border-radius-medium. At the square default they sat as rounded cards
+   in a square panel. They are rows inside the panel, so they take the row
+   radius, the same shell/row pairing every other popup uses (Firefox pairs
+   them the same way: large panel, medium thumbnail). */
+.tab-preview-thumbnail-container > canvas,
+.tab-note-preview-container {
+  border-radius: var(--uc-radius-row) !important;
 }
 
 /* Extensions-panel gear buttons escape the hover treatment above: toolkit
@@ -1232,6 +1265,19 @@ sidebar-main,
   /* In the nav-bar's flow, which centres it. --uc-row-height describes the
      tab strip and is recomputed from the vertical tab metrics here. (#57) */
   height: auto !important;
+}
+
+/* The URL bar fills the whole vertical-tab toolbar, which leaves nothing to
+   grab the window by. Same gap as the mini window's: margin is not hit-tested
+   on the container, so it drags. Keep the value in step with the MINI WINDOW
+   block. Left out when the toolbar holds a spring, since the user has then
+   placed their own spacing. Firefox's own #vertical-spacer doesn't count: it
+   is a fixed spring in every nav-bar, and the .titlebar-spacer rule hides it,
+   which is why the grab area was missing in the first place. (#98) */
+:root:has(#tabbrowser-tabs[orient="vertical"])
+  #nav-bar-customization-target:not(:has(> toolbarspring:not(#vertical-spacer)))
+  > #urlbar-container {
+  margin-inline: 0 clamp(24px, 12%, 96px) !important;
 }
 
 
@@ -2867,11 +2913,13 @@ sidebar-main {
 /* Private windows: Firefox puts a mask toolbarbutton at the end of #TabsToolbar,
    right where the fixed hamburger sits, so the two overlapped. Give the mask
    the hamburger clearance instead of whatever item is last in the strip, so
-   the strip reads [last item][mask][hamburger][window controls]. */
+   the strip reads [last item][mask][hamburger][window controls]. The rules that
+   hand the clearance to the mask only apply while the mask exists: ESR 153 has
+   no mask button, and there the last item keeps its own clearance. (#97) */
 #TabsToolbar .private-browsing-indicator-button {
   margin-inline-end: var(--uc-hamburger-width) !important;
 }
-:root[privatebrowsingmode] #TabsToolbar-customization-target > :is(toolbarbutton, toolbaritem):where(:not(#alltabs-button, [hidden])):where(:not(:has(~ :not(#alltabs-button, [hidden])))) {
+:root[privatebrowsingmode]:has(#TabsToolbar .private-browsing-indicator-button) #TabsToolbar-customization-target > :is(toolbarbutton, toolbaritem):where(:not(#alltabs-button, [hidden])):where(:not(:has(~ :not(#alltabs-button, [hidden])))) {
   margin-inline-end: 0 !important;
 }
 
@@ -2880,7 +2928,7 @@ sidebar-main {
    hamburger (and puzzle). Give the toolbar's last wrapper the clearance.
    Private windows: the mask carries it instead. Vertical tabs left as they
    are. (#62, snkiz/FoxMica#32) */
-:root[customizing]:not([privatebrowsingmode]):not(:has(#tabbrowser-tabs[orient="vertical"]))
+:root[customizing]:where(:not([privatebrowsingmode]:has(#TabsToolbar .private-browsing-indicator-button))):not(:has(#tabbrowser-tabs[orient="vertical"]))
   #TabsToolbar-customization-target > toolbarpaletteitem:last-child {
   margin-inline-end: calc(var(--uc-hamburger-width) + var(--uc-extensions-button-width) * var(--uc-extensions-button-right)) !important;
 }
@@ -2910,12 +2958,13 @@ sidebar-main {
      flexible space, would slide under the hamburger once the cluster folds
      to zero. It takes over the clearance while collapsed and hands it back
      on reveal, when the cluster's padding carries it again. Private windows
-     are left out: the mask holds the clearance there. The transition sits
+     with the mask are left out: the mask holds the clearance there (ESR 153
+     has none and is treated like a normal window, #97). The transition sits
      in its own low-specificity rule so the reduced-motion block still wins. */
   #TabsToolbar-customization-target > toolbarbutton:where(:not(#alltabs-button, [hidden])):where(:has(~ toolbaritem:not([hidden]))):where(:not(:has(~ :not(toolbaritem, #alltabs-button, [hidden])))) {
     transition: margin-inline-end 0.2s ease !important;
   }
-  :root:not([privatebrowsingmode]) #TabsToolbar-customization-target > toolbarbutton:where(:not(#alltabs-button, [hidden])):where(:has(~ toolbaritem:not([hidden]))):where(:not(:has(~ :not(toolbaritem, #alltabs-button, [hidden])))) {
+  :root:where(:not([privatebrowsingmode]:has(#TabsToolbar .private-browsing-indicator-button))) #TabsToolbar-customization-target > toolbarbutton:where(:not(#alltabs-button, [hidden])):where(:has(~ toolbaritem:not([hidden]))):where(:not(:has(~ :not(toolbaritem, #alltabs-button, [hidden])))) {
     margin-inline-end: var(--uc-hamburger-width) !important;
   }
 
@@ -2955,7 +3004,7 @@ sidebar-main {
   /* Private windows: the mask already carries the hamburger clearance as its
      own margin (above), so the revealed cluster must not add it again or the
      gap doubles. The mask's :hover in the lists above is the bridge here. */
-  :root[privatebrowsingmode]:is(
+  :root[privatebrowsingmode]:has(#TabsToolbar .private-browsing-indicator-button):is(
     :has(#PanelUI-button:hover),
     :has(#TabsToolbar-customization-target > toolbaritem:hover):where(:not(:has(#TabsToolbar-customization-target > toolbaritem:hover ~ :not(toolbaritem, #alltabs-button, [hidden])))),
     :has(#TabsToolbar-customization-target > toolbaritem [open]),
@@ -2983,6 +3032,9 @@ sidebar-main {
    position:fixed, anchored to the window controls, --uc-extensions-button-
    width further left. Leaving the nav-bar flow hands its slot to the URL bar.
    Fullscreen and vertical tabs follow the hamburger's handling. (#48)
+   The off switch (0) is kept on purpose for two-row layouts such as FoxMica's
+   StockMica+ and PWAsForFirefox windows, where the pin doesn't take. Only 1
+   is tested, 0 is best effort but must keep working. (#73)
    ========================================================================== */
 @container style(--uc-extensions-button-right: 1) {
   #unified-extensions-button {
@@ -3029,7 +3081,7 @@ sidebar-main {
     }
     /* The button before the collapsed cluster clears both fixed buttons,
        and drops it on reveal, the puzzle's hover included. */
-    :root:not([privatebrowsingmode]) #TabsToolbar-customization-target > toolbarbutton:where(:not(#alltabs-button, [hidden])):where(:has(~ toolbaritem:not([hidden]))):where(:not(:has(~ :not(toolbaritem, #alltabs-button, [hidden])))) {
+    :root:where(:not([privatebrowsingmode]:has(#TabsToolbar .private-browsing-indicator-button))) #TabsToolbar-customization-target > toolbarbutton:where(:not(#alltabs-button, [hidden])):where(:has(~ toolbaritem:not([hidden]))):where(:not(:has(~ :not(toolbaritem, #alltabs-button, [hidden])))) {
       margin-inline-end: calc(var(--uc-hamburger-width) + var(--uc-extensions-button-width)) !important;
     }
     :root:is(
@@ -3065,7 +3117,7 @@ sidebar-main {
     }
     /* Private windows: the mask carries the two-button clearance (margin
        above), the cluster adds none. Same reasoning as the #13 base block. */
-    :root[privatebrowsingmode]:is(
+    :root[privatebrowsingmode]:has(#TabsToolbar .private-browsing-indicator-button):is(
       :has(#PanelUI-button:hover),
       :has(#unified-extensions-button:hover),
       :has(#TabsToolbar-customization-target > toolbaritem:hover):where(:not(:has(#TabsToolbar-customization-target > toolbaritem:hover ~ :not(toolbaritem, #alltabs-button, [hidden])))),
@@ -3075,6 +3127,58 @@ sidebar-main {
       max-width: 60px !important;
       padding-inline-end: revert !important;
     }
+  }
+}
+
+
+/* ==========================================================================
+   EXTENSION DRAWER with vertical tabs (#96)
+   Vertical tabs leave the puzzle button in the nav-bar, never at the corner, and the extension icons beside it are
+   nav-bar items too, outside the tab bar's rules above, so --uc-hide-extension-icons did nothing for them. This hides
+   them and reveals them the way the tab bar does, only while the tab strip is vertical and the icons hide
+   (--uc-hide-extension-icons: 1). Horizontal tabs are not touched.
+   The drawer is the unbroken run of extension icons touching the puzzle button on its left: an icon is in it when
+   everything between that icon and the puzzle is another extension icon. What lies beyond the run does not matter, so
+   a spacer or a Firefox tool there does not break it, and a Firefox tool between the icons and the puzzle ends the
+   run. The run tucks away and slides out when the pointer rests on the puzzle, on the hamburger, on one of its
+   icons, or while an extension popup is open.
+   The reveal conditions are flat on purpose: a :has() inside a :has() is not allowed by the spec, and inside :is()
+   the branch is silently dropped. So "an icon of the run is hovered" is written with sibling combinators from the bar
+   (hovered icon, then the puzzle later, with only icons between), not by reusing the run selector. "An extension
+   popup is open" is looser for the same reason: an open popup from any extension button in the bar opens the drawer
+   and holds it open, wherever that extension sits, not only one in the run. Harmless in practice.
+   ========================================================================== */
+@container style(--uc-hide-extension-icons: 1) {
+  :where(:root:has(#tabbrowser-tabs[orient="vertical"])) #nav-bar-customization-target > toolbaritem[id$="-browser-action"]:where(:has(~ #unified-extensions-button):not(:has(~ :not(toolbaritem[id$="-browser-action"], #unified-extensions-button, [hidden]) ~ #unified-extensions-button))) {
+    max-width: 0 !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    padding-inline: 0 !important;
+    /* Firefox gives every extension item margin-inline: var(--space-xxsmall)
+       (.toolbaritem-combined-buttons). Left alone, a tucked run still took
+       4px per icon, and the open run had dead strips between the icons that
+       no hover reaches. Margin goes to 0 here, and the reveal moves the same
+       2px into padding, which is hit-tested. */
+    margin-inline: 0 !important;
+    overflow: hidden !important;
+    /* Closing waits 150ms, and the icons stay hoverable until it has run
+       (visibility flips last), so the pointer can cross from the puzzle onto
+       an icon, or from one icon to the next, without the drawer shutting
+       under it. The reveal below drops the delay, so opening is immediate. */
+    transition: max-width 0.2s ease 150ms, opacity 0.2s ease 150ms,
+                padding-inline 0.2s ease 150ms, visibility 0s linear 350ms !important;
+  }
+  :root:root:has(#tabbrowser-tabs[orient="vertical"]) #nav-bar:is(
+    :has(#unified-extensions-button:is(:hover, [open])),
+    :has(#PanelUI-button:hover),
+    :has(#nav-bar-customization-target > toolbaritem[id$="-browser-action"]:hover ~ #unified-extensions-button):not(:has(#nav-bar-customization-target > toolbaritem[id$="-browser-action"]:hover ~ :not(toolbaritem[id$="-browser-action"], #unified-extensions-button, [hidden]) ~ #unified-extensions-button)),
+    :has(#nav-bar-customization-target > toolbaritem[id$="-browser-action"] [open])
+  ) #nav-bar-customization-target > toolbaritem[id$="-browser-action"]:where(:has(~ #unified-extensions-button):not(:has(~ :not(toolbaritem[id$="-browser-action"], #unified-extensions-button, [hidden]) ~ #unified-extensions-button))) {
+    max-width: 60px !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    padding-inline: var(--space-xxsmall, 2px) !important;
+    transition-delay: 0s !important;
   }
 }
 
@@ -3835,7 +3939,9 @@ html[id^="taskbartab"] #unified-extensions-button {
    but keeps a gap before the restore/close buttons: the nav-bar is the mini
    window's only drag area (no titlebar), and a full-width URL bar left
    nothing to grab. Margin is not hit-tested on the container, so the gap
-   drags the window. Nova's own drop under 150px stays. */
+   drags the window. Nova's own drop under 150px stays. The vertical-tabs
+   grab area (under "Vertical tabs – toolbar layout override", #98) uses the
+   same margin, keep the two in step. */
 :root[mini-window] #urlbar-container {
   max-width: none !important;
   margin-inline: 0 clamp(24px, 12%, 96px) !important;
@@ -4355,6 +4461,11 @@ html[id^="taskbartab"] #unified-extensions-button {
   #TabsToolbar-customization-target > toolbaritem,
   #TabsToolbar-customization-target > toolbarbutton:where(:has(~ toolbaritem)) { transition: none !important; }
 
+  /* Nav-bar extension-icon reveal (vertical tabs). The hide rule keeps its vertical-tabs gate inside :where(), so the
+     two selectors tie and the later position wins. Only the durations go: the close delay is what lets the pointer
+     travel onto the icons, not motion, so it stays and the drawer snaps shut after it. (#96) */
+  #nav-bar-customization-target > toolbaritem[id$="-browser-action"] { transition-duration: 0s !important; }
+
   /* Dynamic bookmarks bar – reveal and collapse snap. The resting rule carries
      :not(:has(toolbarpaletteitem)), which outranked a bare #PersonalToolbar,
      so the bar kept animating. Repeat it so the specificity ties. Only the
@@ -4395,6 +4506,10 @@ html[id^="taskbartab"] #unified-extensions-button {
   --ut-tab-hover-bg: light-dark(rgb(255 255 255 / 30%), rgb(58 58 58 / 30%));   /* Half the layer */
 
   --ut-separator: light-dark(rgb(0 0 0 / 22%), rgb(255 255 255 / 25%));         /* Transparent = off */
+
+  /* The tabs follow FoxOne's rounded-corners setting: with --uc-rounded at 0 the tabs and the collapsed strip's close
+     badge are square like the rest. foxmica-tabs.css only reads its own name, so this hands the value over. */
+  --ut-tab-rounded: var(--uc-rounded, 1);
 
   /* Bookmarks bar fill while it floats over the page. Windows paints Mica only where there is no page, so a floating
      bar cannot be translucent and needs a solid colour. --uc-color-base is the same colour the about: pages use, so
@@ -4995,13 +5110,6 @@ notification-message {
    VERTICAL TABS (#42): the toolbar. The tabs themselves are styled in foxmica-tabs.css.
    ========================================================================== */
 
-/* The close badge on the collapsed strip (foxmica-tabs.css) is a 4px rounded square. FoxOne squares every surface when
-   its rounding option is off (--uc-rounded: 0), so the badge follows: the flag multiplies the 4px, the same way FoxOne
-   derives its own radii. Only the on / off is read; the size is not up for change. */
-:root:root:root #tabbrowser-tabs[orient="vertical"]:not([expanded]) .tab-close-button {
-  border-radius: calc(var(--uc-rounded, 1) * 4px) !important;
-}
-
 /* The URL field in the toolbar: with vertical tabs the tabs are in the sidebar, so the toolbar is the whole window wide
    and Firefox stretches the field across all of it. The star then sits at the far edge, and nothing shows where the
    field ends. Here the field is the middle half of the row, 1:2:1 (a quarter of the row before it, half for the field),
@@ -5014,10 +5122,27 @@ notification-message {
    those plus a quarter of the row. Taking it out of the row to centre it exactly was tried and dropped: the results
    list, the row height and the puzzle all moved. FoxOne's own widths (--uc-urlbar-min-width and -max-width) size the
    whole bar in the one-line layout and do nothing here, and the values are not in the config on purpose. */
-:root:has(#tabbrowser-tabs[orient="vertical"]) #nav-bar #urlbar-container {
+:root:has(#tabbrowser-tabs[orient="vertical"]) #nav-bar #nav-bar-customization-target > #urlbar-container {
   max-width: none !important;
-  margin-inline: min(25%, 550px) auto !important;
   flex: 0 1 min(50%, 1100px) !important;
+}
+/* The two gaps. FoxOne 4.0.11 gives this toolbar a grab gap of its own (FoxOne #98) and leaves it out when the
+   toolbar holds a spring, since the user has then placed their own spacing. Firefox's #vertical-spacer does not count,
+   as in FoxOne: it is a fixed spring in every nav bar and FoxOne hides it. The selectors here name the same elements
+   as FoxOne's rule plus #nav-bar, so these outrank it: its gap (nothing before the field, a small one after) would
+   otherwise replace both of these.
+   Before the field: the quarter-row gap, unless a spring sits before the field, which then does the spacing.
+   After the field: the auto margin always stays, spring or no spring. A spring cannot stand in for it: Firefox caps
+   a spring at 112px (toolbarbuttons.css, the same on ESR 153, 160 and Nightly 162), so it cannot soak up the rest of
+   the row. With the auto margin dropped the leftover space fell after the puzzle, which sat away from the corner and
+   was pushed into it when the drawer opened. A spring after the field just adds its own width to the gap.
+   Springs on both sides are not accounted for. */
+:root:has(#tabbrowser-tabs[orient="vertical"]) #nav-bar #nav-bar-customization-target
+  > #urlbar-container:not(toolbarspring:not(#vertical-spacer) ~ #urlbar-container) {
+  margin-inline-start: min(25%, 550px) !important;
+}
+:root:has(#tabbrowser-tabs[orient="vertical"]) #nav-bar #nav-bar-customization-target > #urlbar-container {
+  margin-inline-end: auto !important;
 }
 /* In a narrow window the ratio gives way: a quarter of the row for the margin and the buttons on both sides left the
    field a third of the row (a half-width window on a 1080p screen, ~960px, showed barely 300px of the URL). So the
@@ -5027,11 +5152,19 @@ notification-message {
    field gets as much room as it can. 1000 is just over a half-width window on a 1080p screen at 100% (960, the
    floor), about 1150 physical px at 115% (where a snapped half is about 665 CSS px and a full window about 1330), and
    about 1500 at 150%. Snapped windows stay clear of it, so the switch shows only when a window is dragged across it
-   by hand. The narrowest window is about 620 (the sidebar and the bookmarks bar set it). */
+   by hand. The narrowest window is about 620 (the sidebar and the bookmarks bar set it). The gaps keep the same
+   per-side spring test. */
 @media (max-width: 1000px) {
-  :root:has(#tabbrowser-tabs[orient="vertical"]) #nav-bar #urlbar-container {
-    margin-inline: var(--ut-btn-box) !important;
+  :root:has(#tabbrowser-tabs[orient="vertical"]) #nav-bar #nav-bar-customization-target > #urlbar-container {
     flex: 1 1 0 !important;
+  }
+  :root:has(#tabbrowser-tabs[orient="vertical"]) #nav-bar #nav-bar-customization-target
+    > #urlbar-container:not(toolbarspring:not(#vertical-spacer) ~ #urlbar-container) {
+    margin-inline-start: var(--ut-btn-box) !important;
+  }
+  :root:has(#tabbrowser-tabs[orient="vertical"]) #nav-bar #nav-bar-customization-target
+    > #urlbar-container:not(:has(~ toolbarspring:not(#vertical-spacer))) {
+    margin-inline-end: var(--ut-btn-box) !important;
   }
 }
 
@@ -5226,7 +5359,7 @@ findbar {
 /* ==========================================================================
    8. UNPINNED PUZZLE – the extension drawer follows the puzzle button
    Offered to FoxOne (#71), declined: it stays here. Only applies when the puzzle is NOT pinned to the corner
-   (--uc-extensions-button-right: 0, or vertical tabs, see the rule just below this comment) and the icons hide
+   (--uc-extensions-button-right: 0) and the icons hide
    (--uc-hide-extension-icons: 1). With the puzzle pinned nothing here applies, and the burger anchors, the reserved
    space and the title-bar rules behave as before.
    Today, with the puzzle unpinned, the title-bar icons still hide but only the burger or an icon opens them.
@@ -5245,27 +5378,9 @@ findbar {
    puzzle (FoxMica #41). FoxOne's own title-bar rule only takes the trailing run of items, and the puzzle, a
    toolbarbutton, breaks it, so with the puzzle beside the burger nothing was picked up.
    ========================================================================== */
-/* Vertical tabs put the puzzle in the nav bar and never pin it to the corner, so the drawer below applies there
-   whatever --uc-extensions-button-right says (FoxOne #96). Same state as setting it to 0 in the config, but only
-   while the tab strip is vertical, so a pinned puzzle with horizontal tabs is untouched. It is set on the toolbox,
-   inside the hide switch's own query (:root has no ancestor to query, and the drawer rules all sit inside the
-   toolbox), so with the icons not hiding nothing changes for vertical tabs. */
-@container style(--uc-hide-extension-icons: 1) {
-  :root:has(#tabbrowser-tabs[orient="vertical"]) #navigator-toolbox {
-    --uc-extensions-button-right: 0;
-  }
-}
-
-/* The puzzle in the vertical toolbar's flow. FoxOne puts it back in the flow there (static, height auto, and the 2px
-   top margin that levels it with the star) with a rule that sits inside its own @container style(--uc-extensions-
-   button-right: 1) block. The gate above sets that to 0, so the rule stopped applying: patch 26's fixed bar height
-   took over and the puzzle sat low. The same three declarations here, outside the query, so they hold either way.
-   FoxOne does the same for the burger, outside the query. */
-:root:has(#tabbrowser-tabs[orient="vertical"]) #unified-extensions-button {
-  position: static !important;
-  height: auto !important;
-  margin-top: 2px !important;
-}
+/* Vertical tabs are FoxOne's now: 4.0.11 has its own drawer for them (FoxOne #96, which started here), so the rule
+   that switched this drawer on for a vertical tab strip is gone, and so is the copy of FoxOne's puzzle placement that
+   went with it. This drawer applies with vertical tabs only if the config sets --uc-extensions-button-right: 0. */
 
 /* The reveal conditions are flat on purpose: a :has() inside a :has() is not allowed by the spec, and inside :is() the
    branch is silently dropped. So "an icon of the run is hovered" is written with sibling combinators from the bar
@@ -5279,10 +5394,19 @@ findbar {
       :is(#nav-bar-customization-target, #TabsToolbar-customization-target) > toolbaritem[id$="-browser-action"]:where(:has(~ #unified-extensions-button):not(:has(~ :not(toolbaritem[id$="-browser-action"], #unified-extensions-button, [hidden]) ~ #unified-extensions-button))) {
         max-width: 0 !important;
         opacity: 0 !important;
-        pointer-events: none !important;
+        visibility: hidden !important;
         padding-inline: 0 !important;
+        /* From FoxOne 4.0.10's drawer: Firefox gives every extension item a 2px margin on each side
+           (--space-xxsmall). Left alone, a tucked run still took 4px per icon, and the open run had dead strips
+           between the icons that no hover reaches. The margin goes to 0 here, and the reveal moves the same 2px
+           into padding, which is hit-tested. */
+        margin-inline: 0 !important;
         overflow: hidden !important;
-        transition: max-width 0.2s ease, opacity 0.2s ease, padding-inline 0.2s ease !important;
+        /* Closing waits 150ms, and the icons stay hoverable until it has run (visibility flips last), so the pointer
+           can cross from the puzzle onto an icon, or from one icon to the next, without the drawer shutting under
+           it. The reveal below drops the delay, so opening is immediate. */
+        transition: max-width 0.2s ease 150ms, opacity 0.2s ease 150ms, padding-inline 0.2s ease 150ms,
+                    visibility 0s linear 350ms !important;
       }
       :root:root :is(#nav-bar, #TabsToolbar):is(
         :has(#unified-extensions-button:is(:hover, [open])),
@@ -5291,8 +5415,9 @@ findbar {
       ) :is(#nav-bar-customization-target, #TabsToolbar-customization-target) > toolbaritem[id$="-browser-action"]:where(:has(~ #unified-extensions-button):not(:has(~ :not(toolbaritem[id$="-browser-action"], #unified-extensions-button, [hidden]) ~ #unified-extensions-button))) {
         max-width: 60px !important;
         opacity: 1 !important;
-        pointer-events: auto !important;
-        padding-inline: revert !important;
+        visibility: visible !important;
+        padding-inline: var(--space-xxsmall, 2px) !important;
+        transition-delay: 0s !important;
       }
     }
 
@@ -5300,10 +5425,19 @@ findbar {
       :is(#nav-bar-customization-target, #TabsToolbar-customization-target) > toolbaritem[id$="-browser-action"]:where(#unified-extensions-button ~ *):not(#unified-extensions-button ~ :not(toolbaritem[id$="-browser-action"], [hidden]) ~ *) {
         max-width: 0 !important;
         opacity: 0 !important;
-        pointer-events: none !important;
+        visibility: hidden !important;
         padding-inline: 0 !important;
+        /* From FoxOne 4.0.10's drawer: Firefox gives every extension item a 2px margin on each side
+           (--space-xxsmall). Left alone, a tucked run still took 4px per icon, and the open run had dead strips
+           between the icons that no hover reaches. The margin goes to 0 here, and the reveal moves the same 2px
+           into padding, which is hit-tested. */
+        margin-inline: 0 !important;
         overflow: hidden !important;
-        transition: max-width 0.2s ease, opacity 0.2s ease, padding-inline 0.2s ease !important;
+        /* Closing waits 150ms, and the icons stay hoverable until it has run (visibility flips last), so the pointer
+           can cross from the puzzle onto an icon, or from one icon to the next, without the drawer shutting under
+           it. The reveal below drops the delay, so opening is immediate. */
+        transition: max-width 0.2s ease 150ms, opacity 0.2s ease 150ms, padding-inline 0.2s ease 150ms,
+                    visibility 0s linear 350ms !important;
       }
       :root:root :is(#nav-bar, #TabsToolbar):is(
         :has(#unified-extensions-button:is(:hover, [open])),
@@ -5312,8 +5446,9 @@ findbar {
       ) :is(#nav-bar-customization-target, #TabsToolbar-customization-target) > toolbaritem[id$="-browser-action"]:where(#unified-extensions-button ~ *):not(#unified-extensions-button ~ :not(toolbaritem[id$="-browser-action"], [hidden]) ~ *) {
         max-width: 60px !important;
         opacity: 1 !important;
-        pointer-events: auto !important;
-        padding-inline: revert !important;
+        visibility: visible !important;
+        padding-inline: var(--space-xxsmall, 2px) !important;
+        transition-delay: 0s !important;
       }
     }
   }
@@ -5321,10 +5456,11 @@ findbar {
 
 /* Reduced motion: the drawer snaps instead of sliding. FoxOne's own reduced-motion block comes before the patches and
    covers only the tab bar's icons, and the collapse rules above carry !important, so this repeats their selector for
-   the specificity to tie, and sits after them so the later position wins. */
+   the specificity to tie, and sits after them so the later position wins. Only the durations go: the close delay is
+   what lets the pointer travel onto the icons, not motion, so it stays and the drawer snaps shut after it. */
 @media (prefers-reduced-motion: reduce) {
   :is(#nav-bar-customization-target, #TabsToolbar-customization-target) > toolbaritem[id$="-browser-action"] {
-    transition: none !important;
+    transition-duration: 0s !important;
   }
 }
 
@@ -5377,28 +5513,4 @@ findbar {
   --uc-autohide-nav-buttons: 0;
   --uc-hide-disabled-nav-buttons: 1;
   --ut-hide-disabled-nav: 1;
-}
-
-/* ==========================================================================
-   PRIVATE WINDOWS WITHOUT THE MASK BUTTON (ESR 153)
-   In a private window FoxOne zeroes the end margin of the last item in the tab strip, because Firefox puts a mask
-   button (.private-browsing-indicator-button) at the very end and FoxOne gives the mask the clearance for the corner
-   buttons instead. ESR 153 has no such button, so the last item, an extension icon, kept no clearance and sat on top
-   of the burger and the puzzle. With no mask in the window this puts the last item's clearance back: the burger's
-   width, or the burger's plus the puzzle's while the puzzle is pinned to the corner, the same two values FoxOne uses
-   for it in a normal window. Windows that have the mask are not touched.
-   Not covered: with --uc-hide-extension-icons on, the icons that slide out on hover in a private window still leave
-   no clearance there, because FoxOne's private-window reveal rules also assume the mask.
-   The selector is FoxOne's own, so the :not(:has()) adds the weight to outrank the rule it undoes.
-   ========================================================================== */
-:root[privatebrowsingmode]:not(:has(#TabsToolbar .private-browsing-indicator-button))
-  #TabsToolbar-customization-target > :is(toolbarbutton, toolbaritem):where(:not(#alltabs-button, [hidden])):where(:not(:has(~ :not(#alltabs-button, [hidden])))) {
-  margin-inline-end: var(--uc-hamburger-width) !important;
-}
-
-@container style(--uc-extensions-button-right: 1) {
-  :root[privatebrowsingmode]:not(:has(#TabsToolbar .private-browsing-indicator-button))
-    #TabsToolbar-customization-target > :is(toolbarbutton, toolbaritem):where(:not(#alltabs-button, [hidden])):where(:not(:has(~ :not(#alltabs-button, [hidden])))) {
-    margin-inline-end: calc(var(--uc-hamburger-width) + var(--uc-extensions-button-width)) !important;
-  }
 }
