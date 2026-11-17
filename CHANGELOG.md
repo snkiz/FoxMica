@@ -5,94 +5,44 @@ this file is cleared for the next version. Older versions live in their GitHub r
 
 The settings and each flavour are documented in [docs/](https://github.com/snkiz/FoxMica/tree/main/docs) on GitHub. The folder is left out of the release zip.
 
-## Next release, built on FoxOne 4.0.9
+## Next release, built on FoxOne 4.0.11
 
 ### Changed
 
-- **Toolbar button spacing is worked out from the bar height.** The padding inside a button is a quarter of the bar
-  height less 3.5px, never under 4px: 4 / 6 / 8px at compact / normal / touch. `--ut-btn-outer` (default 2px, the same
-  at every density) is the one spacing setting left. `--ut-btn-inner-compact / -normal / -touch` are gone from
-  `foxmica-config.css`; a config that still sets them is ignored. The nav bar, tab bar and bookmarks bar now read the
-  same two values. The old override used names Firefox no longer reads, so button spacing may look a little different.
-  The first button on the nav bar had the same problem (its start padding read `--toolbarbutton-outer-padding`, which
-  Firefox no longer has) and now reads `--toolbarbutton-padding-outer`.
-  `foxmica-tabs.css`, `patches/userChrome/27-corner-reserve.css`, `patches/userChrome/38-grab-and-nav.css`.
-
-- **The room held for the burger and puzzle buttons is worked out from that padding too.** `--uc-extensions-button-width`,
-  `--uc-hamburger-width`, `--uc-toolbar-button-width` and `--uc-newtab-width` are no longer in `foxmica-config.css`,
-  so nothing needs keeping in step by hand. A config that sets one still wins.
-
-- **The bookmarks bar is 30 / 34 / 40px** at compact / normal / touch (the bar height less 4px, never under 30 or over
-  40), where the previous release had 30 / 36 / 42px. It is still a calculated value, not a setting.
-  `patches/userChrome/20-layer-values.css`.
-
-- **Tool buttons on the bookmarks bar follow the same padding and sit centred in the row,** and the bookmarks spread
-  out by 0 / 2 / 4px at the three densities. `patches/userChrome/32-bookmarks-height.css`.
-
-- **The vertical-tab fill is no longer a fixed 10px** ([#45](https://github.com/snkiz/FoxMica/issues/45)). Collapsed,
-  FoxOne centres it on the icon with Firefox's own inset. Expanded, it gets 4px on each side instead of running edge to
-  edge. The selected tab's fill is flat on the bottom in the collapsed strip. The close button in
-  that strip is a rounded square instead of a circle, and with the sidebar on the right it hangs over the other corner,
-  mirrored, where Firefox leaves it on the left. The vertical tab styling now lives in `foxmica-tabs.css`, so the
-  Explorer-style tabs drop-in has it too (the close badge is a 4px square, and `patches/userChrome/39-vertical-tabs.css`
-  squares it when FoxOne's rounding is off).
-
-- **Vertical tabs: the URL field is the middle half of the toolbar.** The toolbar is the whole window wide there, so
-  the field ran edge to edge, the star sat at the far corner and nothing was left to drag the window by. The field is
-  now 1:2:1 (a quarter of the row before it, half for the field, capped at 1100px so a 4K screen doesn't stretch it),
-  and the extension icons and nav buttons come and go in the space around it. Windows narrower than 1000 CSS px (a
-  half-width window on a 1080p screen at 100% scaling, wider at higher scaling) switch to a field that fills the row
-  with one button box of gap on each side. `patches/userChrome/39-vertical-tabs.css`.
-
-- **Vertical tabs: the nav buttons use the StockMica+ defaults.** Back and Reload are always shown and only Forward
-  collapses while there is no history, so the field only shifts when Forward comes and goes. Set for this layout only,
-  whatever the main config says (the Mini Window does the same). `patches/userChrome/39-vertical-tabs.css`.
-
-- **StockMica+ no longer has `--uc-extensions-button-right` in its config.** It was always meant to stay at 0 there, so
-  the two-row layout (`--ut-one-line: 0`) now sets it itself, and a config that still has the line is ignored.
-  `patches/userChrome/46-stock-tabs.css`, `micaplus-config.css`, `docs/stockmica-plus.md`.
-
-### From FoxOne 4.0.7 to 4.0.9
-
-- **Alt or F10 no longer breaks the layout** ([FoxOne #78](https://github.com/Firnschnee/FoxOne/issues/78)). The menu
-  bar lies over the nav bar instead of squeezing into the row.
-
-- **The tab strip no longer jumps by a pixel when the menu bar appears.** The hidden menu bar had been holding an
-  invisible 1px sliver at the left edge of the row ([FoxOne #78](https://github.com/Firnschnee/FoxOne/issues/78)).
-
-- **With the bookmarks bar set to "Only Show on New Tab", the find bar no longer slides down when the pointer is over
-  the URL bar** on pages that show no bookmarks bar (found while looking into
-  [FoxOne #87](https://github.com/Firnschnee/FoxOne/issues/87)).
-
-- **F11 on Firefox 154 and up:** the toolbar steps back to the window edge when Firefox autohides the sidebar launcher
-  ([FoxOne #94](https://github.com/Firnschnee/FoxOne/issues/94)).
-
-- **The floating bookmarks bar now floats over an open sidebar panel** instead of hiding. It still steps past the
-  launcher, and still hides when vertical tabs are expanded.
-
-- **The empty footer of the AI chatbot panel and its border line are hidden** (Firefox 158 and up).
-
-- The credit now says FoxOne is built on Cascade (new address) and carries LittleFox's copyright line.
+- **The tabs follow the rounded-corners setting.** With `--uc-rounded: 0` the tabs are square, horizontal and
+  vertical, like the other surfaces. `foxmica-tabs.css` has its own switch for it, `--ut-tab-rounded` (1 by default,
+  so the tabs file alone stays rounded), and FoxMica points it at `--uc-rounded`. The default config has rounding on,
+  so nothing changes unless it was turned off. `foxmica-tabs.css`, `patches/userChrome/20-layer-values.css`.
 
 ### Fixed
 
-- **Vertical tabs: the pinned extension icons beside the burger now hide until the puzzle is hovered**
-  ([FoxOne #96](https://github.com/Firnschnee/FoxOne/issues/96), same on ESR 153 and Nightly, not tied to the density).
-  Vertical tabs put the puzzle in the nav bar, where it is never pinned to the corner, but the drawer that handles
-  that only ran with `--uc-extensions-button-right: 0`. It now also runs whenever the tab strip is vertical, and
-  horizontal tabs keep whatever the setting says. The drawer also snaps instead of sliding when the system asks for
-  reduced motion. `patches/userChrome/48-unpinned-puzzle-drawer.css`.
+- **The close badge on the collapsed vertical strip is square when rounding is off.** The rule for it lost to the
+  tabs file, which loads later, so the badge stayed rounded. It now reads the same switch as the tabs.
+  `foxmica-tabs.css`, `patches/userChrome/39-vertical-tabs.css`.
 
-- **Vertical tabs: the puzzle button no longer sits low in the toolbar** when the extension icons hide. Setting the
-  corner switch for vertical tabs (the fix above) switched off FoxOne's rule that puts the puzzle back in the nav
-  bar's flow, so FoxMica's fixed bar height took over. The rule is repeated outside that switch.
-  `patches/userChrome/48-unpinned-puzzle-drawer.css`.
 
-- **ESR 153, private windows: the last extension icon no longer sits on top of the burger and puzzle.** FoxOne gives
-  the corner clearance to Firefox's private-browsing mask button in a private window, and ESR 153 has no such button.
-  With no mask the icon gets its normal clearance back. `patches/userChrome/53-private-window-no-mask.css`.
+- **The extension drawer no longer shuts while the pointer moves from the puzzle button onto the icons.** Moving
+  slowly, the icon under the pointer did not count as hovered straight away, and the drawer closed in that moment and
+  could not be reached. Closing now waits 150ms and the icons stay hoverable until it has run; opening is still
+  immediate. With reduced motion the drawer snaps shut after the same wait. FoxOne 4.0.11 has the same wait in its
+  vertical-tab drawer (FoxOne #96). `patches/userChrome/48-unpinned-puzzle-drawer.css`.
 
-### Docs
+- **No dead strips between the icons in the extension drawer.** Each extension icon carries a 2px margin on both
+  sides that no hover reaches, so the pointer could fall between two icons and a tucked drawer still took up room.
+  The margin is now zero and the same 2px is padding while the drawer is open. The fix is FoxOne's, from the drawer
+  in 4.0.10. `patches/userChrome/48-unpinned-puzzle-drawer.css`.
+- **Vertical tabs: the URL field keeps its place on FoxOne 4.0.11, and respects springs.** FoxOne now gives the
+  vertical-tab toolbar a grab gap of its own (FoxOne #98), which would have replaced FoxMica's 1:2:1 layout. The
+  layout is rebuilt on FoxOne's rule and takes over its spring test for the gap before the field: a flexible space
+  placed before the field in Customize replaces that gap. The space after the field is kept either way, so the
+  puzzle and burger stay in the corner.
+  `patches/userChrome/39-vertical-tabs.css`.
 
-- README and `docs/foxone-mica.md`: the spacing notes now describe `--ut-btn-outer` and the calculated reserve, and the
-  stock outer padding is corrected to 2px at every density (read on ESR 153; it said 3px at compact).
+### Now in FoxOne
+
+- **The extension drawer with vertical tabs.** FoxOne 4.0.11 hides and reveals the extension icons beside the puzzle
+  button itself when the tab strip is vertical (FoxOne #96), so FoxMica no longer switches its own drawer on there.
+  FoxMica's drawer is still the one for an unpinned puzzle with horizontal tabs, StockMica+ and PWAsForFirefox
+  windows. `patches/userChrome/48-unpinned-puzzle-drawer.css`.
+- **Private windows on ESR 153.** FoxOne 4.0.11 keeps the last tab-bar item clear of the burger and the puzzle when
+  the window has no mask button (FoxOne #97), so `patches/userChrome/53-private-window-no-mask.css` is removed.
