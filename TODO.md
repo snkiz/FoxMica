@@ -9,6 +9,32 @@ where they disagree.
 
 ## Now
 
+- **1.1 refactor on FoxOne 4.1 (branch `1.1-refactor`, set up 2026-11-17).** The branch starts from the 1.0.11 tag.
+  `vendor/` holds Firn's `4.1-cleanup` branch (commit 9d12bc3, 2026-11-16) and `vendor/VERSION` is
+  `4.0.11+4.1-cleanup`; these three files are not committed yet. The build does not run: patch 10 no longer applies,
+  because 4.1 reorders the CONFIG block by chrome section (FoxOne #73). `VERSION` is still `1.0.11`; once patch 10
+  applies, set it with `node scripts/assemble.mjs --version 1.1.0-dev`. Patch 47 and the three userContent hunks still
+  find their text. What 4.1-cleanup removes from CONFIG and FoxMica still names:
+  - `--uc-autohide-nav-delay` and `--uc-dynamic-bookmarks-hover-delay` (merged into the new `--uc-hover-reveal-delay`):
+    patches 10, 28, 32, 42.
+  - `--uc-toolbar-button-width` and `--uc-newtab-width`: patches 10 and 27 (the corner reserve). New in 4.1:
+    `--uc-hamburger-width-auto` and `--uc-extensions-button-width-auto`, derived from the density, which overlaps td45.
+  - `--uc-hide-nav-buttons`, `--uc-urlbar-icons-reveal`, `--uc-container-line-top`: `foxmica-config.css` and patch 10.
+  - The find bar option positions (`--highlight-all-position` and the other three): patch 10 only.
+  This list is from comparing the variable definitions in the two files, not from reading 4.1's rules; start there.
+- **td52. Audio badge on tabs: white or accent (decide in 1.1).** FoxMica's plain tab text colour leaves the audio
+  badge's glyph white on FoxOne's white plate, a blank circle (seen 2026-11-17 on 1.0.11). FoxOne PR #104 (issue #101)
+  gives the badge a base-colour plate and an accent glyph set directly, so it will be readable once that is merged
+  and in `vendor/`. To decide then: keep the accent glyph, or override it to white to match the plain tab text.
+  When #104 is in `vendor/`, the close badge rules in `foxmica-tabs.css` (12px, mirrored) duplicate FoxOne's for
+  FoxOne-Mica; the tabs drop-in still needs its own.
+- **td53. Dialog buttons: pills or radii.** FoxOne themed the confirmation dialogs that open as their own window after
+  the 4.0.11 tag (on FoxOne main and `4.1-cleanup`). Seen on Nightly from the PR branch: the buttons may have gone
+  back to pills. When that theming is in `vendor/`, check whether the dialog buttons follow `--uc-rounded`.
+- **Mozilla bugs filed 2026-11-16 (nothing depends on them):** bug 2093848, the collapsed strip's close button and
+  badges are not mirrored with the sidebar on the right; bug 2093878, the collapsed close button's size. Drafts as
+  posted are in the private notes (`issue-drafts\posted`).
+
 - **td51. LICENSE: carry FoxOne's two new copyright lines (the next push after 1.0.6, not the 1.0.6 push).** FoxOne
   commit 2cfd49d (https://github.com/Firnschnee/FoxOne/commit/2cfd49d66b81224f2a1ab2d8e02ae68f328f674f, it is in what
   FoxOne's header calls 4.0.7) added "Portions copyright (c) 2022 Andreas Grafen (Cascade)" and "Portions copyright
@@ -107,7 +133,8 @@ where they disagree.
   Firefox strip width). Until then patch 34 has two known ESR 153 faults: it checks `:root[sidebar-positionend]`, which ESR
   doesn't set, so the bar doesn't step aside with the sidebar on the right; and its fixed 50.47px is about 2px short here.
   Fallback if 4.0.4 is slow: pull 4.0.3, drop 6a and 6c, and give patch 34 the side check and the token formula.
-- **1.0.2 is released (2026-10-28).** The next release has vertical tabs (#42) and the README wording (both in
+- **1.0.11 is released (2026-11-17, tagged) on FoxOne 4.0.11.** Older note, kept for the record: 1.0.2 was released
+  2026-10-28. The next release then had vertical tabs (#42) and the README wording (both in
   `CHANGELOG.md`); steps in `Notes-n-Tools\FoxMica-RELEASING.md`. Release notes for it are not started.
 - **td40. FoxOne accent does not follow dynamic themes.** Seen 2026-10-18 while doing the selected-tab edge: with
   FoxOne, every theme (store themes too) gets FoxOne's accent on the tab edge, tab text and puzzle piece, not the

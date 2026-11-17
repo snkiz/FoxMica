@@ -24,8 +24,8 @@ get things done, not to have Claude do it for me (boilerplate aside).
 FoxOne's one-line UI (tabs and URL bar in one row), with Windows 11 Explorer-style
 tabs. Repo: https://github.com/snkiz/FoxMica (public, MIT). Local: Documents\GitHub\FoxMica.
 
-- Built on FoxOne by Firnschnee (vendored unmodified, currently 4.0.2+pr83: his fork's branch `83-sidebar-hover`, i.e.
-  FoxOne main plus the flyout fix, not a release). Never tag FoxMica on it; put a real release in `vendor/VERSION` first
+- Built on FoxOne by Firnschnee (vendored unmodified; `vendor/VERSION` says which release, or a pre-release copy
+  when it has a "+"). Never tag FoxMica on a pre-release copy; put a real release in `vendor/VERSION` first
   (`node scripts/pull-foxone.mjs <tag>`). `check.mjs` skips the online vendor check while the version has a "+",
   and fails a release (a FoxMica `VERSION` with no `-dev`) while it does.
 - Mica rules come from Wintego's Firefox-transparent-theme (written for FoxOne 3.5).
@@ -65,7 +65,27 @@ root is FoxMica's own version (`1.0.2`, 2026-10-28). Details and the patch forma
 
 ## Where things stand (update this section at the end of every session)
 
-**Last updated:** 2026-10-28
+**Last updated:** 2026-11-17
+
+- **1.0.11 (2026-11-17, tagged) on FoxOne 4.0.11; `VERSION` is `1.0.11`.** A sync release. Out of `patches/` because
+  FoxOne took them: patch 53 (private windows on ESR 153, FoxOne #97) and the vertical-tabs part of patch 48 (FoxOne's
+  own drawer, #96). Patch 48 carries Firn's fix for the dead strips between the drawer's icons (margin to 0, 2px of
+  padding on reveal). Patch 39's URL field is rebuilt on FoxOne's #98 rule: longer selectors so it outranks FoxOne's
+  grab gap, a spring before the field replaces the gap before it, and the auto margin after the field always stays
+  (Firefox caps a spring at 112px, so a spring cannot soak up the row; without the auto margin the puzzle left the
+  corner). The tabs follow `--uc-rounded` through `--ut-tab-rounded`. The entries below this one are older and partly
+  out of date (the 1.0.4 to 1.0.9 releases were never written up here); `TODO.md` and the GitHub releases are current.
+- **Branch `1.1-refactor` (2026-11-17): the move to FoxOne 4.1.** `vendor/` is Firn's `4.1-cleanup` branch
+  (`4.0.11+4.1-cleanup`, not a release). The build stops at patch 10. The list of what 4.1 removes is in `TODO.md`,
+  under Now. `main` stays on 1.0.11.
+- **Upstream, 2026-11-16:** FoxOne PR #104 (issue #101): smaller badges on the collapsed vertical strip and on pinned
+  tabs, mirrored with the sidebar on the right. Open, waiting on Firn.
+- Lesson (2026-11-16): Firefox's own CSS can be read straight from each install's `browser/omni.ja` (a zip;
+  `chrome/browser/skin/classic/browser/tabbrowser/tabs.css`). Check ESR, Release, Beta and Nightly before trusting a
+  number.
+- Lesson (2026-11-16): in GitHub Desktop a changed line is two halves, the red and the green, ticked separately. A
+  commit with only the green half of a changed selector left the old line behind and broke the braces in a pushed
+  commit. Tick the whole file unless the commit is meant to be partial, and run the check on what was committed.
 
 - **0.9.1 (2026-10-21)** on FoxOne 3.9.9; `VERSION` is `0.9.1`. Three modes, picked in `userChrome.css`: **FoxOne-Mica**
   (the full theme, default), **StockMica+** (Firefox's own two rows with FoxMica's look; `micaplus-config.css`, which
