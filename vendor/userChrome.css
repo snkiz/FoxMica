@@ -14,13 +14,22 @@
    ========================================================================== */
 
 :root {
+  /* Settings come first, grouped by where they act: palette, look, tab bar,
+     nav bar and URL bar, bookmarks bar, find bar, window controls, other.
+     Sizes, offsets and delays follow in the ADVANCED part further down, in
+     the same order. Most setups never need to touch those. */
+
+  /* ---------------------------------------------------------------------
+     PALETTE
+     --------------------------------------------------------------------- */
+
   /* Color palette – change these five values to retheme FoxOne (dark scheme).
      Retheming takes more than this block (issue #50):
      - userContent.css carries its own copy of both sets (PALETTE block) for
        the about: pages, new tab included. The two files cannot share
        variables, so change the values there too.
      - The tab hover colour is separate: --uc-tab-hover-text and
-       --uc-light-tab-hover-text, further down in this block.
+       --uc-light-tab-hover-text, right below the light palette.
      - A few rules cannot read variables and hold literals: the accent
        (#fabd2f dark / #b57614 light) on the sidebar's selected rows and in
        the Library window, the field ground (#1f1f1f / #f9f5d7) on the
@@ -43,26 +52,127 @@
   --uc-light-color-text:    #3c3836;
   --uc-light-color-hover:   #bdae93;
 
-  /* Corner radius for the surfaces FoxOne owns (tab-group chips, library
-     search field) and the value handed to every surface the rounded-corners
-     toggle below can round. */
-  --uc-border-radius: 8px;
+  /* Inactive tab hover title color (issue #16). Sits between text and accent:
+     lighter amber on dark, darker amber on light. */
+  --uc-tab-hover-text: #ffda85;
+  --uc-light-tab-hover-text: #855d22;
+
+  /* ---------------------------------------------------------------------
+     LOOK
+     --------------------------------------------------------------------- */
 
   /* Rounded corners (0 = FoxOne's square edges, 1 = every surface FoxOne
      squares takes --uc-border-radius instead). Details in the derived block
      right below the config. */
   --uc-rounded: 0;
 
-  /* Statuspanel distance from window border (0 = corner). Set to match the
-     floating findbar's --findbar-top / --findbar-right (8px): both are CSS px,
-     so they render at the same real inset under any display scaling. */
-  --uc-status-panel-spacing: 8px;
+  /* ---------------------------------------------------------------------
+     TAB BAR
+     --------------------------------------------------------------------- */
 
-  /* URL Bar width (min applied normally, max on focus). The px ceiling caps
-     growth on ultrawide/4K, where bare vw scales to absurd widths (issue #6).
-     Caps engage from ~1800px CSS-px viewport; below that the vw value wins. */
-  --uc-urlbar-min-width: min(35vw, 630px);
-  --uc-urlbar-max-width: min(50vw, 900px);
+  /* All-tabs button (0 = hidden, 1 = visible) */
+  --uc-show-all-tabs-button: 0;
+
+  /* Pinned toolbar extension icons – hide and reveal on hamburger hover, to
+   * keep the one-line layout clean (1 = hide + hover-reveal, 0 = always show) */
+  --uc-hide-extension-icons: 1;
+
+  /* Tab loading progress bar (1 = show, 0 = hide) */
+  --uc-show-loading-progress: 0;
+
+  /* ---------------------------------------------------------------------
+     NAV BAR AND URL BAR
+     --------------------------------------------------------------------- */
+
+  /* Navigation buttons (Back, Forward, Reload, VPN)
+   * 0 = always show
+   * 1 = auto-hide, reveal on hovering the nav bar. A button you reach with
+   *     the keyboard (Tab, arrow keys) reveals itself.
+   * 3 = hide completely, for mouse-button and shortcut users
+   * (2 from 4.0 still works and now means the same as 1.) */
+  --uc-autohide-nav-buttons: 0;
+
+  /* Navigation buttons – hide Back/Forward while there's nowhere to go instead of dimming them (1 = hide, 0 = dim) */
+  --uc-hide-disabled-nav-buttons: 0;
+
+  /* URL-bar clutter icons – fully hide shield (tracking protection), reader
+   * mode, translations, bookmark star and add-to-taskbar so they can't be
+   * misclicked when aiming for the URL bar (1 = hide all, 0 = default reveal:
+   * reader, translations, add-to-taskbar and add-on icons appear while you
+   * rest on the bookmark star, the permissions icon on the shield) */
+  --uc-hide-urlbar-buttons: 0;
+
+  /* ---------------------------------------------------------------------
+     BOOKMARKS BAR
+     --------------------------------------------------------------------- */
+
+  /* Bookmarks bar – float it out of the layout and reveal it on URL-bar hover
+   * (1 = dynamic overlay, 0 = static row that keeps its own line).
+   * Only bites with Firefox' bookmarks toolbar set to "Always show": under
+   * "Never show" there is nothing to reveal, and "Only on New Tab" leaves
+   * Firefox' own collapse in charge everywhere else. */
+  --uc-dynamic-bookmarks: 1;
+
+  /* Bookmarks bar on fresh tabs – keep the dynamic bar revealed while the
+   * active tab shows no page yet (new tab, home), no hover needed
+   * (1 = show on fresh tabs, 0 = hover only). Ignored while
+   * --uc-dynamic-bookmarks is 0. */
+  --uc-dynamic-bookmarks-newtab: 1;
+
+  /* ---------------------------------------------------------------------
+     FIND BAR
+     --------------------------------------------------------------------- */
+
+  /* Show/Hide Find Bar Options
+   * Show: 1
+   * Hide: 0
+   */
+  --show-highlight-all:    1;
+  --show-match-case:       1;
+  --show-match-diacritics: 1;
+  --show-whole-words:      1;
+
+  /* ---------------------------------------------------------------------
+     WINDOW CONTROLS
+     --------------------------------------------------------------------- */
+
+  /* Window controls (minimise/maximise/close) – hide them to free the space
+   * (1 = hide, 0 = show). Windows/Linux only, macOS keeps its traffic lights.
+   * Close with Ctrl+Shift+W or Alt+F4, maximise by double-clicking the drag
+   * space. In fullscreen (F11) the reveal loses its exit button too, F11
+   * leaves. (#60) */
+  --uc-hide-window-buttons: 0;
+
+  /* Extensions (puzzle) button – pin it to the right edge, next to the
+   * hamburger, instead of leaving it in the nav-bar after the URL bar
+   * (1 = right, beside the hamburger, 0 = Firefox default in the nav-bar).
+   * Firefox locks the button to the nav-bar in Customize Toolbar, so this is
+   * the only way to get it there. Pinned is the tested layout, 0 leaves the
+   * button where Firefox puts it, best effort. (issues #48, #67)
+   * Two-row layouts need 0: in FoxMica's StockMica+ and in PWAsForFirefox
+   * windows the pin can't take, so the switch stays even though only 1 is
+   * tested. Don't cut it in a cleanup round. (#73) */
+  --uc-extensions-button-right: 1;
+
+  /* ---------------------------------------------------------------------
+     OTHER
+     --------------------------------------------------------------------- */
+
+  /* Context menu: "Open Link in Split View" (0 = hidden, 1 = visible) */
+  --uc-show-context-splitview: 0;
+
+  /* =====================================================================
+     ADVANCED – sizes, offsets and delays, in the same order as above
+     ===================================================================== */
+
+  /* --- Look --- */
+
+  /* Corner radius for the surfaces FoxOne owns (tab-group chips, library
+     search field) and the value handed to every surface the rounded-corners
+     toggle (--uc-rounded) can round. */
+  --uc-border-radius: 8px;
+
+  /* --- Tab bar --- */
 
   /* Dynamic tab widths. The inactive ceiling is intentionally lower than the
      active one: inactive tabs cap sooner, freeing strip space for the active
@@ -80,139 +190,34 @@
      All three widths apply to horizontal tabs only, vertical ones fill the sidebar. */
   --uc-tab-min-width: 76px;
 
-  /* Inactive tab hover title color (issue #16). Sits between text and accent:
-     lighter amber on dark, darker amber on light. */
-  --uc-tab-hover-text: #ffda85;
-  --uc-light-tab-hover-text: #855d22;
-
-  /* Container tab indicator line (0 = bottom edge, 1 = top) */
-  --uc-container-line-top: 1;
-
-  /* Context menu: "Open Link in Split View" (0 = hidden, 1 = visible) */
-  --uc-show-context-splitview: 0;
-
-  /* All-tabs button (0 = hidden, 1 = visible) */
-  --uc-show-all-tabs-button: 0;
-
-  /* Windows control button width. Fallback only: on non-macOS the hamburger
-     auto-tracks the real window-control box via CSS anchor positioning, so
-     this value is used just on macOS and on Firefox builds without anchor
-     support. No need to measure it by hand on a modern build. */
-  --uc-window-buttons-width: 138px;
-
-  /* Window controls (minimise/maximise/close) – hide them to free the space
-   * (1 = hide, 0 = show). Windows/Linux only, macOS keeps its traffic lights.
-   * Close with Ctrl+Shift+W or Alt+F4, maximise by double-clicking the drag
-   * space. In fullscreen (F11) the reveal loses its exit button too, F11
-   * leaves. (#60) */
-  --uc-hide-window-buttons: 0;
-
-  /* Hamburger button width – reserved in tab bar to prevent overlap.
-   * With the pinned puzzle it works out as the puzzle's own width, so the
-   * puzzle sits at regular button spacing from the tab-bar item before it.
-   * Naming note: with the puzzle pinned (--uc-extensions-button-right: 1)
-   * the two width names describe the opposite buttons. This one acts as the
-   * PUZZLE's width, --uc-extensions-button-width below as the HAMBURGER's.
-   * The names stay until 4.1 so existing overrides keep working. (#73) */
-  --uc-hamburger-width: 36px;
-
-  /* Extensions (puzzle) button – pin it to the right edge, next to the
-   * hamburger, instead of leaving it in the nav-bar after the URL bar
-   * (1 = right, beside the hamburger, 0 = Firefox default in the nav-bar).
-   * Firefox locks the button to the nav-bar in Customize Toolbar, so this is
-   * the only way to get it there. Pinned is the tested layout, 0 leaves the
-   * button where Firefox puts it, best effort. (issues #48, #67)
-   * Two-row layouts need 0: in FoxMica's StockMica+ and in PWAsForFirefox
-   * windows the pin can't take, so the switch stays even though only 1 is
-   * tested. Don't cut it in a cleanup round. (#73) */
-  --uc-extensions-button-right: 1;
-  /* Width reserved for the pinned puzzle button. Also its distance from the
-   * window controls beyond the hamburger, so it doubles as the gap knob:
-   * lower it to pull the two buttons closer, raise it to space them out.
-   * The hamburger is 4px wider than the puzzle (40 vs 36 at normal density),
-   * so 38 puts the two at regular button spacing. Measured on Windows, FF159;
-   * compact and normal both read even with 36 / 38. Despite the name it
-   * stands for the HAMBURGER's slot, see the naming note above. (#73) */
-  --uc-extensions-button-width: 38px;
-
-  /* Extra toolbar button width (extensions, uBlock etc.) */
-  --uc-toolbar-button-width: 36px;
-  
-  /* Standalone new-tab button width (set to 0 if removed from toolbar) */
-  --uc-newtab-width: 36px;
-
-  /* Drag space – grab zone after the tabs for moving the window. Kept small;
-     it is functional space, not just a gap, so don't drop it to 0. */
+  /* Drag space – grab zone after the tabs for moving the window. It stays
+     there even when a new-tab button or extension icons follow the tabs.
+     Kept small, but it is functional space, not just a gap, so don't drop
+     it to 0. */
   --uc-drag-space: 20px;
 
-  /* Findbar – floating search bar */
-  --findbar-top: 8px;
-  --findbar-right: 8px;
-  --findbar-width: 360px;
+  /* --- Nav bar and URL bar --- */
 
-  /* Show/Hide Find Bar Options
-   * Show: 1
-   * Hide: 0
-   */
-  --show-highlight-all:    1;
-  --show-match-case:       1;
-  --show-match-diacritics: 1;
-  --show-whole-words:      1;
+  /* URL Bar width (min applied normally, max on focus). The px ceiling caps
+     growth on ultrawide/4K, where bare vw scales to absurd widths (issue #6).
+     Caps engage from ~1800px CSS-px viewport; below that the vw value wins. */
+  --uc-urlbar-min-width: min(35vw, 630px);
+  --uc-urlbar-max-width: min(50vw, 900px);
 
-  /* Find Bar Options Position */
-  --highlight-all-position:    0;
-  --match-case-position:       1;
-  --match-diacritics-position: 2;
-  --whole-words-position:      3;
+  /* Hover reveal delay – how long the pointer has to rest before a hover
+   * reveals the auto-hidden navigation buttons (on the nav bar) and the
+   * dynamic bookmarks bar (on the URL field), so a quick pass doesn't shift
+   * the URL bar or drop the bookmarks over the page. Leaving and keyboard
+   * focus stay immediate (0ms = instant). Replaces --uc-autohide-nav-delay
+   * and --uc-dynamic-bookmarks-hover-delay from 4.0. (#73) */
+  --uc-hover-reveal-delay: 450ms;
 
-  /* Tab loading progress bar (1 = show, 0 = hide) */
-  --uc-show-loading-progress: 0;
+  /* --- Bookmarks bar --- */
 
-  /* Navigation buttons – auto-hide with hover reveal (0 = always show, 1 = reveal with hover and focus, 2 = reveal with hover) */
-  --uc-autohide-nav-buttons: 0;
-
-  /* Navigation buttons – delay before hover reveals them (with auto-hide 1 or 2), so a quick pass over the bar doesn't shift the URL bar. Leaving and keyboard focus stay immediate (0ms = instant) */
-  --uc-autohide-nav-delay: 450ms;
-
-  /* Navigation buttons – hide Back/Forward while there's nowhere to go instead of dimming them (1 = hide, 0 = dim) */
-  --uc-hide-disabled-nav-buttons: 0;
-
-  /* Navigation buttons – remove back/forward/reload for mouse button and shortcut users (1 = hide, 0 = show) */
-  --uc-hide-nav-buttons: 0;
-
-  /* URL-bar clutter icons – fully hide shield (tracking protection), reader
-   * mode, translations, bookmark star and add-to-taskbar so they can't be
-   * misclicked when aiming for the URL bar (1 = hide all, 0 = default reveal) */
-  --uc-hide-urlbar-buttons: 0;
-
-  /* URL-bar icons (reader, translations, add-to-taskbar, add-ons, permissions)
-   * – when to reveal them (0 = on URL-bar hover and focus, 1 = only when
-   * resting on the bookmark star or the shield next to them).
-   * Ignored while --uc-hide-urlbar-buttons is 1. */
-  --uc-urlbar-icons-reveal: 1;
-
-  /* Pinned toolbar extension icons – hide and reveal on hamburger hover, to
-   * keep the one-line layout clean (1 = hide + hover-reveal, 0 = always show) */
-  --uc-hide-extension-icons: 1;
-
-  /* Bookmarks bar – float it out of the layout and reveal it on URL-bar hover
-   * (1 = dynamic overlay, 0 = static row that keeps its own line).
-   * Only bites with Firefox' bookmarks toolbar set to "Always show": under
-   * "Never show" there is nothing to reveal, and "Only on New Tab" leaves
-   * Firefox' own collapse in charge everywhere else. */
-  --uc-dynamic-bookmarks: 1;
-
-  /* Delay before the URL-bar hover reveals the bar, and before it hides again
-   * once the pointer leaves. The hide delay is the grace period for travelling
-   * from the URL bar down onto the bookmarks. */
-  --uc-dynamic-bookmarks-hover-delay: 450ms;
+  /* Delay before the dynamic bar hides again once the pointer leaves, the
+   * grace period for travelling from the URL bar down onto the bookmarks.
+   * The reveal delay is --uc-hover-reveal-delay right above. */
   --uc-dynamic-bookmarks-hide-delay: 150ms;
-
-  /* Bookmarks bar on fresh tabs – keep the dynamic bar revealed while the
-   * active tab shows no page yet (new tab, home), no hover needed
-   * (1 = show on fresh tabs, 0 = hover only). Ignored while
-   * --uc-dynamic-bookmarks is 0. */
-  --uc-dynamic-bookmarks-newtab: 1;
 
   /* How far the find bar moves down while the dynamic bookmarks bar is open, so
    * the bar doesn't cover it. The default follows Firefox's density (about
@@ -223,6 +228,43 @@
    * bar's own 6px padding top and bottom plus one item (a 16px icon, about 3px
    * around the label, and Firefox's --bookmark-block-padding on each side). */
   --uc-bookmarks-bar-height: calc(31px + 2 * var(--bookmark-block-padding, 4px));
+
+  /* --- Find bar --- */
+
+  /* Findbar – floating search bar */
+  --findbar-top: 8px;
+  --findbar-right: 8px;
+  --findbar-width: 360px;
+
+  /* --- Window controls --- */
+
+  /* Hamburger button width – reserved in tab bar to prevent overlap.
+   * With the pinned puzzle it works out as the puzzle's own width, so the
+   * puzzle sits at regular button spacing from the tab-bar item before it.
+   * Naming note: with the puzzle pinned (--uc-extensions-button-right: 1)
+   * the two width names describe the opposite buttons. This one acts as the
+   * PUZZLE's width, --uc-extensions-button-width below as the HAMBURGER's.
+   * The names stay so existing overrides keep working. (#73)
+   * Both widths follow Firefox's density on their own (32 / 34 compact,
+   * 36 / 38 normal, 38 / 40 touch, narrower in small windows). Put a number
+   * here instead of the var() to fix a width, e.g. 36px. How the defaults
+   * are worked out is in the BUTTON RESERVATIONS block below the config. */
+  --uc-hamburger-width: var(--uc-hamburger-width-auto);
+
+  /* Width reserved for the pinned puzzle button. Also its distance from the
+   * window controls beyond the hamburger, so it doubles as the gap knob:
+   * lower it to pull the two buttons closer, raise it to space them out.
+   * The default puts the two at regular button spacing, e.g. 38px at normal
+   * density. Despite the name it stands for the HAMBURGER's slot, see the
+   * naming note above. (#73) */
+  --uc-extensions-button-width: var(--uc-extensions-button-width-auto);
+
+  /* --- Other --- */
+
+  /* Statuspanel distance from window border (0 = corner). Set to match the
+     floating findbar's --findbar-top / --findbar-right (8px): both are CSS px,
+     so they render at the same real inset under any display scaling. */
+  --uc-status-panel-spacing: 8px;
 
 }
 
@@ -287,6 +329,42 @@
 
 :root {
   --uc-row-height: var(--tabstrip-min-height);
+}
+
+/* ==========================================================================
+   BUTTON RESERVATIONS – the defaults for --uc-hamburger-width and
+   --uc-extensions-button-width, derived from Firefox's toolbar button
+   padding (#73).
+
+   Not config: CONFIG hands these to the two width variables, and a number
+   set there replaces them.
+
+   A toolbar button is a 16px icon plus inner and outer padding on both
+   sides. Firefox sets both paddings on :root and changes them with the
+   density, below 900 / 800 / 700px window width and in the mini window, so
+   the reservations follow all of that. Measured widths at compact / normal /
+   touch: puzzle 32 / 36 / 38, hamburger 4px more, because the nav-bar's last
+   button takes the toolbar's edge padding instead of the outer padding on
+   its outside.
+   - --uc-hamburger-width-auto is one button box. With the puzzle pinned it
+     acts as the puzzle's slot (see the naming note in CONFIG).
+   - --uc-extensions-button-width-auto is the box plus HALF the edge extra,
+     tuned by eye: the full extra left the puzzle looking too far from the
+     hamburger. Rounded to whole pixels, since 1px outer padding below 900px
+     makes the half 2.5px.
+   That gives 32 / 34, 36 / 38 and 38 / 40 at compact / normal / touch.
+   The fallbacks are the normal-density values, so if Firefox renames the
+   tokens again (the older --toolbarbutton-inner-padding names are gone), the
+   result is the 36 / 38 that shipped in 4.0. --toolbar-edge-padding is the
+   edge token on Nightly 162 (4px), --toolbar-padding-inline the one up to
+   then (6px under Nova).
+   ========================================================================== */
+
+:root {
+  --uc-hamburger-width-auto: calc(16px + 2 * var(--toolbarbutton-padding-inner, 8px)
+                                       + 2 * var(--toolbarbutton-padding-outer, 2px));
+  --uc-extensions-button-width-auto: calc(var(--uc-hamburger-width-auto)
+    + round((var(--toolbar-edge-padding, var(--toolbar-padding-inline, 6px)) - var(--toolbarbutton-padding-outer, 2px)) / 2, 1px));
 }
 
 /* Wide-window tab widths (>= 1710px physical, ~2/3 of WQHD). Restores the
@@ -1201,10 +1279,14 @@ sidebar-main,
       padding-block: 6px !important;
     }
     /* Hover on the URL bar waits out the delay; hover on the bar itself (the
-       bridge that lets the pointer travel down) opens immediately. */
+       bridge that lets the pointer travel down) opens immediately. The hit
+       box (max-height, padding-block) waits as well: opening it at once left
+       an invisible bar under the URL field during the delay, and a pointer
+       passing over the URL text on its way down to the page landed on it and
+       fired the bridge, a flash of the bar on every quick pass. */
     &:has(#urlbar-input:hover, .urlbar-input:hover) #PersonalToolbar {
-      transition-delay: var(--uc-dynamic-bookmarks-hover-delay),
-                        var(--uc-dynamic-bookmarks-hover-delay), 0s, 0s !important;
+      transition-delay: var(--uc-hover-reveal-delay), var(--uc-hover-reveal-delay),
+                        var(--uc-hover-reveal-delay), var(--uc-hover-reveal-delay) !important;
     }
     & #PersonalToolbar:is(:hover, :has(toolbarbutton[open])),
     :root:has(#placesContext:hover):not(:has(
@@ -1386,11 +1468,18 @@ sidebar-main,
   width: 100%;
 }
 
-/* The last term reserves the pinned puzzle button (#48); it is a 0/1 toggle,
-   so the product is 0 while the button stays in the nav-bar. */
+/* Only the fixed buttons are reserved here: the hamburger and the pinned
+   puzzle (#48, a 0/1 toggle, so its term is 0 while the puzzle stays in the
+   nav-bar). Buttons in the tab bar's own flow, such as the standalone new-tab
+   button or extension icons, take their own room. (#73)
+   The drag space is a margin, so it stays after the tabs when such buttons
+   fill the row and max-width no longer binds. It is also subtracted in
+   max-width: the margin sits outside the capped box, and with nothing in
+   flow after the tabs, only the cap keeps it clear of the fixed buttons. */
 #tabbrowser-tabs:not([orient="vertical"]) {
-  max-width: calc(100% - var(--uc-hamburger-width) - var(--uc-toolbar-button-width) - var(--uc-drag-space) - var(--uc-newtab-width)
+  max-width: calc(100% - var(--uc-hamburger-width) - var(--uc-drag-space)
                   - var(--uc-extensions-button-width) * var(--uc-extensions-button-right)) !important;
+  margin-inline-end: var(--uc-drag-space) !important;
 }
 
 /* Widen only while the results view is open. The toolbox-wide :focus-within
@@ -2415,6 +2504,56 @@ sidebar-main {
   }
 }
 
+/* Confirmation dialogs that open as a window of their own instead of a
+   subdialog, e.g. "Cookies und Website-Daten löschen" after removing
+   selected sites in the cookie manager (preferences/dialogs/
+   siteDataRemoveSelected.xhtml, opened from inside that subdialog), and
+   the generic window-modal prompts (toolkit commonDialog.xhtml, e.g. the
+   cookie manager's "Alle löschen" confirmation). As windows they load
+   userChrome.css, not userContent.css, so the in-content token block never
+   reaches them. Outside subdialog mode nothing in them reads a design
+   token anyway: global-shared.css paints the root with the -moz-Dialog
+   system colour (the violet-tinted Photon grey in dark mode), and
+   button.css styles the dialog buttons with ButtonFace / ButtonBorder and
+   a native `outline: auto` focus ring in the Windows accent blue.
+   Subdialog mode (:root[subdialog]) loads in-content/common.css instead,
+   so the surface rules skip it; the buttons are the exception, see
+   below. */
+@-moz-document url("chrome://global/content/commonDialog.xhtml"), url-prefix("chrome://browser/content/preferences/dialogs/") {
+  /* The site list of a multi-site removal (Field-coloured listbox). */
+  :root:not([subdialog]) richlistbox {
+    background-color: var(--uc-color-base) !important;
+    border-color: var(--uc-color-surface) !important;
+  }
+  :root:not([subdialog]),
+  :root:not([subdialog]) dialog {
+    background-color: var(--uc-color-base) !important;
+    color: var(--uc-color-text) !important;
+  }
+  /* XUL buttons draw as a native widget (-moz-default-appearance: button),
+     which paints its own ButtonFace fill, border and focus/default ring
+     and ignores colours from a user sheet. appearance: none hands the box
+     back to CSS, so the border has to be spelled out in full. The buttons
+     live in the <dialog>'s shadow root: neither a :root ancestor nor
+     ::part() from the user sheet reaches them there, a bare element
+     selector does (user sheets match inside shadow trees). That also
+     covers the subdialog variant, which then gets the same flat buttons. */
+  button {
+    appearance: none !important;
+    background-color: var(--uc-color-base) !important;
+    border: 1px solid var(--uc-color-surface) !important;
+    color: var(--uc-color-text) !important;
+    border-radius: var(--uc-radius-surface) !important;
+  }
+  button:hover {
+    color: var(--uc-color-accent) !important;
+  }
+  button:focus-visible {
+    outline: 2px solid var(--uc-color-accent) !important;
+    outline-offset: 1px !important;
+  }
+}
+
 
 /* AI chatbot chrome – everything but the chat iframe lives inside
    chrome://browser/content/genai/chat.html, not browser.xhtml.
@@ -2451,9 +2590,14 @@ sidebar-main {
    HIDDEN ELEMENTS
    ========================================================================== */
 
-/* Permanent hide – takes precedence over autohide. Skipped in Customize mode,
-   so the buttons can still be moved or dragged out of the bar. */
-@container style(--uc-hide-nav-buttons: 1) {
+/* Navigation buttons (Back, Forward, Reload, VPN) – one switch since 4.1
+   (#73): 0 = shown, 1 = auto-hide with hover reveal, 3 = hidden. 2 was the
+   hover-only mode next to 1 (hover + focus) and now means the same as 1, so
+   4.0 configs keep working. The old --uc-hide-nav-buttons: 1 is value 3. */
+
+/* 3: permanent hide. Skipped in Customize mode, so the buttons can still be
+   moved or dragged out of the bar. */
+@container style(--uc-autohide-nav-buttons: 3) {
   :where(:root:not([customizing])) :is(
     #back-button,
     #forward-button,
@@ -2465,14 +2609,19 @@ sidebar-main {
   }
 }
 
-/* Navigation buttons – auto-hide with hover reveal */
-/* Mode 1 and 2 apply hidden state – only inside #nav-bar and never in
-   Customize mode, so the palette and the customizable bar show every button
-   at full width. :where() keeps the qualifier at zero specificity, so the
-   hover and focus reveals below still win.
+/* 1 (and 2): auto-hide with hover reveal. Hidden state applies only inside
+   #nav-bar and never in Customize mode, so the palette and the customizable
+   bar show every button at full width. :where() keeps the qualifier at zero
+   specificity, so the hover and focus reveals below still win.
    width stays at the reveal's revert (auto) in both states, max-width does the
    collapsing. width: 0 here snapped at once on leave (auto can't interpolate)
-   while padding still animated, leaving a sliver of the arrow for 0.2s. */
+   while padding still animated, leaving a sliver of the arrow for 0.2s.
+   Keyboard: Firefox's toolbar navigation (Tab, arrow keys) skips every
+   button whose box is 0px wide, so a fully collapsed button could never take
+   focus and reveal itself. The hidden buttons therefore keep 1px and hand it
+   back with margin-inline-end: -1px, which nets out to 0 in the layout. The
+   margin sits on the top-level items only: #reload-button lives inside
+   #stop-reload-button, and a second -1px there would pull the bar 1px left. */
 @container style(--uc-autohide-nav-buttons: 1), style(--uc-autohide-nav-buttons: 2) {
   :where(:root:not([customizing])) #nav-bar :is(
     #back-button,
@@ -2482,14 +2631,22 @@ sidebar-main {
     #ipprotection-button
   ) {
     opacity: 0 !important;
-    max-width: 0 !important;
+    max-width: 1px !important;
     min-width: 0 !important;
     width: revert !important;
     padding: 0 !important;
     overflow: hidden !important;
     transition: all 0.2s ease !important;
   }
-  /* Hover reveal applies to both modes – revert restores native button widths */
+  :where(:root:not([customizing])) #nav-bar :is(
+    #back-button,
+    #forward-button,
+    #stop-reload-button,
+    #ipprotection-button
+  ) {
+    margin-inline-end: -1px !important;
+  }
+  /* Hover reveal – revert restores native button widths */
   #nav-bar:hover :is(
     #back-button,
     #forward-button,
@@ -2502,20 +2659,45 @@ sidebar-main {
     min-width: revert !important;
     max-width: 60px !important;
     padding-inline: revert !important;
-    /* Only the reveal properties wait for --uc-autohide-nav-delay. The later entries override
+    margin-inline-end: 0 !important;
+    /* Only the reveal properties wait for --uc-hover-reveal-delay. The later entries override
        `all` for those properties, so the hover colour still changes at once. Leaving uses the
        hidden state's transition above, so it has no delay. Keyboard focus reveals through the
-       focus rule below and skips the delay. */
+       focus rule below and skips the delay. The margin has to wait with max-width: dropping
+       the -1px at once while max-width still holds 1px nudged the URL bar right for the
+       length of the delay. */
     transition:
       all 0.2s ease,
-      opacity 0.2s ease var(--uc-autohide-nav-delay),
-      width 0.2s ease var(--uc-autohide-nav-delay),
-      min-width 0.2s ease var(--uc-autohide-nav-delay),
-      max-width 0.2s ease var(--uc-autohide-nav-delay),
-      padding 0.2s ease var(--uc-autohide-nav-delay) !important;
+      opacity 0.2s ease var(--uc-hover-reveal-delay),
+      width 0.2s ease var(--uc-hover-reveal-delay),
+      min-width 0.2s ease var(--uc-hover-reveal-delay),
+      max-width 0.2s ease var(--uc-hover-reveal-delay),
+      padding 0.2s ease var(--uc-hover-reveal-delay),
+      margin-inline-end 0.2s ease var(--uc-hover-reveal-delay) !important;
+  }
+  /* Keyboard focus reveals the focused button alone, without delay. Focus in
+     the URL bar no longer reveals anything, that was mode 1's focus reveal
+     and got in the way of click-to-cancel. Toolbar buttons don't take focus
+     from a mouse click, so this only fires from the keyboard. :focus-within
+     also catches #stop-reload-button while its inner #reload-button has
+     focus. */
+  #nav-bar :is(
+    #back-button,
+    #forward-button,
+    #reload-button,
+    #stop-reload-button,
+    #ipprotection-button
+  ):focus-within {
+    opacity: 1 !important;
+    width: revert !important;
+    min-width: revert !important;
+    max-width: 60px !important;
+    padding-inline: revert !important;
+    margin-inline-end: 0 !important;
   }
   /* Back button has extra native leading padding (8px left vs 2px); revert misses it */
-  #nav-bar:hover #back-button {
+  #nav-bar:hover #back-button,
+  #nav-bar #back-button:focus-within {
     padding-inline-start: 8px !important;
   }
   /* Disabled back/forward stay visible but dimmed, like native */
@@ -2524,78 +2706,38 @@ sidebar-main {
   }
 }
 
-/* Mode 1 also reveals on focus */
-@container style(--uc-autohide-nav-buttons: 1) {
-  #nav-bar:focus-within :is(
+/* Star and shield freeze the nav buttons (#59, #73). Resting on the bookmark
+   star (#page-action-buttons: star, zoom, the revealed icons) asks for the
+   URL-bar icons, resting on the shield or #identity-box (which holds the
+   permissions icon the shield reveals) for the permissions, neither for
+   Back/Forward. So the nav buttons don't move while the pointer is there:
+   hidden ones stay hidden, ones already out from hovering the URL text stay
+   out. Collapsing them instead pulled the URL bar left from under the
+   pointer onto the URL text, which revealed them again and pushed the
+   shield back under the pointer, in a loop.
+   The freeze is a transition: the rule asks for the hidden values, but with
+   a delay nobody waits out, so whatever state the buttons are in holds.
+   Back on the URL text the pending transition is cancelled without any
+   movement, leaving the bar runs the hidden state's own undelayed collapse.
+   all covers the margin too: holding max-width but not the -1px margin
+   brought back the 1px nudge of the keyboard target. A 0s transition with a
+   delay snaps rather than animates, so prefers-reduced-motion needs no copy,
+   and #id :has(#id) :is(#id) outranks every transition rule there anyway.
+   A button with keyboard focus stays out of the freeze, :where() keeps that
+   exclusion at zero specificity. The selector outranks the #nav-bar:hover
+   reveal above. */
+@container style(--uc-autohide-nav-buttons: 1), style(--uc-autohide-nav-buttons: 2) {
+  :where(:root:not([customizing])) #nav-bar:has(#page-action-buttons:hover, #trust-icon-container:hover, #identity-box:hover) :is(
     #back-button,
     #forward-button,
     #reload-button,
     #stop-reload-button,
     #ipprotection-button
-  ) {
-    opacity: 1 !important;
-    width: revert !important;
-    min-width: revert !important;
-    max-width: 60px !important;
-    padding-inline: revert !important;
-  }
-  #nav-bar:focus-within #back-button {
-    padding-inline-start: 8px !important;
-  }
-  #nav-bar:focus-within :is(#back-button, #forward-button)[disabled] {
-    opacity: 0.4 !important;
-  }
-}
-
-/* Star-only icon reveal (#59): resting on the bookmark star asks for the URL-bar
-   icons, not for Back/Forward on the far side of the bar, so the nav buttons
-   stay hidden while the pointer is on #page-action-buttons (star, zoom, the
-   revealed icons). Coming from the URL text they were already out: their
-   collapse waits the same 300ms as the icon reveal, so both land as one
-   movement instead of two. Only interpolable properties collapse here:
-   width and min-width keep the reveal's revert (auto) and follow max-width
-   down. Setting width: 0 as well would snap it at once (auto can't
-   interpolate) while padding still waits, leaving a sliver of the arrow
-   visible for 300ms. Mode 1 keeps its focus reveal, :where() holds that
-   exclusion at zero specificity so both modes tie with the reduced-motion
-   override at the end of the file. #id :has(#id) :is(#id) outranks the
-   #nav-bar:hover reveal above. */
-@container style(--uc-urlbar-icons-reveal: 1) {
-  @container style(--uc-autohide-nav-buttons: 2) {
-    :where(:root:not([customizing])) #nav-bar:has(#page-action-buttons:hover) :is(
-      #back-button,
-      #forward-button,
-      #reload-button,
-      #stop-reload-button,
-      #ipprotection-button
-    ) {
-      opacity: 0 !important;
-      max-width: 0 !important;
-      padding: 0 !important;
-      transition:
-        all 0.2s ease,
-        opacity 0.2s ease 0.3s,
-        max-width 0.2s ease 0.3s,
-        padding 0.2s ease 0.3s !important;
-    }
-  }
-  @container style(--uc-autohide-nav-buttons: 1) {
-    :where(:root:not([customizing])) #nav-bar:where(:not(:focus-within)):has(#page-action-buttons:hover) :is(
-      #back-button,
-      #forward-button,
-      #reload-button,
-      #stop-reload-button,
-      #ipprotection-button
-    ) {
-      opacity: 0 !important;
-      max-width: 0 !important;
-      padding: 0 !important;
-      transition:
-        all 0.2s ease,
-        opacity 0.2s ease 0.3s,
-        max-width 0.2s ease 0.3s,
-        padding 0.2s ease 0.3s !important;
-    }
+  ):where(:not(:focus-within)) {
+    opacity: 0 !important;
+    max-width: 0 !important;
+    padding: 0 !important;
+    transition: all 0s 9999s !important;
   }
 }
 
@@ -2639,20 +2781,12 @@ sidebar-main {
               margin-inline 0.2s ease, padding-inline 0.2s ease !important;
 }
 
-#urlbar:hover #identity-permission-box,
-#urlbar[focused] #identity-permission-box {
-  max-width: none !important;
-  opacity: 1 !important;
-  pointer-events: auto !important;
-  margin-inline: revert !important;
-  padding-inline: revert !important;
-}
-
 /* Always show active permissions (granted camera/mic/location) and sharing
    icons (active stream) – security indicator should not depend on focus.
    Firefox sets [hasPermissions] also for blocked-only permissions (e.g.
    autoplay), so we exclude those via :not(:has(.blocked-permission-icon))
-   to keep blocked icons hover/focus-revealed like the rest of FoxOne. */
+   to keep blocked icons revealed from the shield like the rest (see the
+   page-icon block below). */
 #identity-permission-box[hasPermissions]:not(:has(.blocked-permission-icon)),
 #identity-permission-box[hasSharingIcon] {
   max-width: none !important;
@@ -2727,7 +2861,7 @@ sidebar-main {
 .identity-color-violet { --identity-tab-color: #764edd !important; --identity-icon-color: #764edd !important; }
 .identity-color-gray   { --identity-tab-color: currentColor !important; --identity-icon-color: currentColor !important; }
 
-/* Hide unwanted page action icons – reveal on hover/focus.
+/* Hide unwanted page action icons – reveal from the bookmark star.
    .urlbar-addon-page-action covers every extension-injected URL-bar icon
    (Firefox assigns that class to all of them), so no per-add-on ID list. */
 #reader-mode-button,
@@ -2744,14 +2878,27 @@ sidebar-main {
               padding 0.2s ease, margin 0.2s ease !important;
 }
 
-#urlbar:hover #reader-mode-button,
-#urlbar:hover #taskbar-tabs-button,
-#urlbar:hover #translations-button,
-#urlbar:hover .urlbar-addon-page-action,
-#urlbar[focused] #reader-mode-button,
-#urlbar[focused] #taskbar-tabs-button,
-#urlbar[focused] #translations-button,
-#urlbar[focused] .urlbar-addon-page-action {
+/* Reveal the page icons only from the bookmark star (issue #59). Fixed
+   behaviour since 4.1 (#73): the switch --uc-urlbar-icons-reveal and its
+   mode 0 (reveal on URL-bar hover and focus) are gone. Hovering the URL bar
+   or clicking into it doesn't bring the icons in, so they can't slide under
+   the pointer while aiming for the text. The trigger is #page-action-buttons,
+   the container that holds the star and the hidden icons: collapsed icons
+   are 0 wide and pointer-events: none, so at first only the visible icons at
+   the right end (star, PiP, zoom) can be hovered. Once revealed, the icons
+   sit inside the same container and keep it hovered while the pointer
+   travels over them. The 300ms delay applies to hover only and filters out
+   passing over the star; hiding stays immediate.
+   :focus-within reveals at once, so keyboard users who reach the star with
+   the toolbar arrow keys can step on to the icons. Typing needs no rule:
+   Firefox itself drops the page actions (display: none) while the URL is
+   being edited. */
+#urlbar #page-action-buttons:is(:hover, :focus-within) :is(
+  #reader-mode-button,
+  #taskbar-tabs-button,
+  #translations-button,
+  .urlbar-addon-page-action
+) {
   /* max-width only drives the slide-in transition; it must never act as the
      real width cap. An exact icon+padding fit (30px, then 32px) clipped the
      translations icon on FF153 stable because the rendered icon runs wider
@@ -2770,96 +2917,41 @@ sidebar-main {
   margin: 0 !important;
 }
 
-/* Reveal the page icons only from the bookmark star (issue #59, default on).
-   Hovering the URL bar or clicking into it no longer brings them in, so they
-   can't slide under the pointer while aiming for the text. The trigger is
-   #page-action-buttons, the container that holds the star and the hidden
-   icons: collapsed icons are 0 wide and pointer-events: none, so at first only
-   the visible icons at the right end (star, PiP, zoom) can be hovered. Once
-   revealed, the icons sit inside the same container and keep it hovered
-   while the pointer travels over them. The 300ms delay applies to hover only
-   and filters out passing over the star; hiding stays immediate.
-   :focus-within reveals at once, so keyboard users who reach the star with
-   the toolbar arrow keys can step on to the icons. Typing needs no rule:
-   Firefox itself drops the page actions (display: none) while the URL is
-   being edited. #id #id :is(#id) outranks the #urlbar:hover / [focused]
-   reveal above, which is what cancels it in this mode. */
-@container style(--uc-urlbar-icons-reveal: 1) {
-  #urlbar #page-action-buttons :is(
-    #reader-mode-button,
-    #taskbar-tabs-button,
-    #translations-button,
-    .urlbar-addon-page-action
-  ) {
-    max-width: 0 !important;
-    opacity: 0 !important;
-    pointer-events: none !important;
-    padding: 0 !important;
-    margin: 0 !important;
-  }
+/* Delay only the reveal: transition-delay comes from the target state, so
+   setting it here leaves the hide untouched. One value covers all four
+   transitioned properties; no colour is transitioned, so hover colours on
+   the icons stay instant (the #58 trap). */
+#urlbar #page-action-buttons:hover:not(:focus-within) :is(
+  #reader-mode-button,
+  #taskbar-tabs-button,
+  #translations-button,
+  .urlbar-addon-page-action
+) {
+  transition-delay: 0.3s !important;
+}
 
-  #urlbar #page-action-buttons:is(:hover, :focus-within) :is(
-    #reader-mode-button,
-    #taskbar-tabs-button,
-    #translations-button,
-    .urlbar-addon-page-action
-  ) {
-    max-width: 40px !important;
-    opacity: 1 !important;
-    pointer-events: auto !important;
-    padding-block: 0 !important;
-    padding-inline: 8px !important;
-    margin: 0 !important;
-  }
+/* Same idea on the left: the permissions icon reveals from the shield
+   instead of the URL bar. #trust-icon-container and #identity-box are
+   siblings, the permission box sits inside #identity-box right of the
+   shield, so it slides in away from the pointer. Hovering #identity-box
+   keeps it while the pointer travels onto it. The hidden state is the
+   #identity-permission-box rule further up, the always-on states (granted
+   camera/mic/location, active sharing) override it there. */
+#urlbar #trust-icon-container:is(:hover, :focus-visible) ~ #identity-box #identity-permission-box,
+#urlbar #identity-box:is(:hover, :focus-within) #identity-permission-box {
+  /* A length, not none: 0 -> none can't interpolate, so the width would
+     jump at once and ignore the delay, opening an empty gap before the
+     delayed opacity fades the icon in. 200px clears several permission
+     icons side by side; the real width stays the content width. */
+  max-width: 200px !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  margin-inline: revert !important;
+  padding-inline: revert !important;
+}
 
-  /* Delay only the reveal: transition-delay comes from the target state, so
-     setting it here leaves the hide untouched. One value covers all four
-     transitioned properties; no colour is transitioned, so hover colours on
-     the icons stay instant (the #58 trap). */
-  #urlbar #page-action-buttons:hover:not(:focus-within) :is(
-    #reader-mode-button,
-    #taskbar-tabs-button,
-    #translations-button,
-    .urlbar-addon-page-action
-  ) {
-    transition-delay: 0.3s !important;
-  }
-
-  /* Same idea on the left: the permissions icon reveals from the shield
-     instead of the URL bar. #trust-icon-container and #identity-box are
-     siblings, the permission box sits inside #identity-box right of the
-     shield, so it slides in away from the pointer. Hovering #identity-box
-     keeps it while the pointer travels onto it. The always-on states
-     (granted camera/mic/location, active sharing) are excluded from the
-     re-hide; :where() keeps that exclusion at zero specificity so the
-     reveals below still win. */
-  #urlbar #identity-box #identity-permission-box:where(:not(
-    [hasSharingIcon],
-    [hasPermissions]:not(:has(.blocked-permission-icon))
-  )) {
-    max-width: 0 !important;
-    opacity: 0 !important;
-    pointer-events: none !important;
-    margin-inline: 0 !important;
-    padding-inline: 0 !important;
-  }
-
-  #urlbar #trust-icon-container:is(:hover, :focus-visible) ~ #identity-box #identity-permission-box,
-  #urlbar #identity-box:is(:hover, :focus-within) #identity-permission-box {
-    /* A length, not none: 0 -> none can't interpolate, so the width would
-       jump at once and ignore the delay, opening an empty gap before the
-       delayed opacity fades the icon in. 200px clears several permission
-       icons side by side; the real width stays the content width. */
-    max-width: 200px !important;
-    opacity: 1 !important;
-    pointer-events: auto !important;
-    margin-inline: revert !important;
-    padding-inline: revert !important;
-  }
-
-  #urlbar #trust-icon-container:hover:not(:focus-visible) ~ #identity-box #identity-permission-box {
-    transition-delay: 0.3s !important;
-  }
+#urlbar #trust-icon-container:hover:not(:focus-visible) ~ #identity-box #identity-permission-box {
+  transition-delay: 0.3s !important;
 }
 
 /* Translations icon, FF153: Mozilla's translations.svg is 17px wide in a
@@ -2930,11 +3022,14 @@ sidebar-main {
    HAMBURGER MENU – fixed position next to the window control buttons.
    Base rule uses the --uc-window-buttons-width fallback; non-macOS overrides
    it below with CSS anchor positioning so it tracks the real box width.
+   --uc-window-buttons-width is internal since 4.1 (#73): no longer in CONFIG,
+   every use reads it as var(--uc-window-buttons-width, 138px), so the macOS
+   and hidden-controls rules (0px) and an old CONFIG override still win.
    ========================================================================== */
 
 #PanelUI-button {
   position: fixed !important;
-  right: var(--uc-window-buttons-width) !important;
+  right: var(--uc-window-buttons-width, 138px) !important;
   top: 0 !important;
   height: var(--uc-row-height) !important;
   z-index: 1000 !important;
@@ -2954,7 +3049,7 @@ sidebar-main {
     anchor-name: --uc-winbtns !important;
   }
   #PanelUI-button {
-    right: anchor(--uc-winbtns left, var(--uc-window-buttons-width)) !important;
+    right: anchor(--uc-winbtns left, var(--uc-window-buttons-width, 138px)) !important;
   }
 }
 
@@ -3047,8 +3142,8 @@ sidebar-main {
 /* ==========================================================================
    TOOLBAR EXTENSION BUTTONS – push to right, next to hamburger.
    Only targets <toolbarbutton> and <toolbaritem> children of #TabsToolbar
-   that are NOT known built-in elements. Adjust --uc-toolbar-button-width
-   in CONFIG for multiple buttons (36px per button).
+   that are NOT known built-in elements. They sit in the toolbar's flow, so
+   the tab strip shrinks for them on its own, however many there are.
    ========================================================================== */
 
 #TabsToolbar-customization-target > toolbaritem {
@@ -3205,7 +3300,7 @@ sidebar-main {
 @container style(--uc-extensions-button-right: 1) {
   #unified-extensions-button {
     position: fixed !important;
-    right: calc(var(--uc-window-buttons-width) + var(--uc-extensions-button-width)) !important;
+    right: calc(var(--uc-window-buttons-width, 138px) + var(--uc-extensions-button-width)) !important;
     top: 0 !important;
     height: var(--uc-row-height) !important;
     /* the nav-bar 1px nudge from the trust-icon family no longer applies */
@@ -3216,7 +3311,7 @@ sidebar-main {
   }
   @media not (-moz-platform: macos) {
     #unified-extensions-button {
-      right: calc(anchor(--uc-winbtns left, var(--uc-window-buttons-width)) + var(--uc-extensions-button-width)) !important;
+      right: calc(anchor(--uc-winbtns left, var(--uc-window-buttons-width, 138px)) + var(--uc-extensions-button-width)) !important;
     }
   }
   :root:has(#tabbrowser-tabs[orient="vertical"]) #unified-extensions-button {
@@ -3487,20 +3582,19 @@ sidebar-main {
   box-shadow: 0 -1px 10px 1px var(--tab-selected-textcolor, #fabd2f) !important;
 }
 
-/* container tabs indicator (position toggle in CONFIG)
-   Nova puts its 4px stripe at the top of the tab and shifts it a further -6px
-   into the edge; the 1px FoxOne line inherits both. Default pins it to the
-   bottom edge on the same geometry as the pinned-tab indicator above; the
-   style query at 1 puts it back on top, un-shifted. */
+/* Container tabs indicator. Nova puts its stripe at the top of the tab, and
+   FoxOne keeps it there as a 1px line: in flow, 2px clear of the tab edge so
+   the glow has room on both sides, any inset shift cancelled by
+   inset-block-start: 0. Pinning it flat to the edge instead costs half the
+   glow and reads as the muted pre-3.4.5 line. The bottom-edge variant
+   (--uc-container-line-top: 0) went in 4.1 (#73). */
 #TabsToolbar .tab-context-line {
   height: 1px !important;
-  position: absolute !important;
-  inset-block-start: auto !important;
-  inset-block-end: 0 !important;
-  inset-inline: 10px !important;
-  margin: 0 !important;
-  /* Glow points up, away from the bottom tab edge, so it isn't clipped. */
-  box-shadow: 0 -1px 10px 1px var(--identity-tab-color) !important;
+  position: relative !important;
+  inset-block-start: 0 !important;
+  margin: 2px 10px 0 10px !important;
+  /* Glow points down, away from the top tab edge, so it isn't clipped. */
+  box-shadow: 0 1px 10px 1px var(--identity-tab-color) !important;
 }
 .tab-context-line {
   /* Same lift as the urlbar indicator: boosted core, raw colour for the glow.
@@ -3508,20 +3602,6 @@ sidebar-main {
      alone, where a directional glow has no edge to point away from. */
   background-color: oklch(from var(--identity-icon-color) calc(l + 0.12) calc(c * 1.15) h) !important;
   box-shadow: 0 0 10px 1px var(--identity-tab-color) !important;
-}
-/* Top placement is the 3.4.5 geometry: back into flow, 2px clear of the tab
-   edge so the glow has room on both sides, Nova's -6px shift cancelled by
-   inset-block-start: 0. Pinning it flat to the edge instead costs half the
-   glow and reads as the muted pre-3.4.5 line. */
-@container style(--uc-container-line-top: 1) {
-  #TabsToolbar .tab-context-line {
-    position: relative !important;
-    inset-block-start: 0 !important;
-    inset-block-end: auto !important;
-    inset-inline: auto !important;
-    margin: 2px 10px 0 10px !important;
-    box-shadow: 0 1px 10px 1px var(--identity-tab-color) !important;
-  }
 }
 
 /* show favicon when media is playing but tab is hovered */
@@ -3875,7 +3955,7 @@ findbar[hidden] {
       translate: 0 var(--uc-bookmarks-bar-height) !important;
     }
     &:has(#navigator-toolbox :is(#urlbar-input, .urlbar-input):hover) findbar:not([hidden]) {
-      transition-delay: 0s, 0s, 0s, var(--uc-dynamic-bookmarks-hover-delay) !important;
+      transition-delay: 0s, 0s, 0s, var(--uc-hover-reveal-delay) !important;
     }
     &:has(#PersonalToolbar:hover, #PersonalToolbar toolbarbutton[open]) findbar:not([hidden]),
     &:has(#placesContext:hover):not(:has(
@@ -3945,25 +4025,21 @@ label.found-matches {
 }
 
 .findbar-highlight {
-  order: var(--highlight-all-position) !important;
   width: calc(30px * var(--show-highlight-all)) !important;
   height: calc(24px * var(--show-highlight-all)) !important;
   margin-right: calc(4px * var(--show-highlight-all)) !important;
 }
 .findbar-case-sensitive {
-  order: var(--match-case-position) !important;
   width: calc(30px * var(--show-match-case)) !important;
   height: calc(24px * var(--show-match-case)) !important;
   margin-right: calc(4px * var(--show-match-case)) !important;
 }
 .findbar-match-diacritics {
-  order: var(--match-diacritics-position) !important;
   width: calc(30px * var(--show-match-diacritics)) !important;
   height: calc(24px * var(--show-match-diacritics)) !important;
   margin-right: calc(4px * var(--show-match-diacritics)) !important;
 }
 .findbar-entire-word {
-  order: var(--whole-words-position) !important;
   width: calc(30px * var(--show-whole-words)) !important;
   height: calc(24px * var(--show-whole-words)) !important;
   margin-right: calc(4px * var(--show-whole-words)) !important;
@@ -4570,11 +4646,12 @@ html[id^="taskbartab"] #unified-extensions-button {
   ) {
     transition:
       all 0s,
-      opacity 0s var(--uc-autohide-nav-delay),
-      width 0s var(--uc-autohide-nav-delay),
-      min-width 0s var(--uc-autohide-nav-delay),
-      max-width 0s var(--uc-autohide-nav-delay),
-      padding 0s var(--uc-autohide-nav-delay) !important;
+      opacity 0s var(--uc-hover-reveal-delay),
+      width 0s var(--uc-hover-reveal-delay),
+      min-width 0s var(--uc-hover-reveal-delay),
+      max-width 0s var(--uc-hover-reveal-delay),
+      padding 0s var(--uc-hover-reveal-delay),
+      margin-inline-end 0s var(--uc-hover-reveal-delay) !important;
   }
 
   /* Urlbar hover-reveal groups */
@@ -4591,36 +4668,18 @@ html[id^="taskbartab"] #unified-extensions-button {
   /* Star-only reveal: the delay is a filter, not motion, so keep it. A 0s
      transition with a delay still holds the old value until the delay ends,
      then snaps. */
-  @container style(--uc-urlbar-icons-reveal: 1) {
-    #urlbar #page-action-buttons:hover:not(:focus-within) :is(
-      #reader-mode-button,
-      #taskbar-tabs-button,
-      #translations-button,
-      .urlbar-addon-page-action
-    ) {
-      transition: max-width 0s 0.3s, opacity 0s 0.3s,
-                  padding 0s 0.3s, margin 0s 0.3s !important;
-    }
-    #urlbar #trust-icon-container:hover:not(:focus-visible) ~ #identity-box #identity-permission-box {
-      transition: max-width 0s 0.3s, opacity 0s 0.3s,
-                  margin-inline 0s 0.3s, padding-inline 0s 0.3s !important;
-    }
-    /* Nav buttons held back on the star: same specificity as the rules
-       in the nav section, later position wins. The collapse snaps together with
-       the icons. */
-    :where(:root:not([customizing])) #nav-bar:has(#page-action-buttons:hover) :is(
-      #back-button,
-      #forward-button,
-      #reload-button,
-      #stop-reload-button,
-      #ipprotection-button
-    ) {
-      transition:
-        all 0s,
-        opacity 0s 0.3s,
-        max-width 0s 0.3s,
-        padding 0s 0.3s !important;
-    }
+  #urlbar #page-action-buttons:hover:not(:focus-within) :is(
+    #reader-mode-button,
+    #taskbar-tabs-button,
+    #translations-button,
+    .urlbar-addon-page-action
+  ) {
+    transition: max-width 0s 0.3s, opacity 0s 0.3s,
+                padding 0s 0.3s, margin 0s 0.3s !important;
+  }
+  #urlbar #trust-icon-container:hover:not(:focus-visible) ~ #identity-box #identity-permission-box {
+    transition: max-width 0s 0.3s, opacity 0s 0.3s,
+                margin-inline 0s 0.3s, padding-inline 0s 0.3s !important;
   }
 
   /* Tabstrip extension-icon reveal */
