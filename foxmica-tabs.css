@@ -16,6 +16,9 @@
                                  you don't like it. Any colour works. AccentColor is your Windows accent colour
                                  (the default here); currentColor gives Firefox's plain look.
      --ut-tab-radius 6px        top corners of a tab
+     --ut-tab-rounded 1         rounded corners on or off: 1 uses --ut-tab-radius, 0 squares the tabs and the
+                                close badge on the collapsed vertical strip. FoxMica points it at FoxOne's
+                                rounded-corners setting (patches/userChrome/20-layer-values.css).
      --ut-tab-top-gap 2px       gap above the tabs
      --ut-tab-weight 500        tab title weight
      --ut-tab-pinstripe 1       the 1px edge around the selected tab (no bottom edge): 1 shows it, 0 hides it.
@@ -37,7 +40,7 @@
 /* ---- Tab shape: top-only rounding, filled selected tab, flat inactive ---- */
 
 :root :where(#tabbrowser-tabs:not([orient="vertical"])) .tab-background {
-  border-radius: var(--ut-tab-radius, 6px) var(--ut-tab-radius, 6px) 0 0 !important;
+  border-radius: calc(var(--ut-tab-rounded, 1) * var(--ut-tab-radius, 6px)) calc(var(--ut-tab-rounded, 1) * var(--ut-tab-radius, 6px)) 0 0 !important;
   margin-block: var(--ut-tab-top-gap, 2px) 0 !important;
   margin-inline: 0 !important;
   /* The pinstripe is Nova's 1px edge around the selected tab. --ut-tab-pinstripe: 1 shows it, 0 hides it.
@@ -83,7 +86,7 @@
    ========================================================================== */
 
 :root:root:root #tabbrowser-tabs[orient="vertical"] .tab-background {
-  border-radius: var(--ut-tab-radius, 6px) !important;
+  border-radius: calc(var(--ut-tab-rounded, 1) * var(--ut-tab-radius, 6px)) !important;
   border-width: calc(var(--ut-tab-pinstripe, 1) * 1px) !important;
 }
 
@@ -127,13 +130,13 @@
 }
 
 /* Collapsed strip: the close button, a badge that hangs over the tab's top corner. Firefox draws it as a circle. Here
-   it is a rounded square, 4px, so it matches the fill and the rest of the buttons (FoxMica's patch 39 squares it
-   again when FoxOne's rounding is off). Firefox pins it to the start edge of the tab (inset-inline-start) and
+   it is a rounded square, 4px, so it matches the fill and the rest of the buttons, and a plain square when
+   --ut-tab-rounded is 0. Firefox pins it to the start edge of the tab (inset-inline-start) and
    never checks which side the sidebar is on, so with the sidebar on the right it hangs over the page side. This puts it
    on the end edge there, mirrored. The side is read the way FoxOne does it: Nightly sets sidebar-positionend on :root,
    ESR 153 and Beta only set it on the sidebar container. The top offset is left to Firefox (it differs per build). */
 :root:root:root #tabbrowser-tabs[orient="vertical"]:not([expanded]) .tab-close-button {
-  border-radius: 4px !important;
+  border-radius: calc(var(--ut-tab-rounded, 1) * 4px) !important;
   /* 12px with 2px padding, so the glyph is 8px on every build. Firefox's own is 15px with 3.5px padding on ESR 153 and
      Beta (the same 8px glyph) and 16px with 2px padding on Nightly with Nova, which read as too big here. */
   width: 12px !important;

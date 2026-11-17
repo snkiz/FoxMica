@@ -16,6 +16,10 @@
 
   --ut-separator: light-dark(rgb(0 0 0 / 22%), rgb(255 255 255 / 25%));         /* Transparent = off */
 
+  /* The tabs follow FoxOne's rounded-corners setting: with --uc-rounded at 0 the tabs and the collapsed strip's close
+     badge are square like the rest. foxmica-tabs.css only reads its own name, so this hands the value over. */
+  --ut-tab-rounded: var(--uc-rounded, 1);
+
   /* Bookmarks bar fill while it floats over the page. Windows paints Mica only where there is no page, so a floating
      bar cannot be translucent and needs a solid colour. --uc-color-base is the same colour the about: pages use, so
      the bar matches them (and FoxOne's own default). In customize mode it is the translucent layer instead.
