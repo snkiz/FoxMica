@@ -2,13 +2,6 @@
    VERTICAL TABS (#42): the toolbar. The tabs themselves are styled in foxmica-tabs.css.
    ========================================================================== */
 
-/* The close badge on the collapsed strip (foxmica-tabs.css) is a 4px rounded square. FoxOne squares every surface when
-   its rounding option is off (--uc-rounded: 0), so the badge follows: the flag multiplies the 4px, the same way FoxOne
-   derives its own radii. Only the on / off is read; the size is not up for change. */
-:root:root:root #tabbrowser-tabs[orient="vertical"]:not([expanded]) .tab-close-button {
-  border-radius: calc(var(--uc-rounded, 1) * 4px) !important;
-}
-
 /* The URL field in the toolbar: with vertical tabs the tabs are in the sidebar, so the toolbar is the whole window wide
    and Firefox stretches the field across all of it. The star then sits at the far edge, and nothing shows where the
    field ends. Here the field is the middle half of the row, 1:2:1 (a quarter of the row before it, half for the field),
@@ -21,10 +14,27 @@
    those plus a quarter of the row. Taking it out of the row to centre it exactly was tried and dropped: the results
    list, the row height and the puzzle all moved. FoxOne's own widths (--uc-urlbar-min-width and -max-width) size the
    whole bar in the one-line layout and do nothing here, and the values are not in the config on purpose. */
-:root:has(#tabbrowser-tabs[orient="vertical"]) #nav-bar #urlbar-container {
+:root:has(#tabbrowser-tabs[orient="vertical"]) #nav-bar #nav-bar-customization-target > #urlbar-container {
   max-width: none !important;
-  margin-inline: min(25%, 550px) auto !important;
   flex: 0 1 min(50%, 1100px) !important;
+}
+/* The two gaps. FoxOne 4.0.11 gives this toolbar a grab gap of its own (FoxOne #98) and leaves it out when the
+   toolbar holds a spring, since the user has then placed their own spacing. Firefox's #vertical-spacer does not count,
+   as in FoxOne: it is a fixed spring in every nav bar and FoxOne hides it. The selectors here name the same elements
+   as FoxOne's rule plus #nav-bar, so these outrank it: its gap (nothing before the field, a small one after) would
+   otherwise replace both of these.
+   Before the field: the quarter-row gap, unless a spring sits before the field, which then does the spacing.
+   After the field: the auto margin always stays, spring or no spring. A spring cannot stand in for it: Firefox caps
+   a spring at 112px (toolbarbuttons.css, the same on ESR 153, 160 and Nightly 162), so it cannot soak up the rest of
+   the row. With the auto margin dropped the leftover space fell after the puzzle, which sat away from the corner and
+   was pushed into it when the drawer opened. A spring after the field just adds its own width to the gap.
+   Springs on both sides are not accounted for. */
+:root:has(#tabbrowser-tabs[orient="vertical"]) #nav-bar #nav-bar-customization-target
+  > #urlbar-container:not(toolbarspring:not(#vertical-spacer) ~ #urlbar-container) {
+  margin-inline-start: min(25%, 550px) !important;
+}
+:root:has(#tabbrowser-tabs[orient="vertical"]) #nav-bar #nav-bar-customization-target > #urlbar-container {
+  margin-inline-end: auto !important;
 }
 /* In a narrow window the ratio gives way: a quarter of the row for the margin and the buttons on both sides left the
    field a third of the row (a half-width window on a 1080p screen, ~960px, showed barely 300px of the URL). So the
@@ -34,11 +44,19 @@
    field gets as much room as it can. 1000 is just over a half-width window on a 1080p screen at 100% (960, the
    floor), about 1150 physical px at 115% (where a snapped half is about 665 CSS px and a full window about 1330), and
    about 1500 at 150%. Snapped windows stay clear of it, so the switch shows only when a window is dragged across it
-   by hand. The narrowest window is about 620 (the sidebar and the bookmarks bar set it). */
+   by hand. The narrowest window is about 620 (the sidebar and the bookmarks bar set it). The gaps keep the same
+   per-side spring test. */
 @media (max-width: 1000px) {
-  :root:has(#tabbrowser-tabs[orient="vertical"]) #nav-bar #urlbar-container {
-    margin-inline: var(--ut-btn-box) !important;
+  :root:has(#tabbrowser-tabs[orient="vertical"]) #nav-bar #nav-bar-customization-target > #urlbar-container {
     flex: 1 1 0 !important;
+  }
+  :root:has(#tabbrowser-tabs[orient="vertical"]) #nav-bar #nav-bar-customization-target
+    > #urlbar-container:not(toolbarspring:not(#vertical-spacer) ~ #urlbar-container) {
+    margin-inline-start: var(--ut-btn-box) !important;
+  }
+  :root:has(#tabbrowser-tabs[orient="vertical"]) #nav-bar #nav-bar-customization-target
+    > #urlbar-container:not(:has(~ toolbarspring:not(#vertical-spacer))) {
+    margin-inline-end: var(--ut-btn-box) !important;
   }
 }
 
